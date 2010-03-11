@@ -34,8 +34,9 @@ limitations under the License.
 		<ProjectName>Castle.Facilities.AutomaticTransactionManagement</ProjectName>
 		
 		<!-- Versioning -->
-		<Project_Major>1</Project_Major>
+		<Project_Major>2</Project_Major>
 		<Project_Minor>0</Project_Minor>
+		<Project_Build>1</Project_Build>
 
 		<!-- Project folders -->
 		<BuildScriptsPath Condition="'$(BuildScriptsPath)' ==''">$(RootPath)\buildscripts</BuildScriptsPath>
