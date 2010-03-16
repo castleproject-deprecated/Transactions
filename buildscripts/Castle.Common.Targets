@@ -57,9 +57,9 @@ limitations under the License.
 	
 	<!-- Versioning Properties -->
 	<PropertyGroup>
-		<Project_Major Condition="'$(Project_Major)' == ''">1</Project_Major>
+		<Project_Major Condition="'$(Project_Major)' == ''">2</Project_Major>
 		<Project_Minor Condition="'$(Project_Minor)' == ''">0</Project_Minor>
-		<Project_Build Condition="'$(Project_Build)' == ''">3</Project_Build>
+		<Project_Build Condition="'$(Project_Build)' == ''">0</Project_Build>
 	</PropertyGroup>
 
 	
