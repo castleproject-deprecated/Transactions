@@ -1,6 +1,3 @@
 [submodule "lib/Castle.Services.Transaction"]
 	path = lib/Castle.Services.Transaction
 	url = git@github.com:haf/Castle.Services.Transaction.git
-[submodule "lib/Castle.DynamicProxy"]
-	path = lib/Castle.DynamicProxy
-	url = git://github.com/castleproject/Castle.DynamicProxy.git
