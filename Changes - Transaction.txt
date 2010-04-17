@@ -1,6 +1,18 @@
+2010-04-16
+==========
+Henrik: Updated folder structure to match that of John's suggestions. ClickToBuild.cmd now works after fix from Krzysztof/John. Previously
+it didn't work for directories with spaces in them.
+
+Somewhere in between these dates:
+=================================
+Updated to fix a bug, as per the commit message, caused by incorrect disposal of transactions. Remade the AbstractTransaction into BaseTransaction
+and changed the public API quite a lot.
+
 2010-02-28
 ==========
 Henrik: Cloned from git repository, going to modify so that it compiles. Moved sln files to src dir.
+Added functionality in terms of a managed implementation of the transactional file system. More information
+is available to the web site and on the mailing list.
 
 ----
 November, 2007
