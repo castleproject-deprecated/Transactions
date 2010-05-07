@@ -31,12 +31,12 @@ limitations under the License.
 
 	<!-- Project Properties -->
 	<PropertyGroup>
-		<ProjectName>Castle.Facilities.AutomaticTransactionManagement</ProjectName>
+		<ProjectName>Castle.Facilities.AutoTx</ProjectName>
 		
 		<!-- Versioning -->
 		<Project_Major>2</Project_Major>
 		<Project_Minor>0</Project_Minor>
-		<Project_Build>1</Project_Build>
+		<Project_Build>0</Project_Build>
 
 		<!-- Project folders -->
 		<BuildScriptsPath Condition="'$(BuildScriptsPath)' ==''">$(RootPath)\buildscripts</BuildScriptsPath>
