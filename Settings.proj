@@ -42,9 +42,8 @@ limitations under the License.
 		<BuildScriptsPath Condition="'$(BuildScriptsPath)' ==''">$(RootPath)\buildscripts</BuildScriptsPath>
 
 	</PropertyGroup>
-	
 
-	<!-- Import framework version specific settings, like Settings-v3.5 or Settings-v4.0 -->
+  <!-- Import framework version specific settings, like Settings-v3.5 or Settings-v4.0 -->
 	<Import
 		Project="$(RootPath)\Settings-$(TargetFrameworkVersion).proj"
 		Condition="'$(TargetFrameworkVersion)' != '' and Exists('$(RootPath)\Settings-$(TargetFrameworkVersion).proj')"

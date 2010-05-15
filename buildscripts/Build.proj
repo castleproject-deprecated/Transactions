@@ -241,7 +241,7 @@ limitations under the License.
 			ZipFileName="$(Build_ZipFilePath)"
 			/>
 
-		<RemoveDir Directories="$(PackageDir)" ContinueOnError="true" />
+    <RemoveDir Directories="$(PackageDir)" ContinueOnError="true" />
 
 	</Target>
 
@@ -401,7 +401,8 @@ limitations under the License.
 			<_BuildScriptsTxtFiles Include="$(BuildScriptsPath)\*.txt"/>
 			<_Txt Include="$(RootPath)\*.txt"/>			
 			
-			<_PackageFiles Include="$(PackageFiles)" />
+			<_PackageFiles Include="@(PackageFiles)" />
+  
 			<_ExcludeFromPackageFiles Include="$(ExcludeFromPackageFiles)" />
 		</ItemGroup>
 		
