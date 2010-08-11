@@ -1,3 +1,7 @@
+2010-08-10
+==========
+Breaking Change: Renamed the property RollbackResourceException.FailedResource to RollbackResourceException.FailedResources
+
 2010-04-16
 ==========
 Henrik: Updated folder structure to match that of John's suggestions. ClickToBuild.cmd now works after fix from Krzysztof/John. Previously
