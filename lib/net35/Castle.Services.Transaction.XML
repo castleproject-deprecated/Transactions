@@ -1,0 +1,1561 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Castle.Services.Transaction</name>
+    </assembly>
+    <members>
+        <member name="M:Castle.Services.Transaction.TransactionException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.TransactionException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.TransactionException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.TransactionException"/> class.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"></see> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"></see> is zero (0). </exception>
+            <exception cref="T:System.ArgumentNullException">The info parameter is null. </exception>
+        </member>
+        <member name="T:Castle.Services.Transaction.ITransaction">
+            <summary>
+            Represents the contract for a transaction.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.Begin">
+            <summary>
+            Starts the transaction. Implementors
+            should activate the apropriate resources
+            in order to start the underlying transaction
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.Commit">
+            <summary>
+            Succeed the transaction, persisting the
+            modifications
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.Rollback">
+            <summary>
+            <list>
+            <item>
+            Pre:	TransactionStatus = Active
+            </item>
+            <item>
+            Mid:	Supply a logger and any exceptions from rollbacks will be logged as they happen.
+            </item>
+            <item>
+            Post:
+            <list><item>InnerRollback will be called for inheritors, then</item>
+            <item>All resources will have Rollback called, then</item>
+            <item>All sync infos will have AfterCompletion called.</item>
+            </list>
+            </item>
+            </list>
+            </summary>
+            <remarks>
+            If you are interfacing the transaction through an inversion of control engine
+            and in particylar AutoTx, calling this method is not recommended. Instead use
+            <see cref="M:Castle.Services.Transaction.ITransaction.SetRollbackOnly"/>.
+            </remarks>
+            <exception cref="T:Castle.Services.Transaction.RollbackResourceException">If any resource(s) failed.</exception>
+            <exception cref="T:Castle.Services.Transaction.TransactionException">If the transaction status was not active.</exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.SetRollbackOnly">
+            <summary>
+            Signals that this transaction can only be rolledback. 
+            This is used when the transaction is not being managed by
+            the callee.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.Enlist(Castle.Services.Transaction.IResource)">
+            <summary>
+            Register a participant on the transaction.
+            </summary>
+            <param name="resource"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.RegisterSynchronization(Castle.Services.Transaction.ISynchronization)">
+            <summary>
+            Registers a synchronization object that will be 
+            invoked prior and after the transaction completion
+            (commit or rollback)
+            </summary>
+            <param name="synchronization"></param>
+            <exception cref="T:System.ArgumentNullException">If the parameter is null.</exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransaction.Resources">
+            <summary>
+            Gets an enumerable of the resources present.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.Status">
+            <summary>
+            Returns the current transaction status.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.Context">
+            <summary>
+            Transaction context. Can be used by applications.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.IsChildTransaction">
+            <summary>
+            Gets whether the transaction is running inside another of castle's transactions.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.IsRollbackOnlySet">
+            <summary>
+            Gets whether rollback only is set.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.TransactionMode">
+            <summary>
+            Gets the transaction mode of the transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.IsolationMode">
+            <summary>
+            Gets the isolation mode in use for the transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.IsAmbient">
+            <summary>
+            Gets whether the transaction "found an" ambient transaction to run in.
+            This is true if the tx is running in the DTC or a TransactionScope, but 
+            doesn't imply a distributed transaction (as TransactionScopes automatically choose the least
+            performance invasive option)
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransaction.Name">
+            <summary>
+            Gets the friendly name (if set) or an unfriendly integer hash name (if not set).
+            Never returns null.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.Begin">
+            <summary>
+            <see cref="M:Castle.Services.Transaction.ITransaction.Begin"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.InnerBegin">
+            <summary>
+            Implementors set <see cref="P:Castle.Services.Transaction.TransactionBase.Status"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.Commit">
+            <summary>
+            Succeed the transaction, persisting the
+                        modifications
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.InnerCommit">
+            <summary>
+            Implementors should NOT change the base class.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.Rollback">
+            <summary>
+            See <see cref="M:Castle.Services.Transaction.ITransaction.Rollback"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.InnerRollback">
+            <summary>
+            Implementors should NOT change the base class.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.SetRollbackOnly">
+            <summary>
+            Signals that this transaction can only be rolledback. 
+                        This is used when the transaction is not being managed by
+                        the callee.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.Enlist(Castle.Services.Transaction.IResource)">
+            <summary>
+            Register a participant on the transaction.
+            </summary>
+            <param name="resource"/>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionBase.RegisterSynchronization(Castle.Services.Transaction.ISynchronization)">
+            <summary>
+            Registers a synchronization object that will be 
+                        invoked prior and after the transaction completion
+                        (commit or rollback)
+            </summary>
+            <param name="s"/>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.Status">
+            <summary>
+            Returns the current transaction status.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.Context">
+            <summary>
+            Transaction context. Can be used by applications.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.IsChildTransaction">
+            <summary>
+             Gets whether the transaction is a child transaction or not.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.IsAmbient">
+            <summary>
+            <see cref="P:Castle.Services.Transaction.ITransaction.IsAmbient"/>.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.IsRollbackOnlySet">
+            <summary>
+            Gets whether rollback only is set.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.TransactionMode">
+            <summary>
+             Gets the transaction mode of the transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.IsolationMode">
+            <summary>
+             Gets the isolation mode of the transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionBase.Name">
+            <summary>
+             Gets the name of the transaction.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.ChildTransaction">
+            <summary>
+            Emulates a standalone transaction but in fact it 
+            just propages a transaction. 
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IEventPublisher">
+            <summary>
+            This interface shows that the transaction of transaction manager implementing
+            it is aware of what is success (the completed event), failure or roll-backs.
+            </summary>
+        </member>
+        <member name="E:Castle.Services.Transaction.IEventPublisher.TransactionRolledBack">
+            <summary>
+            Raised when the transaction rolled back successfully.
+            </summary>
+        </member>
+        <member name="E:Castle.Services.Transaction.IEventPublisher.TransactionCompleted">
+            <summary>
+            Raised when the transaction committed successfully.
+            </summary>
+        </member>
+        <member name="E:Castle.Services.Transaction.IEventPublisher.TransactionFailed">
+            <summary>
+            Raised when the transaction has failed on commit/rollback
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.IDirectoryAdapter">
+            <summary>
+             Directory helper. Use this instead of Directory in order to gain
+             transparent interop with transactions (when you want them, as marked by the [Transaction] attribute).
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.Create(System.String)">
+             <summary>Creates a directory at the path given.
+             Contrary to the Win32 API, doesn't throw if the directory already
+             exists, but instead returns true. The 'safe' value to get returned 
+             for be interopable with other path/dirutil implementations would
+             hence be false (i.e. that the directory didn't already exist).
+             </summary>
+            <param name="path">The path to create the directory at.</param>
+             <remarks>True if the directory already existed, False otherwise.</remarks>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.Exists(System.String)">
+            <summary>
+            Checks whether the path exists.
+            </summary>
+            <param name="path">Path to check.</param>
+            <returns>True if it exists, false otherwise.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.Delete(System.String)">
+            <summary>
+            Deletes a folder recursively.
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes an empty directory. Non-empty directories will cause false
+            to be returned.
+            </summary>
+            <param name="path">The path to the folder to delete.</param>
+            <param name="recursively">
+            Whether to delete recursively or not.
+            When recursive, we delete all subfolders and files in the given
+            directory as well. If not recursive sub-directories and files will not
+            be deleted.
+            </param>
+            <returns>Whether the delete was successful (i.e. the directory existed and was deleted).</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.GetFullPath(System.String)">
+            <summary>
+            Gets the full path of the specified directory.
+            </summary>
+            <param name="dir">The relative path.</param>
+            <returns>A string with the full path.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.MapPath(System.String)">
+            <summary>
+             Gets the MapPath of the path. 
+             
+             This will be relative to the root web directory if we're in a 
+             web site and otherwise to the executing assembly.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IDirectoryAdapter.Move(System.String,System.String)">
+            <summary>
+             Moves the directory from the original path to the new path.
+            </summary>
+            <param name="originalPath">Path from</param>
+            <param name="newPath">Path to</param>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.IFileAdapter">
+            <summary>
+             File helper wrapper interface.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.Create(System.String)">
+            <summary>
+             Create a new file transactionally.
+            </summary>
+            <param name="filePath">The path, where to create the file.</param>
+            <returns>A handle pointing to the file.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.Exists(System.String)">
+            <summary>
+             Returns whether the specified file exists or not.
+            </summary>
+            <param name="filePath">The file path.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.ReadAllText(System.String)">
+            <summary>
+            Reads all text from a file as part of a transaction
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.WriteAllText(System.String,System.String)">
+            <summary>
+            Writes text to a file as part of a transaction
+            </summary>
+            <param name="path"></param>
+            <param name="contents"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.Delete(System.String)">
+            <summary>
+            Deletes a file as part of a transaction
+            </summary>
+            <param name="filePath"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.Open(System.String,System.IO.FileMode)">
+            <summary>
+            Opens a file with RW access.
+            </summary>
+            <param name="filePath"></param>
+            <param name="mode">The file mode, which specifies </param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.WriteStream(System.String,System.IO.Stream)">
+            <summary>
+            Writes an input stream to the file path.
+            </summary>
+            <param name="toFilePath">The path to write to.</param>
+            <param name="fromStream">The stream to read from.</param>
+            <returns>The number of bytes written.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.ReadAllText(System.String,System.Text.Encoding)">
+            <summary>
+             Reads all text in a file and returns the string of it.
+            </summary>
+            <param name="path"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IFileAdapter.Move(System.String,System.String)">
+            <summary>
+             Moves a file from one path to another.
+             
+             These should all be equivalent:
+             <code>
+             Move("b/a.txt", "c/a.txt")
+             Move("b/a.txt", "c") // given c either is a directory or doesn't exist, otherwise it overwrites the file c
+             Move("b/a.txt", "c/") // c must be a directory and might or might not exist. If it doesn't exist it will be created.
+             </code>
+            </summary>
+            <param name="originalFilePath">
+             The original file path. It can't be null nor can it point to a directory.
+             </param>
+             ///<param name="newFilePath">The new location of the file.</param>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.IMapPath">
+            <summary>
+             Small interface for the map path functionality.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.IMapPath.MapPath(System.String)">
+            <summary>
+             Gets the absolute path given a string formatted
+             as a map path, for example:
+             "~/plugins" or "plugins/integrated" or "C:\a\b\c.txt" or "\\?\C:\a\b"
+             would all be valid map paths.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.MapPathImpl">
+            <summary>
+             An implementation of the MapPath which seems to be working well with
+             both testfixtures and online. Consumed by <see cref="T:Castle.Services.Transaction.IO.IDirectoryAdapter"/>
+             (or any other object wanting the functionality).
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.MapPathImpl.#ctor">
+            <summary>
+             Default c'tor.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.MapPathImpl.#ctor(System.Func{System.String,System.String})">
+            <summary>
+            Function may be null.
+            </summary>
+            <param name="function"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.MapPathImpl.MapPath(System.String)">
+            <summary>
+             Gets the absolute path given a string formatted
+             as a map path, for example:
+             "~/plugins" or "plugins/integrated" or "C:\a\b\c.txt" or "\\?\C:\a\b"
+             would all be valid map paths.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.Path">
+            <summary>
+             Utility class meant to replace the <see cref="T:System.IO.Path"/> class completely. This class handles these types of paths:
+             <list>
+             <item>UNC network paths: \\server\folder</item>
+             <item>UNC-specified network paths: \\?\UNC\server\folder</item>
+             <item>IPv4 network paths: \\192.168.3.22\folder</item>
+             <item>Rooted paths: /dev/cdrom0</item>
+             <item>Rooted paths: C:\folder</item>
+             <item>UNC-rooted paths: \\?\C:\folder\file</item>
+             <item>Fully expanded IPv6 paths</item>
+             </list>
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.IsRooted(System.String)">
+            <summary>
+             Returns whether the path is rooted.
+            </summary>
+            <param name="path">Gets whether the path is rooted or relative.</param>
+            <returns>Whether the path is rooted or not.</returns>
+            <exception cref="T:System.ArgumentNullException">If the passed argument is null.</exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.GetPathRoot(System.String)">
+            <summary>
+            Gets the path root, i.e. e.g. \\?\C:\ if the passed argument is \\?\C:\a\b\c.abc.
+            </summary>
+            <param name="path">The path to get the root for.</param>
+            <returns>The string denoting the root.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.GetPathWithoutRoot(System.String)">
+            <summary>
+             Gets a path without root.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.NormDirSepChars(System.String)">
+            <summary>
+             Normalize all the directory separation chars.
+             Also removes empty space in beginning and end of string.
+            </summary>
+            <param name="pathWithAlternatingChars"></param>
+            <returns>The directory string path with all occurrances of the alternating chars
+             replaced for that specified in <see cref="F:System.IO.Path.DirectorySeparatorChar"/></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.GetPathInfo(System.String)">
+            <summary>
+             Gets path info (drive and non root path)
+            </summary>
+            <param name="path">The path to get the info from.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.GetFullPath(System.String)">
+            <summary>
+             Gets the full path for a given path.
+            </summary>
+            <param name="path"></param>
+            <returns>The full path string</returns>
+            <exception cref="T:System.ArgumentNullException">if path is null</exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.Path.GetPathWithoutLastBit(System.String)">
+            <summary>
+            Removes the last directory/file off the path.
+            
+            For a path "/a/b/c" would return "/a/b"
+            or for "\\?\C:\folderA\folder\B\C\d.txt" would return "\\?\C:\folderA\folder\B\C"
+            </summary>
+            <param name="path">The path string to modify</param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.PathEx.Combine(System.String,System.String)">
+            <summary>
+            Combines an input path and a path together
+            using System.IO.Path.Combine and returns the result.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.PathInfo">
+            <summary>
+            Path data holder.
+            Invariant: no fields nor properties are null after c'tor.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.PathInfo.IsParentOf(Castle.Services.Transaction.IO.PathInfo)">
+            <summary>
+            Returns whether the current PathInfo is a valid parent of the child path info
+            passed as argument.
+            </summary>
+            <param name="child">The path info to verify</param>
+            <returns>Whether it is true that the current path info is a parent of child.</returns>
+            <exception cref="T:System.NotSupportedException">If this instance of path info and child aren't rooted.</exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.PathInfo.RemoveParameterFromRoot(Castle.Services.Transaction.IO.PathInfo)">
+            <summary>
+            Removes the path info passes as a parameter from the current root. Only works for two rooted paths with same root.
+            Does NOT cover all edge cases, please verify its intended results yourself.
+            <example>
+            
+            </example>
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.Root">
+            <summary>
+            Examples of return values:
+            <list>
+            <item>\\?\UNC\C:\</item>
+            <item>\\?\UNC\servername\</item>
+            <item>\\192.168.0.2\</item>
+            <item>C:\</item>
+            </list>
+            
+            Definition: Returns part of the string that is in itself uniquely from the currently 
+            executing CLR.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.UNCPrefix">
+            <summary>
+            Examples of return values:
+            <list>
+            <item></item>
+            </list>
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.UNCLiteral">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.Options">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.Drive">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.DriveLetter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.Server">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.IPv4">
+            <summary>
+            Gets the 0.0.0.0-based IP-address if any.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.IPv6">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.ServerName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.Device">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.DevicePrefix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.DeviceName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.DeviceGuid">
+            <summary>
+            Gets the device GUID in the form
+            <code>{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}</code>
+            i.e. 8-4-4-4-12 hex digits with curly brackets.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.NonRootPath">
+            <summary>
+            Gets a the part of the path that starts when the root ends.
+            The root in turn is any UNC-prefix plus device, drive, server or ip-prefix.
+            This string may not start with neither of '\' or '/'.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.RelDrive">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.FolderAndFiles">
+            <summary>
+            The only time when this differs from <see cref="P:Castle.Services.Transaction.IO.PathInfo.NonRootPath"/>
+            is when a path like this is used:
+            <code>C:../parent/a.txt</code>, otherwise, for all paths,
+            this property equals <see cref="P:Castle.Services.Transaction.IO.PathInfo.NonRootPath"/>.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.PathInfo.IsRooted">
+            <summary>
+            Returns whether <see cref="P:Castle.Services.Transaction.IO.PathInfo.Root"/> is not an empty string.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IActivityManager">
+            <summary>
+            Abstracts approaches to keep transaction activities
+            that may differ based on the environments.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IActivityManager.CurrentActivity">
+            <summary>
+            Gets the current activity.
+            </summary>
+            <value>The current activity.</value>
+        </member>
+        <member name="M:Castle.Services.Transaction.CallContextActivityManager.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.CallContextActivityManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.CallContextActivityManager.InitializeLifetimeService">
+            <summary>
+            Obtains a lifetime service object to control the lifetime policy for this instance.
+            </summary>
+            
+            <returns>
+            An object of type <see cref="T:System.Runtime.Remoting.Lifetime.ILease"></see> used to control the lifetime policy for this instance. This is the current lifetime service object for this instance if one exists; otherwise, a new lifetime service object initialized to the value of the <see cref="P:System.Runtime.Remoting.Lifetime.LifetimeServices.LeaseManagerPollTime"></see> property.
+            </returns>
+            
+            <exception cref="T:System.Security.SecurityException">The immediate caller does not have infrastructure permission. </exception><filterpriority>2</filterpriority><PermissionSet><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="RemotingConfiguration, Infrastructure" /></PermissionSet>
+        </member>
+        <member name="P:Castle.Services.Transaction.CallContextActivityManager.CurrentActivity">
+            <summary>
+            Gets the current activity.
+            </summary>
+            <value>The current activity.</value>
+        </member>
+        <member name="T:Castle.Services.Transaction.FileResourceAdapter">
+            <summary>
+             A resource adapter for a file transaction.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IResource">
+            <summary>
+            Represents a contract for a resource that 
+            can be enlisted within transactions.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IResource.Start">
+            <summary>
+            Implementors should start the
+            transaction on the underlying resource.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IResource.Commit">
+            <summary>
+            Implementors should commit the
+            transaction on the underlying resource
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IResource.Rollback">
+            <summary>
+            Implementors should rollback the
+            transaction on the underlying resource
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileResourceAdapter.#ctor(Castle.Services.Transaction.IFileTransaction)">
+            <summary>
+             c'tor
+            </summary>
+            <param name="transaction"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileResourceAdapter.Start">
+            <summary>
+            Implementors should start the
+                        transaction on the underlying resource
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileResourceAdapter.Commit">
+            <summary>
+            Implementors should commit the
+                        transaction on the underlying resource
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileResourceAdapter.Rollback">
+            <summary>
+            Implementors should rollback the
+                        transaction on the underlying resource
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.FileResourceAdapter.Transaction">
+            <summary>
+            Gets the transaction this resouce adapter is an
+            adapter for.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.FileTransaction">
+            <summary>
+             Represents a transaction on transactional kernels
+             like the Vista kernel or Server 2008 kernel and newer.
+            </summary>
+             <remarks>
+             Good information for dealing with the peculiarities of the runtime:
+             http://msdn.microsoft.com/en-us/library/system.runtime.interopservices.safehandle.aspx
+             </remarks>
+        </member>
+        <member name="T:Castle.Services.Transaction.IFileTransaction">
+            <summary>
+             Interface for a transaction acting on a file.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.#ctor">
+            <summary>
+             c'tor w/o name.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.#ctor(System.String)">
+            <summary>
+             c'tor for the file transaction.
+            </summary>
+            <param name="name">The name of the transaction.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IDirectoryAdapter#Create(System.String)">
+             <summary>Creates a directory at the path given.</summary>
+            <param name="path">The path to create the directory at.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IFileAdapter#Delete(System.String)">
+            <summary>
+            Deletes a file as part of a transaction
+            </summary>
+            <param name="filePath"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IDirectoryAdapter#Delete(System.String)">
+            <summary>
+            Deletes a folder recursively.
+            </summary>
+            <param name="path">The directory path to start deleting at!</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IDirectoryAdapter#Exists(System.String)">
+            <summary>
+            Checks whether the path exists.
+            </summary>
+            <param name="path">Path to check.</param>
+            <returns>True if it exists, false otherwise.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Open(System.String,System.IO.FileMode)">
+            <summary>
+            Opens a file with RW access.
+            </summary>
+            <param name="filePath"></param>
+            <param name="mode">The file mode, which specifies </param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IFileAdapter#WriteStream(System.String,System.IO.Stream)">
+            <summary>
+            DO NOT USE: Implemented in the file adapter: <see cref="T:Castle.Services.Transaction.IO.FileAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.ReadAllText(System.String,System.Text.Encoding)">
+            <summary>
+             Reads all text in a file and returns the string of it.
+            </summary>
+            <param name="path"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.ReadAllText(System.String)">
+            <summary>
+            Reads all text from a file as part of a transaction
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.WriteAllText(System.String,System.String)">
+            <summary>
+            Writes text to a file as part of a transaction.
+            If the file already contains data, first truncates the file
+            and then writes all contents in the string to the file.
+            </summary>
+            <param name="path">Path to write to</param>
+            <param name="contents">Contents of the file after writing to it.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Castle#Services#Transaction#IO#IDirectoryAdapter#Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes an empty directory
+            </summary>
+            <param name="path">The path to the folder to delete.</param>
+            <param name="recursively">
+            Whether to delete recursively or not.
+            When recursive, we delete all subfolders and files in the given
+            directory as well.
+            </param>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Finalize">
+            <summary>
+            Allows an <see cref="T:System.Object"/> to attempt to free resources and perform other 
+            cleanup operations before the <see cref="T:System.Object"/> is reclaimed by garbage collection.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.open(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <summary>
+            Creates a file handle with the current ongoing transaction.
+            </summary>
+            <param name="path">The path of the file.</param>
+            <param name="mode">The file mode, i.e. what is going to be done if it exists etc.</param>
+            <param name="access">The access rights this handle has.</param>
+            <param name="share">What other handles may be opened; sharing settings.</param>
+            <returns>A safe file handle. Not null, but may be invalid.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.translateFileMode(System.IO.FileMode)">
+            <summary>
+            Managed -> Native mapping
+            </summary>
+            <param name="mode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.translateFileAccess(System.IO.FileAccess)">
+            <summary>
+            Managed -> Native mapping
+            </summary>
+            <param name="access"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.translateFileShare(System.IO.FileShare)">
+            <summary>
+            Direct Managed -> Native mapping
+            </summary>
+            <param name="share"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.DeleteFileTransactedW(System.String,Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/aa363916(VS.85).aspx
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.CreateDirectoryTransactedW(System.String,System.String,System.IntPtr,Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/aa363857(VS.85).aspx
+            Creates a new directory as a transacted operation, with the attributes of a specified 
+            template directory. If the underlying file system supports security on files and 
+            directories, the function applies a specified security descriptor to the new directory. 
+            The new directory retains the other attributes of the specified template directory.
+            </summary>
+            <param name="lpTemplateDirectory">
+            The path of the directory to use as a template 
+            when creating the new directory. This parameter can be NULL.
+            </param>
+            <param name="lpNewDirectory">The path of the directory to be created. </param>
+            <param name="lpSecurityAttributes">A pointer to a SECURITY_ATTRIBUTES structure. The lpSecurityDescriptor member of the structure specifies a security descriptor for the new directory.</param>
+            <param name="hTransaction">A handle to the transaction. This handle is returned by the CreateTransaction function.</param>
+            <returns>True if the call succeeds, otherwise do a GetLastError.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.RemoveDirectoryTransactedW(System.String,Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/aa365490(VS.85).aspx
+            Deletes an existing empty directory as a transacted operation.
+            </summary>
+            <param name="lpPathName">
+            The path of the directory to be removed. 
+            The path must specify an empty directory, 
+            and the calling process must have delete access to the directory.
+            </param>
+            <param name="hTransaction">A handle to the transaction. This handle is returned by the CreateTransaction function.</param>
+            <returns>True if the call succeeds, otherwise do a GetLastError.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.GetFullPathNameTransactedW(System.String,System.Int32,System.Text.StringBuilder,System.IntPtr@,Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/aa364966(VS.85).aspx
+            Retrieves the full path and file name of the specified file as a transacted operation.
+            </summary>
+            <remarks>
+            GetFullPathNameTransacted merges the name of the current drive and directory 
+            with a specified file name to determine the full path and file name of a 
+            specified file. It also calculates the address of the file name portion of
+            the full path and file name. This function does not verify that the 
+            resulting path and file name are valid, or that they see an existing file 
+            on the associated volume.
+            </remarks>
+            <param name="lpFileName">The name of the file. The file must reside on the local computer; 
+            otherwise, the function fails and the last error code is set to 
+            ERROR_TRANSACTIONS_UNSUPPORTED_REMOTE.</param>
+            <param name="nBufferLength">The size of the buffer to receive the null-terminated string for the drive and path, in TCHARs. </param>
+            <param name="lpBuffer">A pointer to a buffer that receives the null-terminated string for the drive and path.</param>
+            <param name="lpFilePart">A pointer to a buffer that receives the address (in lpBuffer) of the final file name component in the path. 
+            Specify NULL if you do not need to receive this information.
+            If lpBuffer points to a directory and not a file, lpFilePart receives 0 (zero).</param>
+            <param name="hTransaction"></param>
+            <returns>If the function succeeds, the return value is the length, in TCHARs, of the string copied to lpBuffer, not including the terminating null character.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.FindFirstFileTransactedW(System.String,Castle.Services.Transaction.FileTransaction.FINDEX_INFO_LEVELS,Castle.Services.Transaction.FileTransaction.WIN32_FIND_DATA@,Castle.Services.Transaction.FileTransaction.FINDEX_SEARCH_OPS,System.IntPtr,System.UInt32,Castle.Services.Transaction.SafeTxHandle)">
+            <param name="lpFileName"></param>
+            <param name="fInfoLevelId"></param>
+            <param name="lpFindFileData"></param>
+            <param name="fSearchOp">The type of filtering to perform that is different from wildcard matching.</param>
+            <param name="lpSearchFilter">
+            A pointer to the search criteria if the specified fSearchOp needs structured search information.
+            At this time, none of the supported fSearchOp values require extended search information. Therefore, this pointer must be NULL.
+            </param>
+            <param name="dwAdditionalFlags">
+            Specifies additional flags that control the search.
+            FIND_FIRST_EX_CASE_SENSITIVE = 0x1
+            Means: Searches are case-sensitive.
+            </param>
+            <param name="hTransaction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.CreateTransaction(System.IntPtr,System.IntPtr,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.String)">
+            <summary>
+            Creates a new transaction object. Passing too long a description will cause problems. This behaviour is indeterminate right now.
+            </summary>
+            <remarks>
+            Don't pass unicode to the description (there's no Wide-version of this function
+            in the kernel).
+            http://msdn.microsoft.com/en-us/library/aa366011%28VS.85%29.aspx
+            </remarks>
+            <param name="lpTransactionAttributes">    
+            A pointer to a SECURITY_ATTRIBUTES structure that determines whether the returned handle 
+            can be inherited by child processes. If this parameter is NULL, the handle cannot be inherited.
+            The lpSecurityDescriptor member of the structure specifies a security descriptor for 
+            the new event. If lpTransactionAttributes is NULL, the object gets a default 
+            security descriptor. The access control lists (ACL) in the default security 
+            descriptor for a transaction come from the primary or impersonation token of the creator.
+            </param>
+            <param name="uow">Reserved. Must be zero (0).</param>
+            <param name="createOptions">
+            Any optional transaction instructions. 
+            Value:		TRANSACTION_DO_NOT_PROMOTE
+            Meaning:	The transaction cannot be distributed.
+            </param>
+            <param name="isolationLevel">Reserved; specify zero (0).</param>
+            <param name="isolationFlags">Reserved; specify zero (0).</param>
+            <param name="timeout">    
+            The time, in milliseconds, when the transaction will be aborted if it has not already 
+            reached the prepared state.
+            Specify NULL to provide an infinite timeout.
+            </param>
+            <param name="description">A user-readable description of the transaction.</param>
+            <returns>
+            If the function succeeds, the return value is a handle to the transaction.
+            If the function fails, the return value is INVALID_HANDLE_VALUE.
+            </returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.CommitTransaction(Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            Requests that the specified transaction be committed.
+            </summary>
+            <remarks>You can commit any transaction handle that has been opened 
+            or created using the TRANSACTION_COMMIT permission; any application can 
+            commit a transaction, not just the creator.
+            This function can only be called if the transaction is still active, 
+            not prepared, pre-prepared, or rolled back.</remarks>
+            <param name="transaction">
+            This handle must have been opened with the TRANSACTION_COMMIT access right. 
+            For more information, see KTM Security and Access Rights.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.FileTransaction.RollbackTransaction(Castle.Services.Transaction.SafeTxHandle)">
+            <summary>
+            Requests that the specified transaction be rolled back. This function is synchronous.
+            </summary>
+            <param name="transaction">A handle to the transaction.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="P:Castle.Services.Transaction.FileTransaction.IsAmbient">
+            <summary>
+            Gets whether the transaction is a distributed transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.FileTransaction.Name">
+            <summary>
+             Gets the name of the transaction.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.FileTransaction.IsDisposed">
+            <summary>
+             Gets whether the transaction is disposed.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.FileTransaction.NativeFileShare">
+            <summary>
+            The sharing mode of an object, which can be read, write, both, delete, all of these, or none (refer to the following table).
+            If this parameter is zero and CreateFileTransacted succeeds, the object cannot be shared and cannot be opened again until the handle is closed. For more information, see the Remarks section of this topic.
+            You cannot request a sharing mode that conflicts with the access mode that is specified in an open request that has an open handle, because that would result in the following sharing violation: ERROR_SHARING_VIOLATION. For more information, see Creating and Opening Files.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.NativeFileShare.None">
+            <summary>
+            Disables subsequent open operations on an object to request any type of access to that object.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.NativeFileShare.Read">
+            <summary>
+            Enables subsequent open operations on an object to request read access.
+            Otherwise, other processes cannot open the object if they request read access.
+            If this flag is not specified, but the object has been opened for read access, the function fails.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.NativeFileShare.Write">
+            <summary>
+            Enables subsequent open operations on an object to request write access.
+            Otherwise, other processes cannot open the object if they request write access.
+            If this flag is not specified, but the object has been opened for write access or has a file mapping with write access, the function fails.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.NativeFileShare.Delete">
+            <summary>
+            Enables subsequent open operations on an object to request delete access.
+            Otherwise, other processes cannot open the object if they request delete access.
+            If this flag is not specified, but the object has been opened for delete access, the function fails.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.FileTransaction.MoveFileFlags">
+            <summary>
+            This enumeration states options for moving a file.
+            http://msdn.microsoft.com/en-us/library/aa365241%28VS.85%29.aspx
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.MoveFileFlags.CopyAllowed">
+            <summary>
+            If the file is to be moved to a different volume, the function simulates the move by using the CopyFile  and DeleteFile  functions.
+            This value cannot be used with MOVEFILE_DELAY_UNTIL_REBOOT.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.MoveFileFlags.CreateHardlink">
+            <summary>
+            Reserved for future use.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.MoveFileFlags.DelayUntilReboot">
+            <summary>
+            The system does not move the file until the operating system is restarted. The system moves the file immediately after AUTOCHK is executed, but before creating any paging files. Consequently, this parameter enables the function to delete paging files from previous startups.
+            This value can only be used if the process is in the context of a user who belongs to the administrators group or the LocalSystem account.
+            This value cannot be used with MOVEFILE_COPY_ALLOWED.
+            The write operation to the registry value as detailed in the Remarks section is what is transacted. The file move is finished when the computer restarts, after the transaction is complete.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.MoveFileFlags.ReplaceExisting">
+            <summary>
+            If a file named lpNewFileName exists, the function replaces its contents with the contents of the lpExistingFileName file.
+            This value cannot be used if lpNewFileName or lpExistingFileName names a directory.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.FileTransaction.MoveFileFlags.WriteThrough">
+            <summary>
+            A call to MoveFileTransacted means that the move file operation is complete when the commit operation is completed. This flag is unnecessary; there are no negative affects if this flag is specified, other than an operation slowdown. The function does not return until the file has actually been moved on the disk.
+            Setting this value guarantees that a move performed as a copy and delete operation is flushed to disk before the function returns. The flush occurs at the end of the copy operation.
+            This value has no effect if MOVEFILE_DELAY_UNTIL_REBOOT is set.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.FileTransaction.SECURITY_ATTRIBUTES">
+            <summary>
+             Attributes for security interop.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.DirectoryAdapter">
+            <summary>
+            Adapter which wraps the functionality in <see cref="T:System.IO.File"/>
+            together with native kernel transactions.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.TxAdapterBase">
+            <summary>
+             Adapter base class for the file and directory adapters.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.TxAdapterBase.TxManager">
+            <summary>
+            Gets the transaction manager, if there is one, or sets it.
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.IO.TxAdapterBase.UseTransactions">
+            <summary>
+             Gets/sets whether to use transactions.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.#ctor(Castle.Services.Transaction.IO.IMapPath,System.Boolean,System.String)">
+            <summary>
+             c'tor
+            </summary>
+            <param name="pathFinder"></param>
+            <param name="constrainToSpecifiedDir"></param>
+            <param name="specifiedDir"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.Create(System.String)">
+             <summary>Creates a directory at the path given.
+             Contrary to the Win32 API, doesn't throw if the directory already
+             exists, but instead returns true. The 'safe' value to get returned 
+             for be interopable with other path/dirutil implementations would
+             hence be false (i.e. that the directory didn't already exist).
+             </summary>
+            <param name="path">The path to create the directory at.</param>
+             <remarks>True if the directory already existed, False otherwise.</remarks>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.Exists(System.String)">
+            <summary>
+            Checks whether the path exists.
+            </summary>
+            <param name="path">Path to check.</param>
+            <returns>True if it exists, false otherwise.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.Delete(System.String)">
+            <summary>
+            Deletes a folder recursively.
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes a folder.
+            </summary>
+            <param name="path">The path to the folder to delete.</param>
+            <param name="recursively">
+            Whether to delete recursively or not.
+            When recursive, we delete all subfolders and files in the given
+            directory as well.
+            </param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.GetFullPath(System.String)">
+            <summary>
+            Gets the full path of the specified directory.
+            </summary>
+            <param name="path">The relative path.</param>
+            <returns>A string with the full path.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.MapPath(System.String)">
+            <summary>
+             Gets the MapPath of the path. 
+             
+             This will be relative to the root web directory if we're in a 
+             web site and otherwise to the executing assembly.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.DirectoryAdapter.Move(System.String,System.String)">
+            <summary>
+             TODO: Moves the directory from the original path to the new path.
+            </summary>
+            <param name="originalPath">Path from</param>
+            <param name="newPath">Path to</param>
+        </member>
+        <member name="T:Castle.Services.Transaction.IO.FileAdapter">
+            <summary>
+            Adapter class for the file transactions
+            which implement the same interface.
+            
+            This adapter chooses intelligently whether there's an ambient
+            transaction, and if there is, joins it.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.FileAdapter.#ctor">
+            <summary>
+             c'tor
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.FileAdapter.#ctor(System.Boolean,System.String)">
+            <summary>
+             c'tor
+            </summary>
+            <param name="constrainToSpecifiedDir"></param>
+            <param name="specifiedDir"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.FileAdapter.Create(System.String)">
+            <summary>
+             Creates a new file from the given path for ReadWrite,
+             different depending on whether we're in a transaction or not.
+            </summary>
+            <param name="path">Path to create file at.</param>
+            <returns>A filestream for the path.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IO.FileAdapter.Exists(System.String)">
+            <summary>
+             Returns whether the specified file exists or not.
+            </summary>
+            <param name="filePath">The file path.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.IKernelTransaction.GetHandle(Castle.Services.Transaction.SafeTxHandle@)">
+            <summary>
+            Gets a safe transaction handle. If we instead use IntPtr we 
+            might not release the transaction handle properly.
+            </summary>
+            <param name="handle"></param>
+        </member>
+        <member name="T:Castle.Services.Transaction.SafeTxHandle">
+            <summary>
+             A safe file handle on the transaction resource.
+            </summary>    
+        </member>
+        <member name="M:Castle.Services.Transaction.SafeTxHandle.#ctor">
+            <summary>
+            Default c'tor
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.SafeTxHandle.#ctor(System.IntPtr)">
+            <summary>
+             c'tor taking a pointer to a transaction.
+            </summary>
+            <param name="handle">The transactional handle.</param>
+        </member>
+        <member name="T:Castle.Services.Transaction.IsolationMode">
+            <summary>
+            Isolation modes which the transactions can run in. These do not
+            apply equally to FtX which run as ReadCommitted for all transactions.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.ISynchronization">
+            <summary>
+            Depicts a synchronization contract.
+            <para>
+            Code can be executed before and after the 
+            transaction completes
+            </para>
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ISynchronization.BeforeCompletion">
+            <summary>
+            Implementors may have code executing
+            just before the transaction completes or rolls back.
+            There be dragons: if a resource fails BeforeCompletion
+            could be called twice, as it's first called before commit
+            and then if the transaction has made changes and needs to 
+            be rolled back because of one of its resources failing,
+            then again, this method will be called.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ISynchronization.AfterCompletion">
+            <summary>
+            Implementors may have code executing
+            just after the transaction completes
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.ITransactionManager">
+            <summary>
+            Manages the creation and disposal of <see cref="T:Castle.Services.Transaction.ITransaction"/> instances.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode)">
+            <summary>
+            <see cref="M:Castle.Services.Transaction.ITransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode,System.Boolean)"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode,System.Boolean)">
+            <summary>
+            Creates a transaction.
+            </summary>
+            <param name="transactionMode">The transaction mode.</param>
+            <param name="isolationMode">The isolation mode.</param>
+            <param name="isAmbient">if set to <c>true</c>, the TM will create a distributed transaction.</param>
+            <returns>
+            null &lt;- If transactions are just supported, but there is no ambient transaction
+            null &lt;- If transactions are not supported and there indeed is no ambient transaction (if there is, see exception docs)
+            
+            </returns>
+            <exception cref="T:Castle.Services.Transaction.TransactionModeUnsupportedException">
+            transactionMode = <see cref="F:Castle.Services.Transaction.TransactionMode.NotSupported"/>
+            and yet there is an ambient transaction in the transaction manager
+            which is active.
+            </exception>
+        </member>
+        <member name="M:Castle.Services.Transaction.ITransactionManager.Dispose(Castle.Services.Transaction.ITransaction)">
+            <summary>
+            Dispose the transaction passed appropriately, removing it from the list of tracked
+            transactions, calling its dispose method and raise the <see cref="E:Castle.Services.Transaction.ITransactionManager.TransactionDisposed"/>
+            event.
+            </summary>
+            <param name="transaction">The transaction to dispose</param>
+            <exception cref="T:System.ArgumentNullException">transaction is null</exception>
+        </member>
+        <member name="E:Castle.Services.Transaction.ITransactionManager.TransactionCreated">
+            <summary>
+            Raised when a top level transaction was created
+            </summary>
+        </member>
+        <member name="E:Castle.Services.Transaction.ITransactionManager.ChildTransactionCreated">
+            <summary>
+            Raised when a child transaction was created
+            </summary>
+        </member>
+        <member name="E:Castle.Services.Transaction.ITransactionManager.TransactionDisposed">
+            <summary>
+            Raised when the transaction was disposed
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.ITransactionManager.CurrentTransaction">
+            <summary>
+            Returns the current <see cref="T:Castle.Services.Transaction.ITransaction"/>. 
+            The transaction manager will probably need to 
+            hold the created transaction in the thread or in 
+            some sort of context.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.DefaultTransactionManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.#ctor(Castle.Services.Transaction.IActivityManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Castle.Services.Transaction.DefaultTransactionManager"/> class.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">activityManager is null</exception>
+            <param name="activityManager">The activity manager.</param>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode)">
+            <summary>
+            <see cref="M:Castle.Services.Transaction.ITransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode)"/>.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.ObtainDefaultTransactionMode(Castle.Services.Transaction.TransactionMode)">
+            <summary>
+            Gets the default transaction mode, i.e. the mode which is the current mode when
+            <see cref="F:Castle.Services.Transaction.TransactionMode.Unspecified"/> is passed to <see cref="M:Castle.Services.Transaction.DefaultTransactionManager.CreateTransaction(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode)"/>.
+            </summary>
+            <param name="mode">The mode which was passed.</param>
+            <returns>
+            Requires &lt;- mode = Unspecified
+            mode &lt;- otherwise
+            </returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.Dispose(Castle.Services.Transaction.ITransaction)">
+            <summary>
+            <see cref="M:Castle.Services.Transaction.ITransactionManager.Dispose(Castle.Services.Transaction.ITransaction)"/>.
+            </summary>
+            <param name="transaction"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.DefaultTransactionManager.InitializeLifetimeService">
+            <summary>
+            <see cref="M:System.MarshalByRefObject.InitializeLifetimeService"/>.
+            </summary>
+            <returns>always null</returns>
+        </member>
+        <member name="P:Castle.Services.Transaction.DefaultTransactionManager.ActivityManager">
+            <summary>
+            Gets or sets the activity manager.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">value is null</exception>
+            <value>The activity manager.</value>
+        </member>
+        <member name="P:Castle.Services.Transaction.DefaultTransactionManager.CurrentTransaction">
+            <summary>
+            <see cref="P:Castle.Services.Transaction.ITransactionManager.CurrentTransaction"/>
+            </summary>
+            <remarks>Thread-safety of this method depends on that of the <see cref="P:Castle.Services.Transaction.IActivityManager.CurrentActivity"/>.</remarks>
+        </member>
+        <member name="M:Castle.Services.Transaction.TLSActivityManager.InitializeLifetimeService">
+            <summary>
+            Obtains a lifetime service object to control the lifetime policy for this instance.
+            </summary>
+            
+            <returns>
+            An object of type <see cref="T:System.Runtime.Remoting.Lifetime.ILease"></see> used to control the lifetime policy for this instance. This is the current lifetime service object for this instance if one exists; otherwise, a new lifetime service object initialized to the value of the <see cref="P:System.Runtime.Remoting.Lifetime.LifetimeServices.LeaseManagerPollTime"></see> property.
+            </returns>
+            
+            <exception cref="T:System.Security.SecurityException">The immediate caller does not have infrastructure permission. </exception><filterpriority>2</filterpriority><PermissionSet><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="RemotingConfiguration, Infrastructure" /></PermissionSet>
+        </member>
+        <member name="P:Castle.Services.Transaction.TLSActivityManager.CurrentActivity">
+            <summary>
+            Gets the current activity.
+            </summary>
+            <value>The current activity.</value>
+        </member>
+        <member name="T:Castle.Services.Transaction.TransactionalAttribute">
+            <summary>
+            Indicates that the target class wants to use
+            the transactional services.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.TransactionAttribute">
+            <summary>
+            Indicates the transaction support for a method.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionAttribute.#ctor">
+            <summary>
+            Declares unspecified values for transaction and isolation, which
+            means that the transaction manager will use the default values
+            for them
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionAttribute.#ctor(Castle.Services.Transaction.TransactionMode)">
+            <summary>
+            Declares the transaction mode, but omits the isolation, 
+            which means that the transaction manager should use the
+            default value for it.
+            </summary>
+            <param name="transactionMode"></param>
+        </member>
+        <member name="M:Castle.Services.Transaction.TransactionAttribute.#ctor(Castle.Services.Transaction.TransactionMode,Castle.Services.Transaction.IsolationMode)">
+            <summary>
+            Declares both the transaction mode and isolation 
+            desired for this method. The transaction manager should
+            obey the declaration.
+            </summary>
+            <param name="transactionMode"></param>
+            <param name="isolationMode"></param>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionAttribute.TransactionMode">
+            <summary>
+            Returns the <see cref="P:Castle.Services.Transaction.TransactionAttribute.TransactionMode"/>
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionAttribute.IsolationMode">
+            <summary>
+            Returns the <see cref="P:Castle.Services.Transaction.TransactionAttribute.IsolationMode"/>
+            </summary>
+        </member>
+        <member name="P:Castle.Services.Transaction.TransactionAttribute.Distributed">
+            <summary>
+            Gets or sets a value indicating whether the transaction should be distributed.
+            </summary>
+            <value>
+            <c>true</c> if a distributed transaction should be created; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Castle.Services.Transaction.TransactionMode">
+            <summary>
+            The supported transaction mode for the components.
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.TransactionMode.Unspecified">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.TransactionMode.NotSupported">
+            <summary>
+            transaction context will be created 
+            managing internally a connection, no 
+            transaction is opened though
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.TransactionMode.Requires">
+            <summary>
+            transaction context will be created if not present 
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.TransactionMode.RequiresNew">
+            <summary>
+            a new transaction context will be created 
+            </summary>
+        </member>
+        <member name="F:Castle.Services.Transaction.TransactionMode.Supported">
+            <summary>
+            An existing appropriate transaction context 
+            will be joined if present, but if if there is no current
+            transaction on the thread, no transaction will be created.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.Fun">
+            <summary>
+            Utility class for whatever is needed to make the code better.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.Fun.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Iterates over a sequence and performs the action on each.
+            </summary>
+        </member>
+        <member name="M:Castle.Services.Transaction.Fun.TryLogFail(log4net.ILog,System.Action)">
+            <summary>
+            Given a logger and action, performs the action and catches + logs exceptions.
+            </summary>
+            <returns>Whether the lambda was a success or not.</returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.Result.Exception(System.Action{System.Exception})">
+            <summary>
+            Takes a lambda what to do if the result failed. Returns the result so 
+            that it can be managed in whatevery way is needed.
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.Services.Transaction.Result`1.Exception(System.Action{System.Exception})">
+            <summary>
+            Takes a lambda what to do if the result failed. Returns the result so 
+            that it can be managed in whatevery way is needed.
+            </summary>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Castle.Services.Transaction.TransactionEventArgs">
+            <summary>
+            Event args for a transaction event.
+            </summary>
+        </member>
+        <member name="T:Castle.Services.Transaction.TransactionStatus">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>
