@@ -210,7 +210,7 @@ limitations under the License.
 		<Exec Command="$(NUnitPath)/nunit-console-x86.exe /nologo @(TestAssemblies) /xml=$(NUnitTestResultXmlFiles) /framework=$(FrameworkVersion)" Condition=" '$(TEAMCITY_VERSION)' == '' " />
 
 		<NUnitTeamCity
-			Assemblies="@(TestBinaries)"
+			Assemblies="@(TestAssemblies)"
 			NUnitVersion="NUnit-2.5.5"
 			Condition=" '$(TEAMCITY_VERSION)' != '' "
 		/>
