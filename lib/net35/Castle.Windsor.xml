@@ -5114,13 +5114,6 @@
             <param name="factoryMethod">Factory method</param>
             <returns></returns>
         </member>
-        <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.ProcessModel(System.Action{Castle.MicroKernel.IKernel,Castle.Core.ComponentModel})">
-            <summary>
-            Allows direct manipulation of the corresponding <see cref="T:Castle.Core.ComponentModel"/>.
-            </summary>
-            <param name="processModel">The action to apply to the model.</param>
-            <returns></returns>
-        </member>
         <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.Castle#MicroKernel#Registration#IRegistration#Register(Castle.MicroKernel.IKernel)">
             <summary>
             Registers this component with the <see cref="T:Castle.MicroKernel.IKernel"/>.
