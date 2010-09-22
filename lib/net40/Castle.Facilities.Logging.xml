@@ -11,9 +11,9 @@
         </member>
         <member name="T:Castle.Facilities.Logging.LoggerResolver">
             <summary>
-            Custom resolver used by the MicroKernel. It gives
-            us some contextual information that we use to set up a logging
-            before satisfying the dependency
+              Custom resolver used by Windsor. It gives
+              us some contextual information that we use to set up a logging
+              before satisfying the dependency
             </summary>
         </member>
         <member name="T:Castle.Facilities.Logging.LoggingFacility">
