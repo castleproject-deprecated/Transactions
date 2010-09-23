@@ -1,3 +1,9 @@
+2010-09-23
+==========
+* Moved everything together into the Castle.Services.Transaction project on github, even though they are still the same projects.
+* Updated dependencies to Core/Windsor 2.5.1
+* Retiring this text-file. See "Changes - Transaction.txt" in the future.
+
 2010-04-01
 ==========
 Both version 2.0 and version 2.1 compile and work well, but version 2.1 is actually compiled

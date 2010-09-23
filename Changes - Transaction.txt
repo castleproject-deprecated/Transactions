@@ -1,3 +1,17 @@
+2010-09-23, 2.1 (non-release)
+=============================
+* Made all tests run in STA in order to pass nunit tests more reliably.
+* Updated Settings.proj to have the 2.1.0 version.
+* Committed myself to committers.
+* Restructured sln-files, so that we have one for only .Transaction, one with .F.AutoTX and one with both.
+
+Roadmap to 2.2:
+* Will remove all locking from transactions will next version and instead assume non-concurrent access to a transaction instance
+  from multiple threads (one transaction per thread is the scenario we are supporting; everything else is racy)
+* Will add code contracts to the transaction classes
+* Next batch of changes will probably include some sort of
+  improvement on the retry-policies of the transaction, should they collide like they do in tests running concurrently.
+
 2010-04-16
 ==========
 Henrik: Updated folder structure to match that of John's suggestions. ClickToBuild.cmd now works after fix from Krzysztof/John. Previously
