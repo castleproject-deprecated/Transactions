@@ -1,0 +1,53 @@
+2010-04-01
+==========
+Both version 2.0 and version 2.1 compile and work well, but version 2.1 is actually compiled
+against castle.core.dll which is the binary in the lib folder, as opposed to 
+2.0 which is compiled against an updated source code of the core.core project where I had added
+.IO as a namespace.
+
+See the documentation for details on usages.
+
+2010-02-28 - log
+================
+Henrik: Going to release version 2.1. Just cloned. The project builds. S.Tx doesn't build. Making it a submodule.
+
+
+-----
+- SERVICES-7 Fixed 
+  "Can't explictly rollback transaction using ATM"
+
+== Beta 5 ==
+
+- Fixed bug reported on the Forum (when a
+  component was configured using the component's node, no interceptor
+  was being attached)
+
+- Refactored to support configuration and attributes. For example
+
+  [Transactional]
+  public class MyTransactionalComponent
+  {
+    [Transaction]
+    public virtual void Save()
+    {
+    }
+  }
+  
+  is equivalent to 
+  
+  <component 
+	id="someid" 
+	type="MyTransactionalComponent, MyAssembly"
+	isTransactional="true">
+  
+    <transaction>
+      <method name="Save" />
+    </transaction>
+  
+  </component>
+
+  You can also specify the transaction mode and isolation:
+  
+  <transaction>
+    <method name="Save" transactionMode="Requires" isolationLevel="Chaos" />
+  </transaction>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /build
 AssemblyInfo.cs
@@ -11,4 +12,19 @@ _ReSharper*
 *resharper*
 *.suo
 *.cache
+=======
+
+/build
+AssemblyInfo.cs
+
+# Standard VS.NET and ReSharper Foo
+src/*/obj
+src/*/bin
+*.csproj.user
+*ReSharper.user
+_ReSharper*
+*resharper*
+*.suo
+*.cache
+>>>>>>> castle_branch
 * Thumbs.db
