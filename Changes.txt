@@ -1,5 +1,11 @@
-2010-08-10
-==========
+2.5.0 (2010-12-10)
+==================
+
+Included NET40 binaries on the release package
+
+Fixed: Behavior of Nested/Ambient Transactions from the expected behavior (SERVICES-24)
+Fixed: Transaction Synchronizations not been executed when registered in NestedTransaction (SERVICES-21)
+
 Breaking Change: Renamed the property RollbackResourceException.FailedResource to RollbackResourceException.FailedResources
 
 2010-04-16
