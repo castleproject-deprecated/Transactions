@@ -1,6 +1,7 @@
 2.5.0 (2010-12-10)
 ==================
 
+Update to Castle.Core 2.5.2
 Included NET40 binaries on the release package
 
 Fixed: Behavior of Nested/Ambient Transactions from the expected behavior (SERVICES-24)
