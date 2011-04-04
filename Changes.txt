@@ -1,3 +1,13 @@
+2.5.0 (2010-12-10)
+==================
+
+Included NET40 binaries on the release package
+
+Fixed: Behavior of Nested/Ambient Transactions from the expected behavior (SERVICES-24)
+Fixed: Transaction Synchronizations not been executed when registered in NestedTransaction (SERVICES-21)
+
+Breaking Change: Renamed the property RollbackResourceException.FailedResource to RollbackResourceException.FailedResources
+
 2010-09-23, 2.1 (non-release)
 =============================
 * Made all tests run in STA in order to pass nunit tests more reliably.
@@ -5,7 +15,7 @@
 * Committed myself to committers.
 * Restructured sln-files, so that we have one for only .Transaction, one with .F.AutoTX and one with both.
 
-Roadmap to 2.2:
+Roadmap to 2.6:
 * Will remove all locking from transactions will next version and instead assume non-concurrent access to a transaction instance
   from multiple threads (one transaction per thread is the scenario we are supporting; everything else is racy)
 * Will add code contracts to the transaction classes

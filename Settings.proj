@@ -35,16 +35,15 @@ limitations under the License.
 		
 		<!-- Versioning -->
 		<Project_Major>2</Project_Major>
-		<Project_Minor>1</Project_Minor>
+		<Project_Minor>5</Project_Minor>
 		<Project_Build>0</Project_Build>
 
 		<!-- Project folders -->
 		<BuildScriptsPath Condition="'$(BuildScriptsPath)' ==''">$(RootPath)\buildscripts</BuildScriptsPath>
 
 	</PropertyGroup>
-	
 
-	<!-- Import framework version specific settings, like Settings-v3.5 or Settings-v4.0 -->
+  <!-- Import framework version specific settings, like Settings-v3.5 or Settings-v4.0 -->
 	<Import
 		Project="$(RootPath)\Settings-$(TargetFrameworkVersion).proj"
 		Condition="'$(TargetFrameworkVersion)' != '' and Exists('$(RootPath)\Settings-$(TargetFrameworkVersion).proj')"
@@ -53,7 +52,7 @@ limitations under the License.
 	<!-- Import Silverlight specific settings -->
 	<Import
 		Project="$(RootPath)\Settings-SL.proj"
-		Condition="('$(BuildConfigKey)' == 'SL3' or '$(BuildConfigKey)' == 'SL4') and Exists('$(RootPath)\Settings-SL.proj')"
+		Condition="'$(TargetFrameworkIdentifier)' == 'Silverlight' and Exists('$(RootPath)\Settings-SL.proj')"
 		/>
 
 </Project>
