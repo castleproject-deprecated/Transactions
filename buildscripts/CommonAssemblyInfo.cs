@@ -1,5 +1,5 @@
 ﻿#region License
-//  Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+//  Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,4 +18,4 @@
 using System.Reflection;
 
 [assembly: AssemblyCompany("Castle Project")]
-[assembly: AssemblyCopyright("Copyright (c) 2004-2010 Castle Project - http://www.castleproject.org")]
+[assembly: AssemblyCopyright("Copyright (c)Henrik Feldt 2004-2011 and the Castle Project- http://www.castleproject.org")]
