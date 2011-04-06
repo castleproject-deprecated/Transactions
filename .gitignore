@@ -5,7 +5,7 @@ src/*/bin
 *.csproj.user
 *ReSharper.user
 _ReSharper*
-*resharper*
+*.ReSharper
 *.suo
 *.cache
 Castle.Services.Transaction.user
