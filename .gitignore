@@ -1,13 +1,12 @@
 /build
 AssemblyInfo.cs
-
-# Standard VS.NET and ReSharper Foo
 src/*/obj
 src/*/bin
 *.csproj.user
 *ReSharper.user
 _ReSharper*
-*resharper*
+*.ReSharper
 *.suo
 *.cache
+Castle.Services.Transaction.user
 * Thumbs.db
