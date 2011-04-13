@@ -29,3 +29,6 @@ Castle AutoTx enables (current development roadmap):
   
   * Include migration-scaffolding-classes firing the same events from v2.1/2.5.
   * Implement async transactions being spawned through calls to ITxManager
+
+Cheers
+Henrik Feldt
