@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.Transaction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.vNextTransaction", "src\Castle.Services.vNextTransaction\Castle.Services.vNextTransaction.csproj", "{76DF5D09-FC04-411F-B123-01A6B9432796}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.vNextTransaction.NHibernate", "src\Castle.Services.vNextTransaction.NHibernate\Castle.Services.vNextTransaction.NHibernate.csproj", "{12598D2B-B68E-4EA7-A7DD-0CC2398CE8B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.NHibernate", "src\Castle.Services.vNextTransaction.NHibernate\Castle.Facilities.NHibernate.csproj", "{12598D2B-B68E-4EA7-A7DD-0CC2398CE8B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
