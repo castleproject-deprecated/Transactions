@@ -1,3 +1,5 @@
+Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
+
 Castle Transactions enables
 
  * NTFS File Transactions (kernel transactions)
