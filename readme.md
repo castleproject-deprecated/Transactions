@@ -1,5 +1,3 @@
-# Castle.Services.Transactions & Castle.Facilities.AutoTx
-
 Castle Transactions enables
 
  * NTFS File Transactions (kernel transactions)
@@ -29,6 +27,11 @@ Castle AutoTx enables (current development roadmap):
   
   * Include migration-scaffolding-classes firing the same events from v2.1/2.5.
   * Implement async transactions being spawned through calls to ITxManager
+
+
+## Getting in Touch
+
+If you have any questions, please send me an e-mail: [henrik@haf.se](mailto:henrik@haf.se) or ask at [Castle Project Users - Google Groups](http://groups.google.com/group/castle-project-users). As long as the projects are at RC-status I prefer if you e-mail me; it'll be a faster turn-around time and I get the e-mails straight to my inbox.
 
 Cheers!
 
