@@ -1,35 +1,50 @@
 Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
 
-Castle Transactions enables
+# Overview Transactions
 
- * NTFS File Transactions (kernel transactions)
- * In memory (volatile) resource managers and transaction synchronizations.
- * Integration with Lightweight Transaction Managers
+Castle Transactions 3.0 enables the .Net coder with:
+
+ * Transactional NTFS (TxF - File Transactions) with the KTM/Kernel Transaction Manager.
+ * Integration with System.Transactions
+ * 'Nice'/easy creation of CommittableTransaction/DependentTransaction that exposes more features than TransactionScope.
+ * Retry policies for transactions
 
 The .IO namespace of Castle Transactions enables:
 
  * A better tested Path util than what's in the .Net Framework.
- * A MapPath (as seen in ASP.Net) implementation.
+ * A MapPath-implementation (as seen in ASP.Net).
+ * Full directory/file name length support. No more "PathTooLongException" or borked install or build scripts.
+
+# Roadmap
+
+Castle.Transactions 3.1 will enable:
+
+ * Transactional Registry - Managed API (TxR - Registry Transactions)
+ * Full support for all transacted file methods in the Windows kernel:
+   * CopyFileTransacted
+   * CreateDirectoryTransacted
+   * CreateFileTransacted
+   * CreateHardLinkTransacted
+   * CreateSymbolicLinkTransacted
+   * DeleteFileTransacted
+   * FindFirstFileNameTransactedW
+   * FindFirstFileTransacted
+   * FindFirstStreamTransactedW
+   * GetCompressedFileSizeTransacted
+   * GetFileAttributesTransacted
+   * GetFullPathNameTransacted
+   * GetLongPathNameTransacted
+   * MoveFileTransacted
+   * RemoveDirectoryTransacted
+   * SetFileAttributesTransacted
+
+***
  
-Castle AutoTx enables (current development roadmap):
+## Castle AutoTx 3.0 enables the .Net coder with:
 
- * Easy transaction integration through inversion of control.
- * Easy retry-policies for dead connections or deadlocks or livelocks such as a contended lock causing victim database transactions.
- * Compensations when transactions die.
-
-##Before release (3.0):
-
-  * Integrate the file transactions into the nNextTransactions project.
-  * Write a few more tests testing error conditions, including the repro on the (mailing list)[http://groups.google.com/group/castle-project-devel/browse_thread/thread/4ccc0fe4c6c12763] by John Surcombe.
-  * Try to implement the retry policies
-  * Try to implement InDoubt policies??
-  * Give a few basic examples in this readme-file.
- 
-##vNext+1: 
-  
-  * Include migration-scaffolding-classes firing the same events from v2.1/2.5.
-  * Implement async transactions being spawned through calls to ITxManager
-
+ * Easily applying transactions through inversion of control.
+ * Easily applying Retry-Policies to transactional methods
+ * Compensations when transactions abort.
 
 ## Getting in Touch
 
@@ -37,4 +52,4 @@ If you have any questions, please send me an e-mail: [henrik@haf.se](mailto:henr
 
 Cheers!
 
-Henrik Feldt
+Henrik Feldt / The Castle Project
