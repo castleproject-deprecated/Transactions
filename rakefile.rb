@@ -67,7 +67,6 @@ namespace :env do
 	end
 	
 	# version management
-	# official RTM/GA release = 4000, alpha 1 = 1001, alpha 2 = 1002, beta 2 = 2002, RC 1 = 3001
 	official = ENV['OFFICIAL_RELEASE'] || "0"
 	build = ENV['BUILD_NUMBER'] || Time.now.strftime('%j%S') # (day of year 0-265)(seconds 00-60)
     ENV['VERSION'] = VERSION = "#{VERSION_BASE}.#{official}"
@@ -121,9 +120,11 @@ end
 namespace :castle do
 
   desc "build Castle Transaction Services and AutoTx Facility"
-  msbuild :build, [:config, :framework] => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs'] do |msb, args|
+  msbuild :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs'] do |msb, args|
     # msb.use = :args[:framework] || :net40
-	msb.properties :Configuration => args[:config] || :Release
+	config = "#{FRAMEWORK.upcase}-#{CONFIGURATION}"
+	puts "Building config #{config} with MsBuild"
+	msb.properties :Configuration => config
     msb.targets :Build
     msb.solution = Files[:sln]
   end
