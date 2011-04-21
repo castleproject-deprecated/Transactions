@@ -38,9 +38,12 @@ task :help do
   puts " --------------"
   puts " See version if rc 3:      'rake env:rc[3] env:release'"
   puts ""
+  puts " Maintainance"
+  puts " ------------"
+  puts " Remove build/ dir         'rake clobber'"
 end
-  
-CLOBBER.include("*", Folders[:outdir])
+
+CLOBBER.include(Folders[:outdir])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
@@ -68,7 +71,7 @@ namespace :env do
 	
 	# version management
 	official = ENV['OFFICIAL_RELEASE'] || "0"
-	build = ENV['BUILD_NUMBER'] || Time.now.strftime('%j%S') # (day of year 0-265)(seconds 00-60)
+	build = ENV['BUILD_NUMBER'] || Time.now.strftime('%j%H') # (day of year 0-265)(hour 00-24)
     ENV['VERSION'] = VERSION = "#{VERSION_BASE}.#{official}"
 	ENV['VERSION_INFORMAL'] = VERSION_INFORMAL = "#{VERSION_BASE}.#{build}"
 	puts "Assembly Version: #{VERSION}."
