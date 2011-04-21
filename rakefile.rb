@@ -7,6 +7,7 @@ require 'buildscripts/utils'
 require 'buildscripts/project_data'
 
 task :default => [:release]
+task :ci => [:release, "castle:nuget_tx", "castle:nuget_autotx"]
 task :release => ["env:release", "castle:build"]
 task :debug => ["env:debug", "castle:build"]
 
@@ -169,13 +170,16 @@ namespace :castle do
     asm.output_file = 'src/AutoTxAssemblyInfo.cs'
   end
   
-  desc "nuget package for Transaction Services"
-  nuspec :nuspec_tx do |nuspec|
+  directory "#{Folders[:nuspec_tx]}"
+  file "#{Files[:nuspec_tx]}"
+  
+  desc "nuget specification for Transaction Services"
+  nuspec :nuspec_tx => ["#{Folders[:nuspec_tx]}","#{Files[:nuspec_tx]}"] do |nuspec|
     nuspec.id = "Castle.Services.Transaction"
     nuspec.version = File.read(Files[:version])
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
-    nuspec.working_directory = Folders[:nuspec_tx]
+    #nuspec.working_directory = Folders[:nuspec_tx]
     nuspec.title = Projects[:tx][:title]
 	nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
@@ -184,15 +188,16 @@ namespace :castle do
     nuspec.output_file = Files[:nuspec_tx]
   end
   
-  directory "#{Folders[:packages]}}"
+  directory "#{Folders[:nuspec_autotx]}"
+  file "#{Files[:nuspec_autotx]}"
   
-  desc "nuget package for AutoTx Facility"
-  nuspec :nuspec_autotx do |nuspec|
+  desc "nuget specification for AutoTx Facility"
+  nuspec :nuspec_autotx => ["#{Folders[:nuspec_autotx]}", "#{Files[:nuspec_autotx]}"] do |nuspec|
     nuspec.id = "Castle.Facilities.AutoTx"
     nuspec.version = File.read(Files[:version])
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
-    nuspec.working_directory = Folders[:nuspec_autotx]
+    #nuspec.working_directory = Folders[:nuspec_autotx]
     nuspec.title = Projects[:autotx][:title]
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
