@@ -6,7 +6,7 @@ require 'buildscripts/paths'
 require 'buildscripts/utils'
 require 'buildscripts/project_data'
 
-task :default => ["build_all"]
+task :default => [:release]
 task :release => ["env:release", "castle:build"]
 task :debug => ["env:debug", "castle:build"]
 
