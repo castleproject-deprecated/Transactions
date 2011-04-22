@@ -2,14 +2,15 @@
 require 'albacore'
 require 'version_bumper'
 require 'rake/clean'
+require 'buildscripts/project_data'
 require 'buildscripts/paths'
 require 'buildscripts/utils'
-require 'buildscripts/project_data'
+require 'buildscripts/environment'
 
 task :default => [:release]
-task :ci => [:release, "castle:nuget_tx", "castle:nuget_autotx"]
-task :release => ["env:release", "castle:build"]
-task :debug => ["env:debug", "castle:build"]
+task :ci => [:release, "castle:tests", "castle:nuget_tx", "castle:nuget_autotx"]
+task :release => ["env:release", "clean", "castle:build", "castle:tests", "castle:output"]
+task :debug => ["env:debug", "clean", "castle:build", "castle:tests", "castle:output"]
 
 desc "display rake task help"  
 task :help do
@@ -17,7 +18,7 @@ task :help do
   puts " Castle Transaction Services & AutoTx Facility (c)Henrik Feldt 2011"
   puts " =================================================================="
   puts ""
-  puts " Quick Start: Type 'rake' and look in '#{Folders[:outdir]}/'."
+  puts " Quick Start: Type 'rake' and look in '#{Folders[:out]}/'."
   puts ""	
   puts ""
   puts " How-to:"
@@ -44,7 +45,7 @@ task :help do
   puts " Remove build/ dir         'rake clobber'"
 end
 
-CLOBBER.include(Folders[:outdir])
+CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
@@ -64,64 +65,6 @@ def build(conf)
   Rake::Task["castle:build"].invoke
 end
 
-namespace :env do
-
-  task :common do
-	File.open( Files[:version] , "r") do |f|
-		ENV['VERSION_BASE'] = VERSION_BASE = f.gets
-	end
-	
-	# version management
-	official = ENV['OFFICIAL_RELEASE'] || "0"
-	build = ENV['BUILD_NUMBER'] || Time.now.strftime('%j%H') # (day of year 0-265)(hour 00-24)
-    ENV['VERSION'] = VERSION = "#{VERSION_BASE}.#{official}"
-	ENV['VERSION_INFORMAL'] = VERSION_INFORMAL = "#{VERSION_BASE}.#{build}"
-	puts "Assembly Version: #{VERSION}."
-	puts "##teamcity[buildNumber '#{VERSION_INFORMAL}']"
-	
-	# configuration management
-	ENV['FRAMEWORK'] = FRAMEWORK = ENV['FRAMEWORK'] || (Rake::Win32::windows? ? "net40" : "mono28")
-	puts "Framework: #{FRAMEWORK}"
-  end
-  
-  desc "set GA envionment variables"
-  task :ga do
-	ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "4000"
-  end
-  
-  desc "set release candidate environment variables"
-  task :rc, [:number] do |t, args|
-    num = args[:number].to_i || 1
-	ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{3000 + num}"
-  end
-  
-  desc "set beta-environment variables"
-  task :beta, [:number] do |t, args|
-	num = args[:number].to_i || 1
-    ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{2000 + num}"
-  end
-  
-  desc "set alpha environment variables"
-  task :alpha, [:number] do |t, args|
-	num = args[:number].to_i || 1
-    ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{1000 + num}"
-  end
-  
-  desc "set debug environment variables"
-  task :debug => :common do
-    ENV['CONFIGURATION'] = CONFIGURATION = 'Debug'
-    Folders[:binaries] = File.join(Folders[:outdir], "debug", FRAMEWORK)
-	CLEAN.include("*", Folders[:binaries])
-  end
-  
-  desc "set release environment variables"
-  task :release => :common do
-	ENV['CONFIGURATION'] = CONFIGURATION = 'Release'
-    Folders[:binaries] = File.join(Folders[:outdir], "release", FRAMEWORK)
-	CLEAN.include("*", Folders[:binaries])
-  end
-end
-
 namespace :castle do
 
   desc "build Castle Transaction Services and AutoTx Facility"
@@ -132,6 +75,36 @@ namespace :castle do
 	msb.properties :Configuration => config
     msb.targets :Build
     msb.solution = Files[:sln]
+  end
+  
+  task :tests => [:tx_test, :autotx_test]
+  
+  nunit :tx_test => :build do |nunit|
+    puts "Testing #{Files[:tx_test]}"
+    nunit.command = Commands[:nunit]
+	nunit.options '/framework v4.0'
+	nunit.assemblies Files[:tx_test]
+  end
+  
+  nunit :autotx_test => :build do |nunit|
+    puts "Testing #{Files[:autotx_test]}"
+	nunit.command = Commands[:nunit]
+	nunit.options '/framework v4.0'
+	nunit.assemblies Files[:autotx_test]
+  end
+  
+  task :output => [:tx_output, :autotx_output]
+  
+  task :tx_output => :build do
+	target = File.join(Folders[:out], Projects[:tx][:dir])
+    copy_files Folders[:tx_out], "*.{xml,dll,pdb,config}", target
+    CLEAN.include(target)
+  end
+  
+  task :autotx_output => :build do
+	target = File.join(Folders[:out], Projects[:autotx][:dir])
+	copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
+	CLEAN.include(target)
   end
   
   file 'src/TxAssemblyInfo.cs' => "castle:tx_version"

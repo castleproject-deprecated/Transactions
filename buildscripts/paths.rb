@@ -3,15 +3,21 @@ root_folder = File.expand_path("#{File.dirname(__FILE__)}/..")
 Folders = {
   :root => root_folder,
   :src => "src",
-  :outdir => "build",
+  :out => "build",
   :tests => File.join("build", "tests"),
-  :binaries => "placeholder - specify build environment",
   :tools => "tools",
   :nunit => File.join("tools", "NUnit", "bin"),
+  
   :packages => "packages",
-  :nuspec_tx => File.join("packages", "Castle.Services.Transaction"),
-  :nuspec_autotx => File.join("packages", "Castle.Facilities.AutoTx"),
-  :nuget_out => "nuget"
+  :nuspec_tx => File.join("packages", Projects[:tx][:dir]),
+  :nuspec_autotx => File.join("packages", Projects[:autotx][:dir]),
+  :nuget_out => "nuget",
+  
+  :tx_out => 'placeholder - specify build environment',
+  :tx_test_out => 'placeholder - specify build environment',
+  :autotx_out => 'placeholder - specify build environment',
+  :autotx_test_out => 'placeholder - specify build environment',
+  :binaries => "placeholder - specify build environment"
 }
 
 Commands = {
@@ -23,7 +29,10 @@ Commands = {
 
 Files = {
   :sln => "Castle.Services.Transaction.sln",
-  :nuspec_tx => File.join(Folders[:nuspec_tx], "Castle.Services.Transaction.nuspec"),
-  :nuspec_autotx => File.join(Folders[:nuspec_autotx], "Castle.Facilities.AutoTx.nuspec"),
-  :version => "VERSION"
+  :nuspec_tx => File.join(Folders[:nuspec_tx], "#{Projects[:tx][:dir]}.nuspec"),
+  :nuspec_autotx => File.join(Folders[:nuspec_autotx], "#{Projects[:autotx][:dir]}.nuspec"),
+  :version => "VERSION",
+  
+  :tx_test => 'placeholder - specify build environment',
+  :autotx_test => 'placeholder - specify build environment'
 }
