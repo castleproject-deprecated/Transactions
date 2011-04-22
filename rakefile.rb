@@ -45,6 +45,7 @@ task :help do
 end
 
 CLOBBER.include(Folders[:outdir])
+CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
