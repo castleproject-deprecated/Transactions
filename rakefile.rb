@@ -54,9 +54,9 @@ namespace :castle do
   
   msbuild :msbuild do |msb, args|
     # msb.use = :args[:framework] || :net40
-	config = "#{FRAMEWORK.upcase}-#{CONFIGURATION}"
-	puts "Building config #{config} with MsBuild"
-	msb.properties :Configuration => config
+    config = "#{FRAMEWORK.upcase}-#{CONFIGURATION}"
+    puts "Building config #{config} with MsBuild"
+    msb.properties :Configuration => config
     msb.targets :Clean, :Build
     msb.solution = Files[:sln]
   end
@@ -65,43 +65,43 @@ namespace :castle do
   
   nunit :tx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
     nunit.command = Commands[:nunit]
-	nunit.options '/framework v4.0', 
-	  "/out #{File.join(Folders[:tests], Projects[:tx][:dir])}.log",
-	  "/xml #{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
-	nunit.assemblies Files[:tx_test]
+    nunit.options '/framework v4.0', 
+      "/out #{File.join(Folders[:tests], Projects[:tx][:dir])}.log",
+      "/xml #{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
+    nunit.assemblies Files[:tx_test]
   end
   
   desc "AutoTx unit + integration tests"
   nunit :autotx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
-	nunit.command = Commands[:nunit]
-	nunit.options '/framework v4.0', 
-	  "/out #{File.join(Folders[:tests], Projects[:autotx][:dir])}.log",
-	  "/xml #{File.join(Folders[:tests], Projects[:autotx][:dir])}.xml"
-	nunit.assemblies Files[:autotx_test]
+    nunit.command = Commands[:nunit]
+    nunit.options '/framework v4.0', 
+      "/out #{File.join(Folders[:tests], Projects[:autotx][:dir])}.log",
+      "/xml #{File.join(Folders[:tests], Projects[:autotx][:dir])}.xml"
+    nunit.assemblies Files[:autotx_test]
   end
   
   task :output => [:tx_output, :autotx_output] do
     data = commit_data()
     File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
-	  f.puts %Q{aa
-	This file's name gives you the specifics of the commit.
-	
-	Commit hash:		#{data[0]}
-	Commit date:		#{data[1]}
+      f.puts %Q{aa
+    This file's name gives you the specifics of the commit.
+    
+    Commit hash:		#{data[0]}
+    Commit date:		#{data[1]}
 }
-	end
+    end
   end
   
   task :tx_output => :msbuild do
-	target = File.join(Folders[:binaries], Projects[:tx][:dir])
+    target = File.join(Folders[:binaries], Projects[:tx][:dir])
     copy_files Folders[:tx_out], "*.{xml,dll,pdb,config}", target
     CLEAN.include(target)
   end
   
   task :autotx_output => :msbuild do
-	target = File.join(Folders[:binaries], Projects[:autotx][:dir])
-	copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
-	CLEAN.include(target)
+    target = File.join(Folders[:binaries], Projects[:autotx][:dir])
+    copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
+    CLEAN.include(target)
   end
   
   file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
@@ -112,32 +112,32 @@ namespace :castle do
   # versioning: http://support.microsoft.com/kb/556041
   assemblyinfo :tx_version do |asm|
     data = commit_data() #hash + date
-	asm.product_name = asm.title = Projects[:tx][:title]
+    asm.product_name = asm.title = Projects[:tx][:title]
     asm.description = Projects[:tx][:description] + " #{data[0]} - #{data[1]}"
     # This is the version number used by framework during build and at runtime to locate, link and load the assemblies. When you add reference to any assembly in your project, it is this version number which gets embedded.
-	asm.version = VERSION
-	# Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
-	asm.file_version = VERSION_INFORMAL
+    asm.version = VERSION
+    # Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
+    asm.file_version = VERSION_INFORMAL
     asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION_INFORMAL}",
-  	  :CLSCompliantAttribute => false,
-	  :AssemblyConfiguration => "#{CONFIGURATION}",
-	  :Guid => Projects[:tx][:guid]
-	asm.com_visible = false
+      :CLSCompliantAttribute => false,
+      :AssemblyConfiguration => "#{CONFIGURATION}",
+      :Guid => Projects[:tx][:guid]
+    asm.com_visible = false
     asm.copyright = Projects[:tx][:copyright]
     asm.output_file = 'src/TxAssemblyInfo.cs'
   end
   
   assemblyinfo :autotx_version do |asm|
-	asm.product_name = asm.title = Projects[:autotx][:title]
+    asm.product_name = asm.title = Projects[:autotx][:title]
     asm.description = Projects[:autotx][:description]
     # This is the version number used by framework during build and at runtime to locate, link and load the assemblies. When you add reference to any assembly in your project, it is this version number which gets embedded.
-	asm.version = VERSION
-	# Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
-	asm.file_version = VERSION_INFORMAL
+    asm.version = VERSION
+    # Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
+    asm.file_version = VERSION_INFORMAL
     asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION_INFORMAL}",
-  	  :CLSCompliantAttribute => false,
-	  :AssemblyConfiguration => "#{CONFIGURATION}",
-	  :Guid => Projects[:autotx][:guid]
+      :CLSCompliantAttribute => false,
+      :AssemblyConfiguration => "#{CONFIGURATION}",
+      :Guid => Projects[:autotx][:guid]
     asm.copyright = Projects[:autotx][:copyright]
     asm.output_file = 'src/AutoTxAssemblyInfo.cs'
   end
@@ -155,7 +155,7 @@ namespace :castle do
     nuspec.description = Projects[:tx][:description]
     #nuspec.working_directory = Folders[:nuspec_tx]
     nuspec.title = Projects[:tx][:title]
-	nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
     nuspec.dependency "Castle.Core", "2.5.1"
@@ -175,9 +175,9 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
-	nuspec.dependency "Castle.Core", "2.5.1"
-	nuspec.dependency "Castle.Windsor", "2.5.1"
-	nuspec.dependency "Castle.Services.Transaction", "2.5.1"
+    nuspec.dependency "Castle.Core", "2.5.1"
+    nuspec.dependency "Castle.Windsor", "2.5.1"
+    nuspec.dependency "Castle.Services.Transaction", "2.5.1"
     nuspec.output_file = Files[:nuspec_autotx]
   end
   
