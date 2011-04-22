@@ -1,5 +1,20 @@
 Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
 
+# Getting Started
+
+1. Download code
+2. Run `rake -T` to browse tasks.
+
+Either run a `rake`, and you quickly get a release-build, or set up a database `TxTests` and
+a table Things as can be seen in the unit tests and then run `rake build_all` to get
+both a release and a debug build.
+
+The debug build has code contracts interwoven which will catch you out if you break the API
+contracts. The release build is completely free from contracts. As such, I strongly
+recommend that you develop towards the debug build.
+
+Also, note that there's extensive log4net logging enabled. Just add a default logger.
+
 # Overview Transactions
 
 Castle Transactions 3.0 enables the .Net coder with:
