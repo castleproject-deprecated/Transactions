@@ -38,8 +38,8 @@ end
 
 def build(conf)
   puts "BUILD ALL CONF #{conf}"
-  Rake::Task[conf].invoke # these will only be invoked once each
   Rake::Task.tasks.each{ |t| t.reenable }
+  Rake::Task[conf].invoke # these will only be invoked once each
   Rake::Task["castle:build"].invoke
   Rake::Task["castle:test_all"].invoke
 end
@@ -80,7 +80,17 @@ namespace :castle do
 	nunit.assemblies Files[:autotx_test]
   end
   
-  task :output => [:tx_output, :autotx_output]
+  task :output => [:tx_output, :autotx_output] do
+    data = commit_data()
+    File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
+	  f.puts %Q{aa
+	This file's name gives you the specifics of the commit.
+	
+	Commit hash:		#{data[0]}
+	Commit date:		#{data[1]}
+}
+	end
+  end
   
   task :tx_output => :msbuild do
 	target = File.join(Folders[:binaries], Projects[:tx][:dir])
@@ -101,8 +111,9 @@ namespace :castle do
   
   # versioning: http://support.microsoft.com/kb/556041
   assemblyinfo :tx_version do |asm|
+    data = commit_data() #hash + date
 	asm.product_name = asm.title = Projects[:tx][:title]
-    asm.description = Projects[:tx][:description]
+    asm.description = Projects[:tx][:description] + " #{data[0]} - #{data[1]}"
     # This is the version number used by framework during build and at runtime to locate, link and load the assemblies. When you add reference to any assembly in your project, it is this version number which gets embedded.
 	asm.version = VERSION
 	# Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
