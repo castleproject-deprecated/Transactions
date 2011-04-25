@@ -71,20 +71,24 @@ namespace :castle do
   directory "#{Folders[:tests]}"
   
   nunit :tx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
+    xml = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', 
       "/out #{File.join(Folders[:tests], Projects[:tx][:dir])}.log",
-      "/xml #{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
+      "/xml #{xml}"
     nunit.assemblies Files[:tx_test]
+	puts "##teamcity[importData type='nunit' path='#{xml}']"
   end
   
   desc "AutoTx unit + integration tests"
   nunit :autotx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
+    xml = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', 
       "/out #{File.join(Folders[:tests], Projects[:autotx][:dir])}.log",
-      "/xml #{File.join(Folders[:tests], Projects[:autotx][:dir])}.xml"
+      "/xml #{xml}"
     nunit.assemblies Files[:autotx_test]
+	puts "##teamcity[importData type='nunit' path='#{xml}']"
   end
   
   task :output => [:tx_output, :autotx_output] do
