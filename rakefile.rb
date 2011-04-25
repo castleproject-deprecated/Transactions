@@ -17,11 +17,14 @@ task :prepare => ["castle:assembly_infos"]
 desc "runner for continuous integration"
 task :ci => ["env:release", "castle:build", "castle:test_all", "castle:nuget"]
 
+desc "build alpha version next"
+task :alpha do ; puts "dud" ; end
+
 desc "build in release mode"
-task :release => ["env:release", "clean", "castle:build"]
+task :release => ["env:release", "castle:build"]
 
 desc "build in debug mode"
-task :debug => ["env:debug", "clean", "castle:build"]
+task :debug => ["env:debug", "castle:build"]
 
 CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
@@ -118,7 +121,7 @@ namespace :castle do
     asm.version = VERSION
     # Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
     asm.file_version = VERSION_INFORMAL
-    asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION_INFORMAL}",
+    asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION}", # disposed as product version in explorer
       :CLSCompliantAttribute => false,
       :AssemblyConfiguration => "#{CONFIGURATION}",
       :Guid => Projects[:tx][:guid]
@@ -134,7 +137,7 @@ namespace :castle do
     asm.version = VERSION
     # Assembly File Version : This is the version number given to file as in file system. It is displayed by Windows Explorer. Its never used by .NET framework or runtime for referencing.
     asm.file_version = VERSION_INFORMAL
-    asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION_INFORMAL}",
+    asm.custom_attributes :AssemblyInformationalVersion => "#{VERSION}", # disposed as product version in explorer
       :CLSCompliantAttribute => false,
       :AssemblyConfiguration => "#{CONFIGURATION}",
       :Guid => Projects[:autotx][:guid]
@@ -165,7 +168,7 @@ namespace :castle do
   
   nuspec :tx_nuspec => :tx_nuget_dirs do |nuspec|
     nuspec.id = "Castle.Services.Transaction"
-    nuspec.version = File.read(Files[:version])
+    nuspec.version = VERSION
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
@@ -197,7 +200,7 @@ namespace :castle do
   
   nuspec :autotx_nuspec => :autotx_nuget_dirs do |nuspec|
     nuspec.id = "Castle.Facilities.AutoTx"
-    nuspec.version = File.read(Files[:version])
+    nuspec.version = VERSION
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
@@ -247,16 +250,15 @@ task :help do
   puts " -------"
   puts " JUST BUILD IT:           'rake'"
   puts " See available tasks:     'rake -T'"
-  puts " Complete major GA:       'rake bump:major env:ga release'"
-  puts " Complete minor GA:       'rake bump:minor env:ga release'"
+  puts " Complete major GA:       'rake bump:major  env:release castle:build castle:nuget'"
+  puts " Complete minor GA:       'rake bump:minor env:release castle:build castle:nuget'"
   puts " Build release yourself:  'rake' or 'rake release'"
   puts " Build debug yourself:    'rake debug'"
-  puts " GA release build:        'rake env:ga release'"
-  puts " RC 1 build:              'rake env:rc[1] release'"
-  puts " RC 2 build:              'rake env:rc[2] release'"
-  puts " Beta 1 build:            'rake env:beta[1] release'"
-  puts " Alpha 1 build:           'rake env:alpha[1] release'"
-  puts " Alpha 2 build:           'rake env:alpha[2] release'"
+  puts " RC 1 build:              'rake env:rc[1] env:release castle:build castle:nuget'"
+  puts " RC 2 build:              'rake env:rc[2] env:release castle:build castle:nuget'"
+  puts " Beta 1 build:            'rake env:beta[1] env:release castle:build castle:nuget'"
+  puts " Alpha 1 build:           'rake env:alpha[1] env:release castle:build castle:nuget'"
+  puts " Alpha 2 build:           'rake env:alpha[2] env:release castle:build castle:nuget'"
   puts ""
   puts " Informational:"
   puts " --------------"

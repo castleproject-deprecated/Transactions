@@ -62,19 +62,22 @@ namespace :env do
   
   desc "set release candidate environment variables"
   task :rc, [:number] do |t, args|
-    num = args[:number].to_i || 1
+    arg_num = args[:number].to_i
+	num = arg_num != 0 ? arg_num : 1
 	ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{3000 + num}"
   end
   
   desc "set beta-environment variables"
   task :beta, [:number] do |t, args|
-	num = args[:number].to_i || 1
+	arg_num = args[:number].to_i
+	num = arg_num != 0 ? arg_num : 1
     ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{2000 + num}"
   end
   
   desc "set alpha environment variables"
   task :alpha, [:number] do |t, args|
-	num = args[:number].to_i || 1
+    arg_num = args[:number].to_i
+	num = arg_num != 0 ? arg_num : 1
     ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{1000 + num}"
   end
 end
