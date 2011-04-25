@@ -43,6 +43,9 @@ task :alpha do
     10. git tag -a "v[VERSION]"
     11. git push --tags
         This means that the tag is now publically browsable.
+    
+    Now, TeamCity till take over and run the compile process on the server and then
+    upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 } ; end
 
