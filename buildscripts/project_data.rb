@@ -1,4 +1,4 @@
-﻿# the Projects hash should only contain strings relating to the projects.
+# the Projects hash should only contain strings relating to the projects.
 Projects = {
 	:tx => {
 		:dir => "Castle.Services.Transaction",
