@@ -1,5 +1,6 @@
 ﻿$: << './'
 require 'albacore'
+require 'buildscripts/albacore_mods'
 require 'version_bumper'
 require 'rake/clean'
 require 'buildscripts/project_data'
@@ -142,35 +143,63 @@ namespace :castle do
     asm.output_file = 'src/AutoTxAssemblyInfo.cs'
   end
   
-  desc "prepare Tx Services and AutoTx Facility nuget package"
+  desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
   task :nuget => [:nuget_tx, :nuget_autotx]
   
-  directory "#{Folders[:nuspec_tx]}"
-  file "#{Files[:nuspec_tx]}"
+  nugetpack :nuget_tx => [:tx_nuspec, :msbuild] do |nuget|
+   nuget.nuspec      = Files[:tx_nuspec]
+   nuget.base_folder = Folders[:tx_nuspec]
+   nuget.output      = Folders[:nuget_out]
+  end
   
-  nuspec :nuspec_tx => ["#{Folders[:nuspec_tx]}","#{Files[:nuspec_tx]}"] do |nuspec|
+  # creates directory tasks for all nuspec-convention based directories
+  def nuget_directory(key)
+    dirs = FileList.new([:lib, :content, :tools].collect{ |dir|
+      File.join(Folders[:"#{key}_nuspec"], "#{dir}")
+    }).each{ |d| directory d }
+    task :"#{key}_nuget_dirs" => dirs # NOTE: here a new dynamic task is defined
+  end
+  
+  nuget_directory(:tx)
+  file "#{Files[:tx_nuspec]}"
+  
+  nuspec :tx_nuspec => :tx_nuget_dirs do |nuspec|
     nuspec.id = "Castle.Services.Transaction"
     nuspec.version = File.read(Files[:version])
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
-    #nuspec.working_directory = Folders[:nuspec_tx]
     nuspec.title = Projects[:tx][:title]
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
     nuspec.dependency "Castle.Core", "2.5.1"
-    nuspec.output_file = Files[:nuspec_tx]
+	nuspec.dependency "Rx-Core", "1.0.2856.0"
+	nuspec.dependency "Rx-Main", "1.0.2856.0"
+	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
+	nuspec.framework_assembly "System.Transactions", FRAMEWORK
+    nuspec.output_file = Files[:tx_nuspec]
+    #nuspec.working_directory = Folders[:tx_nuspec]
+
+    nuspec_copy(:tx, "*Transaction.{dll,xml,pdb}")
+    # right now, we'll go with the conventions.each{ |ff| nuspec.file ff }
+
+    CLEAN.include(Folders[:tx_nuspec])
   end
   
-  directory "#{Folders[:nuspec_autotx]}"
-  file "#{Files[:nuspec_autotx]}"
+  nugetpack :nuget_autotx => [:autotx_nuspec, :msbuild] do |nuget|
+   nuget.nuspec      = Files[:autotx_nuspec]
+   nuget.base_folder = Folders[:autotx_nuspec]
+   nuget.output      = Folders[:nuget_out]
+  end
   
-  nuspec :nuspec_autotx => ["#{Folders[:nuspec_autotx]}", "#{Files[:nuspec_autotx]}"] do |nuspec|
+  nuget_directory(:autotx)
+  file "#{Files[:autotx_nuspec]}"
+  
+  nuspec :autotx_nuspec => :autotx_nuget_dirs do |nuspec|
     nuspec.id = "Castle.Facilities.AutoTx"
     nuspec.version = File.read(Files[:version])
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
-    #nuspec.working_directory = Folders[:nuspec_autotx]
     nuspec.title = Projects[:autotx][:title]
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
@@ -178,19 +207,30 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "2.5.1"
     nuspec.dependency "Castle.Windsor", "2.5.1"
     nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
-    nuspec.output_file = Files[:nuspec_autotx]
+	nuspec.dependency "Rx-Core", "1.0.2856.0"
+	nuspec.dependency "Rx-Main", "1.0.2856.0"
+	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
+	nuspec.framework_assembly "System.Transactions", FRAMEWORK
+    nuspec.output_file = Files[:autotx_nuspec]
+    #nuspec.working_directory = Folders[:autotx_nuspec]
+    
+    nuspec_copy(:autotx, "*AutoTx.{dll,xml,pdb}")
+	# right now, we'll go with the conventions
+	#.each{ |ff| nuspec.file ff }
+	
+    CLEAN.include(Folders[:autotx_nuspec])
   end
   
-  nugetpack :nuget_autotx => [:nuspec_autotx, :msbuild] do |nuget|
-   nuget.nuspec      = Files[:nuspec_autotx]
-   nuget.base_folder = Folders[:nuspec_autotx]
-   nuget.output      = Folders[:nuget_out]
-  end
-  
-  nugetpack :nuget_tx => [:nuspec_tx, :msbuild] do |nuget|
-   nuget.nuspec      = Files[:nuspec_tx]
-   nuget.base_folder = Folders[:nuspec_tx]
-   nuget.output      = Folders[:nuget_out]
+  # copy from the key's data using the glob pattern
+  def nuspec_copy(key, glob)
+    puts "key: #{key}, glob: #{glob}, proj dir: #{Projects[key][:dir]}"
+    FileList[File.join(Folders[:binaries], Projects[key][:dir], glob)].collect{ |f|
+      to = File.join( Folders[:"#{key}_nuspec"], "lib", FRAMEWORK )
+      FileUtils.mkdir_p to
+      cp f, to
+	  # return the file name and its extension:
+	  File.join(FRAMEWORK, File.basename(f))
+    }
   end
 end
 
