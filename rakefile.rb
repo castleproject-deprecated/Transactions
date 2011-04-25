@@ -88,7 +88,8 @@ namespace :castle do
   end
   
   task :output => [:tx_output, :autotx_output] do
-    data = commit_data()
+    Dir.glob(File.join(Folders[:binaries], "*.txt")){ | fn | File.delete(fn) }
+	data = commit_data()
     File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
       f.puts %Q{aa
     This file's name gives you the specifics of the commit.
