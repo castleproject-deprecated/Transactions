@@ -1,7 +1,9 @@
 /build
+/packages
 AssemblyInfo.cs
 src/*/obj
 src/*/bin
+src/*AssemblyInfo.cs
 *.csproj.user
 *ReSharper.user
 _ReSharper*
@@ -10,3 +12,4 @@ _ReSharper*
 *.cache
 Castle.Services.Transaction.user
 * Thumbs.db
+*.nupkg

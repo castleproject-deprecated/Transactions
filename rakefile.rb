@@ -15,7 +15,7 @@ desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
 desc "runner for continuous integration"
-task :ci => [":build_all", "castle:nuget"]
+task :ci => ["env:release", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "build in release mode"
 task :release => ["env:release", "clean", "castle:build"]
@@ -28,7 +28,6 @@ CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
-  config.nugetpack.command = Commands[:nuget]
   config.assemblyinfo.namespaces = "System", "System.Reflection", "System.Runtime.InteropServices", "System.Security"
 end
 
@@ -143,13 +142,14 @@ namespace :castle do
     asm.output_file = 'src/AutoTxAssemblyInfo.cs'
   end
   
+  directory "#{Folders[:nuget]}"
   desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
-  task :nuget => [:nuget_tx, :nuget_autotx]
+  task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
   
-  nugetpack :nuget_tx => [:tx_nuspec, :msbuild] do |nuget|
-   nuget.nuspec      = Files[:tx_nuspec]
-   nuget.base_folder = Folders[:tx_nuspec]
-   nuget.output      = Folders[:nuget_out]
+  nugetpack :tx_nuget => [:msbuild, :tx_nuspec] do |nuget|
+    nuget.command     = Commands[:nuget]
+    nuget.nuspec      = Files[:tx_nuspec]
+    nuget.output      = Folders[:nuget]
   end
   
   # creates directory tasks for all nuspec-convention based directories
@@ -186,10 +186,10 @@ namespace :castle do
     CLEAN.include(Folders[:tx_nuspec])
   end
   
-  nugetpack :nuget_autotx => [:autotx_nuspec, :msbuild] do |nuget|
-   nuget.nuspec      = Files[:autotx_nuspec]
-   nuget.base_folder = Folders[:autotx_nuspec]
-   nuget.output      = Folders[:nuget_out]
+  nugetpack :autotx_nuget => [:msbuild, :autotx_nuspec] do |nuget|
+	nuget.command     = Commands[:nuget]
+    nuget.nuspec      = Files[:autotx_nuspec]
+    nuget.output      = Folders[:nuget]
   end
   
   nuget_directory(:autotx)

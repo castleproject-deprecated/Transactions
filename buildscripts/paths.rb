@@ -11,7 +11,7 @@ Folders = {
   :packages => "packages",
   :tx_nuspec => File.join("packages", Projects[:tx][:dir]),
   :autotx_nuspec => File.join("packages", Projects[:autotx][:dir]),
-  :nuget_out => File.join("build", "nuget"),
+  :nuget => File.join("build", "nuget"),
   
   :tx_out => 'placeholder - specify build environment',
   :tx_test_out => 'placeholder - specify build environment',
