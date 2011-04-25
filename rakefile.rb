@@ -1,4 +1,4 @@
-$: << './'
+﻿$: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
 begin
