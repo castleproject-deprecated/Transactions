@@ -15,6 +15,8 @@
 // 
 #endregion
 
+using System.Diagnostics.Contracts;
+
 namespace Castle.Services.Transaction.IO
 {
 	using System;
@@ -57,38 +59,33 @@ namespace Castle.Services.Transaction.IO
  (?<rel_drive>\w{1,3}:)?
  (?<folders_files>.+))?";
 
-		private static Regex _Regex;
-
-		static PathInfo()
-		{
-			_Regex = new Regex(_StrRegex,
+		private static Regex _Regex = new Regex(_StrRegex,
 			                   RegexOptions.Compiled |
 			                   RegexOptions.IgnorePatternWhitespace |
 			                   RegexOptions.IgnoreCase |
 			                   RegexOptions.Multiline);
-		}
 
-		private string _Root,
-		               _UNCPrefix,
-		               _UNCLiteral,
-		               _Options,
-		               _Drive,
-		               _DriveLetter,
-		               _Server,
-		               _IPv4,
-		               _IPv6,
-		               _ServerName,
-		               _Device,
-		               _DevicePrefix,
-		               _DeviceName,
-		               _DeviceGuid,
-		               _NonRootPath,
-		               _RelDrive,
-		               _FolderAndFiles;
+		private readonly string _Root,
+								_UNCPrefix,
+								_UNCLiteral,
+								_Options,
+								_Drive,
+								_DriveLetter,
+								_Server,
+								_IPv4,
+								_IPv6,
+								_ServerName,
+								_Device,
+								_DevicePrefix,
+								_DeviceName,
+								_DeviceGuid,
+								_NonRootPath,
+								_RelDrive,
+								_FolderAndFiles;
 
 		public static PathInfo Parse(string path)
 		{
-			if (path == null) throw new ArgumentNullException("path");
+			Contract.Requires(path != null);
 
 			var matches = _Regex.Matches(path);
 
@@ -309,15 +306,15 @@ namespace Castle.Services.Transaction.IO
 		{
 			get
 			{
-				if (Device != string.Empty)
+				if (!string.IsNullOrEmpty(Device))
 					return PathType.Device;
-				if (ServerName != string.Empty)
+				if (!string.IsNullOrEmpty(ServerName))
 					return PathType.Server;
-				if (IPv4 != string.Empty)
+				if (!string.IsNullOrEmpty(IPv4))
 					return PathType.IPv4;
-				if (IPv6 != string.Empty)
+				if (!string.IsNullOrEmpty(IPv6))
 					return PathType.IPv6;
-				if (Drive != string.Empty)
+				if (!string.IsNullOrEmpty(Drive))
 					return PathType.Drive;
 				return PathType.Relative;
 			}
@@ -328,7 +325,7 @@ namespace Castle.Services.Transaction.IO
 		/// </summary>
 		public bool IsRooted
 		{
-			get { return _Root != string.Empty; }
+			get { return !string.IsNullOrEmpty(_Root); }
 		}
 
 		/// <summary>
@@ -338,6 +335,8 @@ namespace Castle.Services.Transaction.IO
 		/// <param name="child">The path info to verify</param>
 		/// <returns>Whether it is true that the current path info is a parent of child.</returns>
 		/// <exception cref="NotSupportedException">If this instance of path info and child aren't rooted.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength",
+			Justification = "Would change semantics")]
 		public bool IsParentOf(PathInfo child)
 		{
 			if (Root == string.Empty || child.Root == string.Empty)

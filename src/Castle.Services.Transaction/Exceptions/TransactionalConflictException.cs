@@ -15,13 +15,18 @@
 // 
 #endregion
 
-namespace Castle.Services.Transaction
-{
-	using System;
-	using System.Runtime.Serialization;
+using System;
+using System.Runtime.Serialization;
 
-	public class TransactionalConflictException : TransactionException
+namespace Castle.Services.Transaction.Exceptions
+{
+	[Serializable]
+	public sealed class TransactionalConflictException : TransactionException
 	{
+		public TransactionalConflictException()
+		{
+		}
+
 		public TransactionalConflictException(string message) : base(message)
 		{
 		}
@@ -30,7 +35,15 @@ namespace Castle.Services.Transaction
 		{
 		}
 
-		public TransactionalConflictException(SerializationInfo info, StreamingContext context) : base(info, context)
+		public TransactionalConflictException(string message, Uri helperLink) : base(message, helperLink)
+		{
+		}
+
+		public TransactionalConflictException(string message, Exception innerException, Uri helperLink) : base(message, innerException, helperLink)
+		{
+		}
+
+		private TransactionalConflictException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

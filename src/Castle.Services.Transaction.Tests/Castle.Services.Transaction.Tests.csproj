@@ -18,8 +18,7 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>Castle.Services.Transaction.Tests</AssemblyName>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\buildscripts\CastleKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>Castle.Services.Transaction.Tests</RootNamespace>
@@ -29,90 +28,29 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-    <OutputPath>bin\NET40-Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>TRACE;DEBUG;DOTNET DOTNET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>1591</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40-Release|AnyCPU' ">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <OutputPath>bin\NET40-Release\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;DOTNET DOTNET40</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET35-Debug|AnyCPU'">
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <OutputPath>bin\NET35-Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DOTNET DOTNET35</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET35-Release|AnyCPU'">
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <OutputPath>bin\NET35-Release\</OutputPath>
-    <DefineConstants>TRACE;DOTNET DOTNET35</DefineConstants>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO26-Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;MONO MONO26</DefineConstants>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <OutputPath>bin\MONO26-Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO26-Release|AnyCPU'">
-    <DefineConstants>TRACE;MONO MONO26</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <OutputPath>bin\MONO26-Release\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO28-Release|AnyCPU'">
-    <OutputPath>bin\MONO28-Release\</OutputPath>
-    <DefineConstants>TRACE;MONO MONO28</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MONO28-Debug|AnyCPU'">
-    <OutputPath>bin\MONO28-Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO MONO28</DefineConstants>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
@@ -132,46 +70,70 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.CoreEx">
+      <HintPath>..\..\lib\net40\System.CoreEx.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive">
+      <HintPath>..\..\lib\net40\System.Interactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\lib\net40\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
-    <ProjectReference Include="..\Castle.Services.Transaction\Castle.Services.Transaction.csproj">
-      <Name>Castle.Services.Transaction</Name>
-      <Project>{0F611C1B-EDFD-46E6-9C3A-95420946E9CC}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DirectoryAdapterTests.cs" />
-    <Compile Include="FileAdapterTests.cs" />
+    <Compile Include="..\TxAssemblyInfo.cs">
+      <Link>Properties\TxAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DirectoryAdapter_InitializationSettings.cs" />
+    <Compile Include="DirectoryAdapter_ChJail.cs" />
+    <Compile Include="DirectoryAdapter_NonTransactionalBehaviour.cs" />
+    <Compile Include="DirectoryAdapter_TransactionalBehavior.cs" />
+    <Compile Include="FileAdapter_InitializationSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FileTransactions_Directory_Tests.cs" />
     <Compile Include="FileTransactions_File_Tests.cs" />
+    <Compile Include="FileTransaction_Initialization_And_State.cs" />
+    <Compile Include="Framework\STATestRuntime.cs" />
+    <Compile Include="Framework\TxFTestFixtureBase.cs" />
+    <Compile Include="MSDN_Is_Wrong.cs" />
     <Compile Include="TestClasses\Exts.cs" />
-    <Compile Include="FileTransactionTests.cs" />
-    <Compile Include="FileTransaction_WithManager_Tests.cs" />
-    <Compile Include="NestedTransactionsTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="FileTransaction_AsDependentTransaction.cs" />
+    <Compile Include="TestClasses\IMyService.cs" />
+    <Compile Include="TestClasses\MyService.cs" />
     <Compile Include="TestClasses\ResourceImpl.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TestClasses\SynchronizationImpl.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TestClasses\TestResource.cs" />
     <Compile Include="TestClasses\ThrowsExceptionResource.cs" />
-    <Compile Include="TransactionManagerTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TestClasses\TransientActivityManager.cs" />
+    <Compile Include="TestClasses\TxTraceListener.cs" />
+    <Compile Include="TransactionManager_EnlistedResources.cs" />
+    <Compile Include="TransactionManager_TransactionDependent_CorrectBookKeeping.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\buildscripts\CastleKey.snk">
+      <Link>CastleKey.snk</Link>
+    </None>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Castle.Services.Transaction\Castle.Services.Transaction.csproj">
+      <Project>{76DF5D09-FC04-411F-B123-01A6B9432796}</Project>
+      <Name>Castle.Services.Transaction</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(RootPath)\Settings.proj" />
-  <Import Project="$(BuildScriptsPath)\Castle.Common.targets" />
+  <!--<Import Project="$(RootPath)\Settings.proj" />
+  <Import Project="$(BuildScriptsPath)\Castle.Common.targets" />-->
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
