@@ -18,9 +18,6 @@ task :default => [:release]
 desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
-desc "build alpha version next"
-task :alpha do ; puts "dud" ; end
-
 desc "build in release mode"
 task :release => ["env:release", "castle:build"]
 
@@ -28,6 +25,26 @@ desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
 task :ci => ["env:release", "clobber", "castle:build"]
+
+desc "prepare alpha version for being published"
+task :alpha do
+  puts %q{
+    TODO: Basically what the script should do;
+    1. Verify no pending changes
+    2. Verify on develop branch
+    3. Ask for alpha number
+    4. Verify alpha number is greater than the last alpha number
+    5. Verify we're not above alpha, e.g. in beta.
+    6. git add . -A ; git commit -m "Automatic alpha" ; rake release castle:test_all
+       This ensures we have passing tests and a build with a matching git commit hash.
+    7. git checkout master
+    8. git merge --no-ff -m "Alpha [version here] commit." develop
+    9. git push
+    10. git tag -a "v[VERSION]"
+    11. git push --tags
+        This means that the tag is now publically browsable.
+
+} ; end
 
 CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
