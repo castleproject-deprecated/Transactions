@@ -24,7 +24,7 @@ task :release => ["env:release", "castle:build"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["env:release", "clobber", "castle:build"]
+task :ci => ["clobber", "castle:build"]
 
 desc "prepare alpha version for being published"
 task :alpha do
