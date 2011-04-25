@@ -177,7 +177,7 @@ namespace :castle do
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
     nuspec.dependency "Castle.Core", "2.5.1"
     nuspec.dependency "Castle.Windsor", "2.5.1"
-    nuspec.dependency "Castle.Services.Transaction", "2.5.1"
+    nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
     nuspec.output_file = Files[:nuspec_autotx]
   end
   
