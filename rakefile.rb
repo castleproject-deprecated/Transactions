@@ -72,23 +72,27 @@ namespace :castle do
   
   nunit :tx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
     xml = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
+	log = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.log"
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', 
-      "/out #{File.join(Folders[:tests], Projects[:tx][:dir])}.log",
+      "/out #{log}",
       "/xml #{xml}"
     nunit.assemblies Files[:tx_test]
 	puts "##teamcity[importData type='nunit' path='#{xml}']"
+	puts "##teamcity[publishArtifacts '#{log}']"
   end
   
   desc "AutoTx unit + integration tests"
   nunit :autotx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
-    xml = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
+    xml = "#{File.join(Folders[:tests], Projects[:autotx][:dir])}.xml"
+	log = "#{File.join(Folders[:tests], Projects[:autotx][:dir])}.log"
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', 
-      "/out #{File.join(Folders[:tests], Projects[:autotx][:dir])}.log",
+      "/out #{log}",
       "/xml #{xml}"
     nunit.assemblies Files[:autotx_test]
 	puts "##teamcity[importData type='nunit' path='#{xml}']"
+	puts "##teamcity[publishArtifacts '#{log}']"
   end
   
   task :output => [:tx_output, :autotx_output] do
