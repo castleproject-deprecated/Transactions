@@ -7,6 +7,7 @@ def commit_data
     commit_date = DateTime.parse( git_date ).strftime("%Y-%m-%d %H%M%S")
   rescue
     commit = "git unavailable"
+    commit_date = DateTime.parse( git_date ).strftime("%Y-%m-%d %H%M%S")
   end
   [commit, commit_date]
 end
