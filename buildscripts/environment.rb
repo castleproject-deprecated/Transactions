@@ -12,7 +12,7 @@ namespace :env do
     ENV['VERSION'] = VERSION = "#{VERSION_BASE}.#{official}"
 	ENV['VERSION_INFORMAL'] = VERSION_INFORMAL = "#{VERSION_BASE}.#{build}"
 	puts "Assembly Version: #{VERSION}."
-	puts "##teamcity[buildNumber '#{VERSION}']"
+	puts "##teamcity[buildNumber '#{VERSION}-#{build}']" # print the version (official) and build number to ci
 	
 	# configuration management
 	ENV['FRAMEWORK'] = FRAMEWORK = ENV['FRAMEWORK'] || (Rake::Win32::windows? ? "net40" : "mono28")
