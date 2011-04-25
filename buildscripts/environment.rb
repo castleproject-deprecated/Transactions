@@ -35,11 +35,11 @@ namespace :env do
 	
 	# for tests
 	Folders[:tx_test_out] = File.join(Folders[:src], Projects[:tx][:test_dir], 'bin', CONFIGURATION)
-	Files[:tx_test] = File.join(Folders[:tx_test_out], "#{Projects[:tx][:test_dir]}.dll")
+	Files[:tx][:test] = File.join(Folders[:tx_test_out], "#{Projects[:tx][:test_dir]}.dll")
 	CLEAN.include(Folders[:tx_test_out])
 	
     Folders[:autotx_test_out] = File.join(Folders[:src], Projects[:autotx][:test_dir], 'bin', CONFIGURATION)
-	Files[:autotx_test] = File.join(Folders[:autotx_test_out], "#{Projects[:autotx][:test_dir]}.dll")
+	Files[:autotx][:test] = File.join(Folders[:autotx_test_out], "#{Projects[:autotx][:test_dir]}.dll")
 	CLEAN.include(Folders[:autotx_test_out])
   end
   

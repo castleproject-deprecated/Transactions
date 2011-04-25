@@ -18,9 +18,6 @@ task :default => [:release]
 desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
-desc "runner for continuous integration"
-task :ci => ["env:release", "castle:build", "castle:test_all", "castle:nuget"]
-
 desc "build alpha version next"
 task :alpha do ; puts "dud" ; end
 
@@ -29,6 +26,8 @@ task :release => ["env:release", "castle:build"]
 
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
+
+task :ci => ["env:release", "clobber", "castle:build"]
 
 CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
@@ -56,8 +55,17 @@ namespace :castle do
   desc "build + tx unit tests + output"
   task :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs', :msbuild, :tx_test, :output]
   
-  desc "run all tests, also for AutoTx"
+  desc "run all tests, also for AutoTx (req. DB)"
   task :test_all => [:tx_test, :autotx_test]
+  
+  desc "generate the assembly infos you need to compile with VS"
+  task :assembly_infos => [:tx_version, :autotx_version]
+  
+  desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
+  task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
+  
+  #                    BUILDING
+  # ===================================================
   
   msbuild :msbuild do |msb, args|
     # msb.use = :args[:framework] || :net40
@@ -68,64 +76,12 @@ namespace :castle do
     msb.solution = Files[:sln]
   end
   
-  directory "#{Folders[:tests]}"
-  
-  nunit :tx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
-    xml = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.xml"
-	log = "#{File.join(Folders[:tests], Projects[:tx][:dir])}.log"
-    nunit.command = Commands[:nunit]
-    nunit.options '/framework v4.0', 
-      "/out #{log}",
-      "/xml #{xml}"
-    nunit.assemblies Files[:tx_test]
-	puts "##teamcity[importData type='nunit' path='#{xml}']"
-	puts "##teamcity[publishArtifacts '#{log}']"
-  end
-  
-  desc "AutoTx unit + integration tests"
-  nunit :autotx_test => [:msbuild, "#{Folders[:tests]}"] do |nunit|
-    xml = "#{File.join(Folders[:tests], Projects[:autotx][:dir])}.xml"
-	log = "#{File.join(Folders[:tests], Projects[:autotx][:dir])}.log"
-    nunit.command = Commands[:nunit]
-    nunit.options '/framework v4.0', 
-      "/out #{log}",
-      "/xml #{xml}"
-    nunit.assemblies Files[:autotx_test]
-	puts "##teamcity[importData type='nunit' path='#{xml}']"
-	puts "##teamcity[publishArtifacts '#{log}']"
-  end
-  
-  task :output => [:tx_output, :autotx_output] do
-    Dir.glob(File.join(Folders[:binaries], "*.txt")){ | fn | File.delete(fn) }
-	data = commit_data()
-    File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
-      f.puts %Q{aa
-    This file's name gives you the specifics of the commit.
-    
-    Commit hash:		#{data[0]}
-    Commit date:		#{data[1]}
-}
-    end
-  end
-  
-  task :tx_output => :msbuild do
-    target = File.join(Folders[:binaries], Projects[:tx][:dir])
-    copy_files Folders[:tx_out], "*.{xml,dll,pdb,config}", target
-    CLEAN.include(target)
-  end
-  
-  task :autotx_output => :msbuild do
-    target = File.join(Folders[:binaries], Projects[:autotx][:dir])
-    copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
-    CLEAN.include(target)
-  end
-  
   file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
   file 'src/AutoTxAssemblyInfo.cs' => "castle:autotx_version"
   
-  task :assembly_infos => [:tx_version, :autotx_version]
-  
-  # versioning: http://support.microsoft.com/kb/556041
+  #                    VERSIONING
+  #        http://support.microsoft.com/kb/556041
+  # ===================================================
   assemblyinfo :tx_version do |asm|
     data = commit_data() #hash + date
     asm.product_name = asm.title = Projects[:tx][:title]
@@ -158,28 +114,83 @@ namespace :castle do
     asm.output_file = 'src/AutoTxAssemblyInfo.cs'
   end
   
-  directory "#{Folders[:nuget]}"
-  desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
-  task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
-  
-  nugetpack :tx_nuget => [:msbuild, :tx_nuspec] do |nuget|
-    nuget.command     = Commands[:nuget]
-    nuget.nuspec      = Files[:tx_nuspec]
-    nuget.output      = Folders[:nuget]
+  #                    OUTPUTTING
+  # ===================================================
+  task :output => [:tx_output, :autotx_output] do
+    Dir.glob(File.join(Folders[:binaries], "*.txt")){ | fn | File.delete(fn) } # remove old commit marker files
+	data = commit_data() # get semantic data
+    File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
+      f.puts %Q{aa
+    This file's name gives you the specifics of the commit.
+    
+    Commit hash:		#{data[0]}
+    Commit date:		#{data[1]}
+}
+    end
   end
   
-  # creates directory tasks for all nuspec-convention based directories
-  def nuget_directory(key)
-    dirs = FileList.new([:lib, :content, :tools].collect{ |dir|
-      File.join(Folders[:"#{key}_nuspec"], "#{dir}")
-    }).each{ |d| directory d }
-    task :"#{key}_nuget_dirs" => dirs # NOTE: here a new dynamic task is defined
+  task :tx_output => :msbuild do
+    target = File.join(Folders[:binaries], Projects[:tx][:dir])
+    copy_files Folders[:tx_out], "*.{xml,dll,pdb,config}", target
+    CLEAN.include(target)
   end
   
-  nuget_directory(:tx)
-  file "#{Files[:tx_nuspec]}"
+  task :autotx_output => :msbuild do
+    target = File.join(Folders[:binaries], Projects[:autotx][:dir])
+    copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
+    CLEAN.include(target)
+  end
   
-  nuspec :tx_nuspec => :tx_nuget_dirs do |nuspec|
+  
+  #                     TESTING
+  # ===================================================
+  directory "#{Folders[:tests]}"
+  
+  task :tx_test => [:msbuild, "#{Folders[:tests]}", :tx_nunit, :tx_test_publish_artifacts]
+  task :autotx_test => [:msbuild, "#{Folders[:tests]}", :autotx_nunit, :autotx_test_publish_artifacts]
+  
+  nunit :tx_nunit do |nunit|
+    nunit.command = Commands[:nunit]
+    nunit.options '/framework v4.0', "/out #{Files[:tx][:test_log]}", "/xml #{Files[:tx][:test_xml]}"
+    nunit.assemblies Files[:tx][:test]
+	CLEAN.include(Folders[:tests])
+  end
+  
+  task :tx_test_publish_artifacts => :tx_nunit do
+	puts "##teamcity[importData type='nunit' path='#{Files[:tx][:test_xml]}']"
+	puts "##teamcity[publishArtifacts '#{Files[:tx][:test_log]}']"
+  end
+    
+  nunit :autotx_nunit do |nunit|
+    nunit.command = Commands[:nunit]
+    nunit.options '/framework v4.0', "/out #{Files[:autotx][:test_log]}", "/xml #{Files[:autotx][:test_xml]}"
+    nunit.assemblies Files[:autotx][:test]
+	CLEAN.include(Folders[:tests])
+  end
+  
+  task :autotx_test_publish_artifacts => :autotx_nunit do
+	puts "##teamcity[importData type='nunit' path='#{Files[:autotx][:test_xml]}']"
+	puts "##teamcity[publishArtifacts '#{Files[:autotx][:test_log]}']"
+  end
+  
+  #                      NUSPEC
+  # ===================================================
+  
+  # copy from the key's data using the glob pattern
+  def nuspec_copy(key, glob)
+    puts "key: #{key}, glob: #{glob}, proj dir: #{Projects[key][:dir]}"
+    FileList[File.join(Folders[:binaries], Projects[key][:dir], glob)].collect{ |f|
+      to = File.join( Folders[:"#{key}_nuspec"], "lib", FRAMEWORK )
+      FileUtils.mkdir_p to
+      cp f, to
+	  # return the file name and its extension:
+	  File.join(FRAMEWORK, File.basename(f))
+    }
+  end
+  
+  file "#{Files[:tx][:nuspec]}"
+  
+  nuspec :tx_nuspec => [:output, :tx_nuget_dirs] do |nuspec|
     nuspec.id = "Castle.Services.Transaction"
     nuspec.version = VERSION
     nuspec.authors = Projects[:tx][:authors]
@@ -193,25 +204,18 @@ namespace :castle do
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
-    nuspec.output_file = Files[:tx_nuspec]
+    nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
 
     nuspec_copy(:tx, "*Transaction.{dll,xml,pdb}")
     # right now, we'll go with the conventions.each{ |ff| nuspec.file ff }
 
-    CLEAN.include(Folders[:tx_nuspec])
+    #CLEAN.include(Folders[:tx][:nuspec])
   end
   
-  nugetpack :autotx_nuget => [:msbuild, :autotx_nuspec] do |nuget|
-	nuget.command     = Commands[:nuget]
-    nuget.nuspec      = Files[:autotx_nuspec]
-    nuget.output      = Folders[:nuget]
-  end
+  file "#{Files[:autotx][:nuspec]}"
   
-  nuget_directory(:autotx)
-  file "#{Files[:autotx_nuspec]}"
-  
-  nuspec :autotx_nuspec => :autotx_nuget_dirs do |nuspec|
+  nuspec :autotx_nuspec => [:output, :autotx_nuget_dirs] do |nuspec|
     nuspec.id = "Castle.Facilities.AutoTx"
     nuspec.version = VERSION
     nuspec.authors = Projects[:autotx][:authors]
@@ -227,7 +231,7 @@ namespace :castle do
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
-    nuspec.output_file = Files[:autotx_nuspec]
+    nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
     
     nuspec_copy(:autotx, "*AutoTx.{dll,xml,pdb}")
@@ -237,16 +241,35 @@ namespace :castle do
     CLEAN.include(Folders[:autotx_nuspec])
   end
   
-  # copy from the key's data using the glob pattern
-  def nuspec_copy(key, glob)
-    puts "key: #{key}, glob: #{glob}, proj dir: #{Projects[key][:dir]}"
-    FileList[File.join(Folders[:binaries], Projects[key][:dir], glob)].collect{ |f|
-      to = File.join( Folders[:"#{key}_nuspec"], "lib", FRAMEWORK )
-      FileUtils.mkdir_p to
-      cp f, to
-	  # return the file name and its extension:
-	  File.join(FRAMEWORK, File.basename(f))
-    }
+  #                       NUGET
+  # ===================================================
+  
+  directory "#{Folders[:nuget]}"
+  
+  # creates directory tasks for all nuspec-convention based directories
+  def nuget_directory(key)
+    dirs = FileList.new([:lib, :content, :tools].collect{ |dir|
+      File.join(Folders[:"#{key}_nuspec"], "#{dir}")
+    }).each{ |d| directory d }
+    task :"#{key}_nuget_dirs" => dirs # NOTE: here a new dynamic task is defined
+  end
+  
+  nuget_directory(:tx)
+  
+  desc "generate nuget package for tx services"
+  nugetpack :tx_nuget => [:output, :tx_nuspec] do |nuget|
+    nuget.command     = Commands[:nuget]
+    nuget.nuspec      = Files[:tx][:nuspec]
+    nuget.output      = Folders[:nuget]
+  end
+  
+  nuget_directory(:autotx)
+  
+  desc "generate nuget package for autotx facility"
+  nugetpack :autotx_nuget => [:output, :autotx_nuspec] do |nuget|
+	nuget.command     = Commands[:nuget]
+    nuget.nuspec      = Files[:autotx][:nuspec]
+    nuget.output      = Folders[:nuget]
   end
 end
 
