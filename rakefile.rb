@@ -96,12 +96,13 @@ namespace :castle do
     msb.solution = Files[:sln]
   end
   
-  file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
-  file 'src/AutoTxAssemblyInfo.cs' => "castle:autotx_version"
-  
   #                    VERSIONING
   #        http://support.microsoft.com/kb/556041
   # ===================================================
+  
+  file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
+  file 'src/AutoTxAssemblyInfo.cs' => "castle:autotx_version"
+  
   assemblyinfo :tx_version do |asm|
     data = commit_data() #hash + date
     asm.product_name = asm.title = Projects[:tx][:title]
