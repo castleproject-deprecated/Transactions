@@ -1,7 +1,11 @@
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
-require 'version_bumper'
+begin
+  require 'version_bumper'  
+rescue LoadError
+  puts 'version bumper not available!'
+end
 require 'rake/clean'
 require 'buildscripts/project_data'
 require 'buildscripts/paths'
