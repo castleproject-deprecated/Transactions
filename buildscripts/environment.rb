@@ -57,11 +57,13 @@ namespace :env do
   
   desc "set GA envionment variables"
   task :ga do
+    puts "##teamcity[progressMessage 'Setting environment variables for GA']"
 	ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "4000"
   end
   
   desc "set release candidate environment variables"
   task :rc, [:number] do |t, args|
+    puts "##teamcity[progressMessage 'Setting environment variables for Release Candidate']"
     arg_num = args[:number].to_i
 	num = arg_num != 0 ? arg_num : 1
 	ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{3000 + num}"
@@ -69,6 +71,7 @@ namespace :env do
   
   desc "set beta-environment variables"
   task :beta, [:number] do |t, args|
+    puts "##teamcity[progressMessage 'Setting environment variables for Beta']"
 	arg_num = args[:number].to_i
 	num = arg_num != 0 ? arg_num : 1
     ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{2000 + num}"
@@ -76,6 +79,7 @@ namespace :env do
   
   desc "set alpha environment variables"
   task :alpha, [:number] do |t, args|
+    puts "##teamcity[progressMessage 'Setting environment variables for Alpha']"
     arg_num = args[:number].to_i
 	num = arg_num != 0 ? arg_num : 1
     ENV['OFFICIAL_RELEASE'] = OFFICIAL_RELEASE = "#{1000 + num}"

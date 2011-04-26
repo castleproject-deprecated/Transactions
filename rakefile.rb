@@ -1,3 +1,5 @@
+# copyright Henrik Feldt 2011
+
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
@@ -18,16 +20,40 @@ task :default => [:release]
 desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
-desc "build alpha version next"
-task :alpha do ; puts "dud" ; end
-
 desc "build in release mode"
 task :release => ["env:release", "castle:build"]
 
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["env:release", "clobber", "castle:build"]
+task :ci => ["clobber", "castle:build"]
+
+desc "Run all unit and integration tests in debug mode"
+task :test_all => ["env:debug", "castle:test_all"]
+
+desc "prepare alpha version for being published"
+task :alpha do
+  puts %q{
+    TODO: Basically what the script should do;
+    1. Verify no pending changes
+    2. Verify on develop branch
+    3. Ask for alpha number
+    4. Verify alpha number is greater than the last alpha number
+    5. Verify we're not above alpha, e.g. in beta.
+    6. git add . -A ; git commit -m "Automatic alpha" ; rake release castle:test_all
+       This ensures we have passing tests and a build with a matching git commit hash.
+    7. git checkout master
+    8. git merge --no-ff -m "Alpha [version here] commit." develop
+    9. git push
+    10. git tag -a "v[VERSION]"
+    11. git push --tags
+        This means that the tag is now publically browsable.
+    
+    Now, TeamCity till take over and run the compile process on the server and then
+    upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
+
+}
+end
 
 CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
@@ -54,15 +80,14 @@ namespace :castle do
 
   desc "build + tx unit tests + output"
   task :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs', :msbuild, :tx_test, :output]
-  
-  desc "run all tests, also for AutoTx (req. DB)"
-  task :test_all => [:tx_test, :autotx_test]
-  
+ 
   desc "generate the assembly infos you need to compile with VS"
   task :assembly_infos => [:tx_version, :autotx_version]
   
   desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
   task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
+  
+  task :test_all => [:tx_test, :autotx_test]
   
   #                    BUILDING
   # ===================================================
@@ -76,12 +101,13 @@ namespace :castle do
     msb.solution = Files[:sln]
   end
   
-  file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
-  file 'src/AutoTxAssemblyInfo.cs' => "castle:autotx_version"
-  
   #                    VERSIONING
   #        http://support.microsoft.com/kb/556041
   # ===================================================
+  
+  file 'src/TxAssemblyInfo.cs' => "castle:tx_version"
+  file 'src/AutoTxAssemblyInfo.cs' => "castle:autotx_version"
+  
   assemblyinfo :tx_version do |asm|
     data = commit_data() #hash + date
     asm.product_name = asm.title = Projects[:tx][:title]
@@ -169,7 +195,7 @@ namespace :castle do
   end
   
   task :autotx_test_publish_artifacts => :autotx_nunit do
-	puts "##teamcity[importData type='nunit' path='#{Files[:autotx][:test_xml]}']"
+	puts "##teamcity[publishArtifacts path='#{Files[:autotx][:test_xml]}']"
 	puts "##teamcity[publishArtifacts '#{Files[:autotx][:test_log]}']"
   end
   
@@ -199,7 +225,8 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
-    nuspec.dependency "Castle.Core", "2.5.1"
+    nuspec.requireLicenseAcceptance = "true"
+    nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
@@ -224,8 +251,9 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
-    nuspec.dependency "Castle.Core", "2.5.1"
-    nuspec.dependency "Castle.Windsor", "2.5.1"
+    nuspec.requireLicenseAcceptance = "true"
+    nuspec.dependency "Castle.Core", "2.5.2"
+    nuspec.dependency "Castle.Windsor", "2.5.2"
     nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"

@@ -30,29 +30,6 @@ The .IO namespace of Castle Transactions enables:
  * A MapPath-implementation (as seen in ASP.Net).
  * Full directory/file name length support. No more "PathTooLongException" or borked install or build scripts.
 
-# Roadmap
-
-Castle.Transactions 3.1 will enable:
-
- * Transactional Registry - Managed API (TxR - Registry Transactions)
- * Full support for all transacted file methods in the Windows kernel:
-   * CopyFileTransacted
-   * CreateDirectoryTransacted
-   * CreateFileTransacted
-   * CreateHardLinkTransacted
-   * CreateSymbolicLinkTransacted
-   * DeleteFileTransacted
-   * FindFirstFileNameTransactedW
-   * FindFirstFileTransacted
-   * FindFirstStreamTransactedW
-   * GetCompressedFileSizeTransacted
-   * GetFileAttributesTransacted
-   * GetFullPathNameTransacted
-   * GetLongPathNameTransacted
-   * MoveFileTransacted
-   * RemoveDirectoryTransacted
-   * SetFileAttributesTransacted
-
 ***
  
 ## Castle AutoTx 3.0 enables the .Net coder with:
@@ -60,6 +37,14 @@ Castle.Transactions 3.1 will enable:
  * Easily applying transactions through inversion of control.
  * Easily applying Retry-Policies to transactional methods
  * Compensations when transactions abort.
+
+## Contributing
+
+ * `rake prepare`
+ * Open `.sln` file in Visual Studio 2010.
+ * Unit/integration test -> code -> fix test -> ...
+ * `rake` or `rake test_all`
+ * `git add . -A`, then `git commit -m "I improved something"`
 
 ## Getting in Touch
 
