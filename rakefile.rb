@@ -28,6 +28,9 @@ task :debug => ["env:debug", "castle:build"]
 
 task :ci => ["clobber", "castle:build"]
 
+desc "Run all unit and integration tests in debug mode"
+task :test_all => ["env:debug", "castle:test_all"]
+
 desc "prepare alpha version for being published"
 task :alpha do
   puts %q{
@@ -77,15 +80,14 @@ namespace :castle do
 
   desc "build + tx unit tests + output"
   task :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs', :msbuild, :tx_test, :output]
-  
-  desc "run all tests, also for AutoTx (req. DB)"
-  task :test_all => [:tx_test, :autotx_test]
-  
+ 
   desc "generate the assembly infos you need to compile with VS"
   task :assembly_infos => [:tx_version, :autotx_version]
   
   desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
   task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
+  
+  task :test_all => [:tx_test, :autotx_test]
   
   #                    BUILDING
   # ===================================================
