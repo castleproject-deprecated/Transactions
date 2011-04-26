@@ -47,7 +47,8 @@ task :alpha do
     Now, TeamCity till take over and run the compile process on the server and then
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
-} ; end
+}
+end
 
 CLOBBER.include(Folders[:out])
 CLOBBER.include(Folders[:packages])
@@ -220,7 +221,8 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
-    nuspec.dependency "Castle.Core", "2.5.1"
+    nuspec.requireLicenseAcceptance = true
+    nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
@@ -245,8 +247,9 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
-    nuspec.dependency "Castle.Core", "2.5.1"
-    nuspec.dependency "Castle.Windsor", "2.5.1"
+    nuspec.requireLicenseAcceptance = true
+    nuspec.dependency "Castle.Core", "2.5.2"
+    nuspec.dependency "Castle.Windsor", "2.5.2"
     nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
