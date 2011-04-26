@@ -1,3 +1,5 @@
+# copyright Henrik Feldt 2011
+
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
@@ -191,7 +193,7 @@ namespace :castle do
   end
   
   task :autotx_test_publish_artifacts => :autotx_nunit do
-	puts "##teamcity[importData type='nunit' path='#{Files[:autotx][:test_xml]}']"
+	puts "##teamcity[publishArtifacts path='#{Files[:autotx][:test_xml]}']"
 	puts "##teamcity[publishArtifacts '#{Files[:autotx][:test_log]}']"
   end
   
