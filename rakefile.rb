@@ -225,7 +225,7 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
-    nuspec.requireLicenseAcceptance = true
+    nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
@@ -251,7 +251,7 @@ namespace :castle do
     nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
-    nuspec.requireLicenseAcceptance = true
+    nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
     nuspec.dependency "Castle.Windsor", "2.5.2"
     nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
