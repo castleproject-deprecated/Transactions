@@ -26,12 +26,12 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build"]
+task :ci => ["clobber", "castle:build", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
-desc "prepare alpha version for being published"
+desc "prepare alpha version for being published (not for ci server)"
 task :alpha => ["env:release"] do
   puts %q{
     Basically what the script should do;
@@ -91,12 +91,14 @@ task :alpha => ["env:release"] do
     ok or fail "---> could not checkout alpha. do you have such a branch?"
   end
   
+  tagname = "v#{new_ver.join('.')}"
+  
   # 8.
-  sh "git merge --no-ff -m \"Alpha #{new_ver.join('.')} commit.\" develop" do |ok, status|
+  sh "git merge --no-ff -m \"Alpha #{tagname} commit.\" develop" do |ok, status|
     ok or fail "---> failed merge. recommending a 'git merge --abort'. you are on #{branch_to} currently."
   end
   
-  sh "git tag -a \"v#{new_ver.join('.')}\" -m \"Alpha #{new_ver.join('.')}\""
+  sh "git tag -a \"#{tagname}\" -m \"Alpha #{tagname}\""
   
   # 9.
   puts " :: Confirm push!"
@@ -104,7 +106,7 @@ task :alpha => ["env:release"] do
   sh "git log -1"
   
   ok = ""
-  puts "\n\nEverything OK? cmd: \"git push origin #{branch_to}\" (yes/no)?"
+  puts "\n\nEverything OK? You can enter 'no' and then run \"git push --dry-run origin #{branch_to}\" if you are unsure. Run command: \"git push origin #{branch_to}\" (yes/no)?"
   until ok == "yes" || ok == "no"
     ok = STDIN.gets.chomp
   end
@@ -113,16 +115,19 @@ task :alpha => ["env:release"] do
     
     Remember what has changed in your repository! (now that you aborted ;))
         
-        1. tags (git tag -d v#{new_ver.join('.')}),
+        1. tags (git tag -d #{tagname}),
         2. you have merged to the alpha branch (git reset --hard HEAD~1)
         3. previous branch commit message (git commit --amend ...) or the same as above
 	
-    ---> NOTE THAT YOU ARE CURRENTLY ON YOUR #{branch-to} BRANCH -- and everything is ready to push.
+    ---> NOTE THAT YOU ARE CURRENTLY ON YOUR #{branch_to} BRANCH -- and everything is ready to push.
 	
 	You can for example change your commit message by 'git commit --amend -m "..."'.
 
 } else
     sh "git push origin #{branch_to}"
+	
+	puts "Type your password below if you would like to push a tag for it (not reversible!)."
+	sh "git push origin \"refs/tags/#{tagname}:refs/tags/#{tagname}\""
   end
   
 end
