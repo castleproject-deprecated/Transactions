@@ -53,6 +53,9 @@ task :alpha do
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 }
+  status = `git status`
+  status.include? "nothing to commit" or fail "Commit your dirty files:\n\n#{status}\n"
+  status.include? "# On branch develop" or fail "Commit the alpha on your develop branch (this rule might change)"
 end
 
 CLOBBER.include(Folders[:out])
