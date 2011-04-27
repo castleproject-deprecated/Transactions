@@ -7,7 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		License.txt = License.txt
 		buildscripts\paths.rb = buildscripts\paths.rb
 		buildscripts\project_data.rb = buildscripts\project_data.rb
-		rakefile.rb = rakefile.rb
 		readme.md = readme.md
 		buildscripts\utils.rb = buildscripts\utils.rb
 		VERSION = VERSION
