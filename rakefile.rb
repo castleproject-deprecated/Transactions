@@ -26,7 +26,7 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build"]
+task :ci => ["clobber", "castle:build", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
