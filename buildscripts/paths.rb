@@ -25,7 +25,7 @@ Files = {
   :version => "VERSION",
   
   :tx => {
-    :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:dir]}.nuspec"),
+    :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:id]}.nuspec"),
 	:test_log => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.log"),
 	:test_xml => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.xml"),
 	
@@ -33,7 +33,7 @@ Files = {
   },
   
   :autotx => {
-    :nuspec => File.join(Folders[:autotx_nuspec], "#{Projects[:autotx][:dir]}.nuspec"),
+    :nuspec => File.join(Folders[:autotx_nuspec], "#{Projects[:autotx][:id]}.nuspec"),
 	:test_log => File.join(Folders[:tests], "Castle.Facilities.AutoTx.Tests.log"),
 	:test_xml => File.join(Folders[:tests], "Castle.Facilities.AutoTx.Tests.xml"),
 	

@@ -32,7 +32,7 @@ desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
 desc "prepare alpha version for being published"
-task :alpha do
+task :alpha => ["env:release"] do
   puts %q{
     TODO: Basically what the script should do;
     1. Verify no pending changes
@@ -53,6 +53,23 @@ task :alpha do
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 }
+  # check status
+  status = `git status`
+  status.include? "nothing to commit" or fail "---> Commit your dirty files:\n\n#{status}\n"
+  status.include? "# On branch develop" or fail "---> Commit the alpha on your develop branch (this rule might change)"
+  
+  # check version
+  max_ver = versions(`git tag`)[-1]
+  puts max_ver[3]
+  next_alpha = (max_ver[3] - (max_ver[3] / 1000) * 1000) + 1
+  curr_ver = version(VERSION) # call utility function with constant
+  puts "Max tag version: #{max_ver}, current version: #{curr_ver}. Please state alpha number > max tag [#{next_alpha}]: "
+  alpha_ver = STDIN.gets.chomp
+  alpha_ver = alpha_ver.length == 0 ? next_alpha : alpha_ver.to_i
+  
+  new_ver = [curr_ver[0], curr_ver[1], curr_ver[2], 1000+alpha_ver]
+  puts "Comp: #{new_ver <=> max_ver}"
+  if (new_ver <=> max_ver) == -1 then puts "#{new_ver} less than maximum: #{max_ver}" end
 end
 
 CLOBBER.include(Folders[:out])
@@ -217,7 +234,7 @@ namespace :castle do
   file "#{Files[:tx][:nuspec]}"
   
   nuspec :tx_nuspec => [:output, :tx_nuget_dirs] do |nuspec|
-    nuspec.id = "Castle.Services.Transaction"
+    nuspec.id = Projects[:tx][:id]
     nuspec.version = VERSION
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
@@ -227,6 +244,7 @@ namespace :castle do
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
+	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
@@ -243,7 +261,7 @@ namespace :castle do
   file "#{Files[:autotx][:nuspec]}"
   
   nuspec :autotx_nuspec => [:output, :autotx_nuget_dirs] do |nuspec|
-    nuspec.id = "Castle.Facilities.AutoTx"
+    nuspec.id = Projects[:autotx][:id]
     nuspec.version = VERSION
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
@@ -254,7 +272,8 @@ namespace :castle do
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
     nuspec.dependency "Castle.Windsor", "2.5.2"
-    nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
+    nuspec.dependency Projects[:tx][:id], VERSION # might require <VERSION sometimes
+	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"

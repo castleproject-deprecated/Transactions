@@ -1,6 +1,7 @@
 # the Projects hash should only contain strings relating to the projects.
 Projects = {
-	:tx => {
+	:tx => {	
+		:id => "Castle.Services.Transaction",
 		:dir => "Castle.Services.Transaction",
 		:test_dir => "Castle.Services.Transaction.Tests",
 		:title => "Castle Transaction Services",
@@ -11,6 +12,7 @@ Projects = {
 		:guid => "83064f6b-fa2c-4630-a087-abd28f77af28"
 	},
 	:autotx => {
+		:id => "Castle.Facilities.AutoTx",
 		:dir => "Castle.Facilities.AutoTx",
 		:test_dir => "Castle.Facilities.AutoTx.Tests",
 		:title => "Castle AutoTx Facility",
