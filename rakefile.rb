@@ -21,7 +21,7 @@ desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
 desc "build in release mode"
-task :release => ["env:release", "castle:build"]
+task :release => ["env:release", "castle:build", "castle:nuget"]
 
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
