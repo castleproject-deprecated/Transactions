@@ -104,7 +104,7 @@ task :alpha => ["env:release"] do
   sh "git log -1"
   
   ok = ""
-  puts "\n\nEverything OK (yes/no)?"
+  puts "\n\nEverything OK? cmd: \"git push origin #{branch_to}\" (yes/no)?"
   until ok == "yes" || ok == "no"
     ok = STDIN.gets.chomp
   end
@@ -122,7 +122,7 @@ task :alpha => ["env:release"] do
 	You can for example change your commit message by 'git commit --amend -m "..."'.
 
 } else
-    sh "git push"
+    sh "git push origin #{branch_to}"
   end
   
 end
