@@ -1,0 +1,40 @@
+(Tutorial/Discussion)[http://www.kernel.org/pub/software/scm/git/docs/howto/using-merge-subtree.html]
+
+```
+1. $ git rm -r --cached buildscripts
+2. $ git commit -m "intermediate commit to remove buildscripts from index."
+3. $ git branch tmp
+4. $ git checkout tmp
+5. $ git add . ; git commit -m "branch with buildscripts"
+6. $ git checkout master
+
+7. $ git remote add -f Releases https://haf@github.com/haf/Castle.Releases.git 
+8. $ git merge -s ours --no-commit Releases/master 
+9. $ git read-tree --prefix=buildscripts/ -u Releases/master 
+10. $ git commit -m "Merge B project as our subdirectory" 
+
+11. $ git merge tmp
+12. $ git branch -d tmp
+
+13. $ git pull -s subtree Releases master
+
+
+```
+ 1. Remove the buildscripts from git's index.
+ 2. You can squash this commit with 'git rebase -i HEAD~1' and then 's'-key, if you feel up for it.
+ 3. 
+ 4.
+ 5.
+ 6.
+ 
+ You're done with saving what has been in buildscripts.
+ 
+ 7. name the other project "Releases", and fetch. 
+ 8. prepare for the later step to record the result as a merge.
+ 9. read "master" branch of Releases to the subdirectory "buildscripts".
+ 10. record the merge result.
+ 
+ 11. merge back what you had before merging the subtree. possible 'git merge -s ours tmp
+ 12. remove the tmp branch.
+ 
+ 13. maintain the result with subsequent merges using "subtree"
