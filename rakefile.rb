@@ -26,7 +26,6 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-# let's try testing this commit
 task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
@@ -54,83 +53,8 @@ task :alpha => ["env:release"] do
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 }
-  branch_to = "alpha"
 
-  # 1. check status
-  status = `git status`
-  status.include? "nothing to commit" or fail "---> Commit your dirty files:\n\n#{status}\n"
-  status.include? "# On branch develop" or fail "---> Commit the alpha on your develop branch (this rule might change)"
-  
-  # 2. check version
-  max_ver = versions(`git tag`)[-1]                          # get max tag version
-  if max_ver == nil then fail "no tags available in your repository, exiting. nothing done." end
-  build_type = (max_ver[3] / 1000) * 1000                    # e.g. 1000, 2000 or 3000
-  next_alpha = (max_ver[3] - build_type) + 1                 # get its alpha/beta/rc-number, e.g. 1, 2, ..., n
-  curr_ver = version(VERSION)                                # call utility function with constant
-  
-  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state alpha number > max tag (CTRL+C to interrupt) [#{next_alpha}]: "
-  alpha_ver = STDIN.gets.chomp
-  alpha_ver = alpha_ver.length == 0 ? next_alpha : alpha_ver.to_i
-  
-  # 3. calculate new version and verify it
-  new_ver = [curr_ver[0], curr_ver[1], curr_ver[2], 1000+alpha_ver]
-  if (new_ver <=> max_ver || alpha_ver) == -1 then puts "---> #{new_ver} less than maximum: #{max_ver}" end
-  
-  # 4, 5. Verify it's an alpha
-  if (next_alpha > 1000) then puts "---> no more than a thousand allowed" end
-  
-  # 6. we can do this optionally, but for now, let's assume someone put a good message in.
-  # sh "git commit --amend -m \"Alpha #{new_ver.join('.')}\"" do |ok, status|
-    # ok or fail "---> could not perform commit:\n#{status}"
-  # end
-  
-  flags = (`git branch`.include? "  #{branch_to}") ? "" : "-b "
-  puts "creating new #{branch_to}-branch, because none exists" if flags.length > 0
-  
-  # 7.
-  sh "git checkout #{flags}#{branch_to}" do |ok, status|
-    ok or fail "---> could not checkout alpha. do you have such a branch?"
-  end
-  
-  tagname = "v#{new_ver.join('.')}"
-  
-  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge.
-  sh "git merge --no-ff -m \"v#{tagname}. Alpha #{alpha_ver} commit.\" develop" do |ok, status|
-    ok or fail "---> failed merge. recommending a 'git merge --abort'. you are on #{branch_to} currently."
-  end
-  
-  sh "git tag -a \"#{tagname}\" -m \"Alpha #{tagname}\""
-  
-  # 9.
-  puts " :: Confirm push! Printing status and your push message:\n"
-  sh "git status"
-  sh "git log -1"
-  
-  ok = ""
-  puts "\n\nEverything OK? You can enter 'no' and then run \"git push --dry-run origin #{branch_to}\" if you are unsure. Run command: \"git push origin #{branch_to}\" (yes/no)?"
-  until ok == "yes" || ok == "no"
-    ok = STDIN.gets.chomp
-  end
-  
-  if ok == "no" then fail %Q{
-    
-    Remember what has changed in your repository now that you have aborted the push. You can undo
-	almost anything as long as you don't push. Here are some commands you might consider for that:
-        
-        1. tags (git tag -d #{tagname}),
-        2. you have merged to the alpha branch (git reset --hard HEAD~1)
-        3. previous branch commit message (git commit --amend ...) or the same as above
-	
-    ---> NOTE THAT YOU ARE CURRENTLY ON YOUR #{branch_to} BRANCH -- and everything is ready to push.
-	
-	You can for example change your commit message by 'git commit --amend -m "..."'.
-
-} else
-    sh "git push origin #{branch_to}"
-	
-	puts "Type your password below if you would like to push a tag for it (not reversible!)."
-	sh "git push origin \"refs/tags/#{tagname}:refs/tags/#{tagname}\""
-  end
+  release_branch("alpha")
   
 end
 
