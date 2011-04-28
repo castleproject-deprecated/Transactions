@@ -27,13 +27,20 @@ namespace :env do
   end
   
   task :set_dirs do
-	Folders[:proj_key_out] = File.join(Folders[:src], Projects[:proj_key][:dir], 'bin', CONFIGURATION)
-	CLEAN.include(Folders[:proj_key_out])
+	Folders[:tx_out] = File.join(Folders[:src], Projects[:tx][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:tx_out])
+	
+    Folders[:autotx_out] = File.join(Folders[:src], Projects[:autotx][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:autotx_out])
 	
 	# for tests
-	Folders[:proj_key] = File.join(Folders[:src], Projects[:proj_key][:test_dir], 'bin', CONFIGURATION)
-	Files[:proj_key][:test] = File.join(Folders[:proj_key_test_out], "#{Projects[:proj_key][:test_dir]}.dll")
-	CLEAN.include(Folders[:proj_key_test_out])
+	Folders[:tx_test_out] = File.join(Folders[:src], Projects[:tx][:test_dir], 'bin', CONFIGURATION)
+	Files[:tx][:test] = File.join(Folders[:tx_test_out], "#{Projects[:tx][:test_dir]}.dll")
+	CLEAN.include(Folders[:tx_test_out])
+	
+    Folders[:autotx_test_out] = File.join(Folders[:src], Projects[:autotx][:test_dir], 'bin', CONFIGURATION)
+	Files[:autotx][:test] = File.join(Folders[:autotx_test_out], "#{Projects[:autotx][:test_dir]}.dll")
+	CLEAN.include(Folders[:autotx_test_out])
   end
   
   desc "set debug environment variables"
