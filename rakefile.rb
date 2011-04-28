@@ -26,7 +26,8 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build", "castle:nuget"]
+# let's try testing this commit
+task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
@@ -93,15 +94,15 @@ task :alpha => ["env:release"] do
   
   tagname = "v#{new_ver.join('.')}"
   
-  # 8.
-  sh "git merge --no-ff -m \"Alpha #{tagname} commit.\" develop" do |ok, status|
+  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge.
+  sh "git merge --no-ff -m \"v#{tagname}. Alpha #{alpha_ver} commit.\" develop" do |ok, status|
     ok or fail "---> failed merge. recommending a 'git merge --abort'. you are on #{branch_to} currently."
   end
   
   sh "git tag -a \"#{tagname}\" -m \"Alpha #{tagname}\""
   
   # 9.
-  puts " :: Confirm push!"
+  puts " :: Confirm push! Printing status and your push message:\n"
   sh "git status"
   sh "git log -1"
   
@@ -113,7 +114,8 @@ task :alpha => ["env:release"] do
   
   if ok == "no" then fail %Q{
     
-    Remember what has changed in your repository! (now that you aborted ;))
+    Remember what has changed in your repository now that you have aborted the push. You can undo
+	almost anything as long as you don't push. Here are some commands you might consider for that:
         
         1. tags (git tag -d #{tagname}),
         2. you have merged to the alpha branch (git reset --hard HEAD~1)
