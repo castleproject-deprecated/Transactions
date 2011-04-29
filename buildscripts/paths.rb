@@ -9,8 +9,8 @@ Folders = {
   :nunit => File.join("tools", "NUnit", "bin"),
   
   :packages => "packages",
-  :tx_nuspec => File.join("packages", Projects[:tx][:dir]),
-  :autotx_nuspec => File.join("packages", Projects[:autotx][:dir]),
+  :tx_nuspec => File.join("build", "nuspec", Projects[:tx][:dir]),
+  :autotx_nuspec => File.join("build", "nuspec", Projects[:autotx][:dir]),
   :nuget => File.join("build", "nuget"),
   
   :tx_out => 'placeholder - specify build environment',
