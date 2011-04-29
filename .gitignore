@@ -1,14 +1,14 @@
-
 /build
-AssemblyInfo.cs
-
-# Standard VS.NET and ReSharper Foo
+/wraps/_cache
 src/*/obj
 src/*/bin
+src/*AssemblyInfo.cs
 *.csproj.user
 *ReSharper.user
 _ReSharper*
-*resharper*
+*.ReSharper
 *.suo
 *.cache
+Castle.Services.Transaction.user
 * Thumbs.db
+*.nupkg
