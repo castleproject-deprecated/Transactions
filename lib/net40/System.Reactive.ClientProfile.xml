@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.ClientProfile</name>
+    </assembly>
+    <members>
+        <member name="M:System.IO.StreamExtensions.AsyncRead(System.IO.Stream)">
+            <summary>
+            Asynchronously read entire stream in chuncks of 64K.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.AsyncRead(System.IO.Stream,System.Int32)">
+            <summary>
+            Asynchronously read entire stream in chuncks of bufferSize.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.AsyncReadLines(System.IO.Stream)">
+            <summary>
+            Asynchronously read entire stream in chuncks of bufferSize and tokenize per NewLine.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.AsyncReadLines(System.IO.Stream,System.Int32)">
+            <summary>
+            Asynchronously read entire stream in chuncks of bufferSize and tokenize per NewLine.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.AsyncReadLines(System.IO.Stream,System.Int32,System.Text.Encoding)">
+            <summary>
+            Asynchronously read entire stream in chuncks of bufferSize and tokenize per NewLine.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.MinimumBuffer``1(System.IObservable{``0[]},System.Int32)">
+            <summary>
+            Buffers source into chunks of at least bufferSize
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.WriteTo(System.IObservable{System.Byte[]},System.IO.Stream)">
+            <summary>
+            Writes source to stream in an ordered asynchronous fashion.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.WriteTo(System.IObservable{System.Byte[]},System.IO.Stream,System.Int32)">
+            <summary>
+            Writes source to stream in an ordered asynchronous fashion.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.WriteLineTo(System.IObservable{System.String},System.IO.Stream)">
+            <summary>
+            Writes source to stream using ASCII encoding including a NewLine.
+            </summary>
+        </member>
+        <member name="M:System.IO.StreamExtensions.WriteLineTo(System.IObservable{System.String},System.IO.Stream,System.Text.Encoding)">
+            <summary>
+            Writes source to stream using encoding including a NewLine.
+            </summary>
+        </member>
+    </members>
+</doc>

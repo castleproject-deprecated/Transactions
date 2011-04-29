@@ -1,33 +1,36 @@
-#region License
-//  Copyright 2004-2010 Castle Project - http://www.castleproject.org/
-//  
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-//  
-//      http://www.apache.org/licenses/LICENSE-2.0
-//  
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
+#region license
+
+// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
 // 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #endregion
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Castle.Services.Transaction.IO
 {
-	using System;
-	using System.Net;
-	using System.Text.RegularExpressions;
-
 	/// <summary>
-	/// Path data holder.
-	/// Invariant: no fields nor properties are null after c'tor.
+	/// 	Path data holder.
+	/// 	Invariant: no fields nor properties are null after c'tor.
 	/// </summary>
 	public struct PathInfo
 	{
-		private const string _StrRegex =
+		private const string StrRegex =
 			@"(?<root>
  (?<UNC_prefix> \\\\\?\\ (?<UNC_literal>UNC\\)?  )?
  (?<options>
@@ -57,38 +60,35 @@ namespace Castle.Services.Transaction.IO
  (?<rel_drive>\w{1,3}:)?
  (?<folders_files>.+))?";
 
-		private static Regex _Regex;
+		private static readonly Regex _Regex = new Regex(StrRegex,
+		                                                 RegexOptions.Compiled |
+		                                                 RegexOptions.IgnorePatternWhitespace |
+		                                                 RegexOptions.IgnoreCase |
+		                                                 RegexOptions.Multiline);
 
-		static PathInfo()
-		{
-			_Regex = new Regex(_StrRegex,
-			                   RegexOptions.Compiled |
-			                   RegexOptions.IgnorePatternWhitespace |
-			                   RegexOptions.IgnoreCase |
-			                   RegexOptions.Multiline);
-		}
+		private readonly string _Root,
+		                        _UNCPrefix,
+		                        _UNCLiteral,
+		                        _Options,
+		                        _Drive,
+		                        _DriveLetter,
+		                        _Server,
+		                        _IPv4,
+		                        _IPv6,
+		                        _ServerName,
+		                        _Device,
+		                        _DevicePrefix,
+		                        _DeviceName,
+		                        _DeviceGuid,
+		                        _NonRootPath,
+		                        _RelDrive,
+		                        _FolderAndFiles;
 
-		private string _Root,
-		               _UNCPrefix,
-		               _UNCLiteral,
-		               _Options,
-		               _Drive,
-		               _DriveLetter,
-		               _Server,
-		               _IPv4,
-		               _IPv6,
-		               _ServerName,
-		               _Device,
-		               _DevicePrefix,
-		               _DeviceName,
-		               _DeviceGuid,
-		               _NonRootPath,
-		               _RelDrive,
-		               _FolderAndFiles;
-
+		// too stupid checker
+		[ContractVerification(false)]
 		public static PathInfo Parse(string path)
 		{
-			if (path == null) throw new ArgumentNullException("path");
+			Contract.Requires(path != null);
 
 			var matches = _Regex.Matches(path);
 
@@ -118,9 +118,11 @@ namespace Castle.Services.Transaction.IO
 		private static string GetMatch(MatchCollection matches,
 		                               string groupIndex)
 		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
 			var matchC = matches.Count;
 
-			for (int i = 0; i < matchC; i++)
+			for (var i = 0; i < matchC; i++)
 			{
 				if (matches[i].Groups[groupIndex].Success)
 					return matches[i].Groups[groupIndex].Value;
@@ -129,8 +131,29 @@ namespace Castle.Services.Transaction.IO
 			return string.Empty;
 		}
 
-		private PathInfo(string root, string uncPrefix, string uncLiteral, string options, string drive, string driveLetter, string server, string iPv4, string iPv6, string serverName, string device, string devicePrefix, string deviceName, string deviceGuid, string nonRootPath, string relDrive, string folderAndFiles)
+		#region c'tor and non null invariants
+
+		private PathInfo(string root, string uncPrefix, string uncLiteral, string options, string drive, string driveLetter,
+		                 string server, string iPv4, string iPv6, string serverName, string device, string devicePrefix,
+		                 string deviceName, string deviceGuid, string nonRootPath, string relDrive, string folderAndFiles)
 		{
+			Contract.Requires(root != null);
+			Contract.Requires(uncPrefix != null);
+			Contract.Requires(uncLiteral != null);
+			Contract.Requires(options != null);
+			Contract.Requires(drive != null);
+			Contract.Requires(driveLetter != null);
+			Contract.Requires(server != null);
+			Contract.Requires(iPv4 != null);
+			Contract.Requires(iPv6 != null);
+			Contract.Requires(serverName != null);
+			Contract.Requires(device != null);
+			Contract.Requires(devicePrefix != null);
+			Contract.Requires(deviceName != null);
+			Contract.Requires(deviceGuid != null);
+			Contract.Requires(nonRootPath != null);
+			Contract.Requires(relDrive != null);
+			Contract.Requires(folderAndFiles != null);
 			_Root = root;
 			_UNCPrefix = uncPrefix;
 			_UNCLiteral = uncLiteral;
@@ -150,194 +173,232 @@ namespace Castle.Services.Transaction.IO
 			_FolderAndFiles = folderAndFiles;
 		}
 
+		[ContractInvariantMethod]
+		private void Invariant()
+		{
+			Contract.Invariant(_Root != null);
+			Contract.Invariant(_UNCPrefix != null);
+			Contract.Invariant(_UNCLiteral != null);
+			Contract.Invariant(_Options != null);
+			Contract.Invariant(_Drive != null);
+			Contract.Invariant(_DriveLetter != null);
+			Contract.Invariant(_Server != null);
+			Contract.Invariant(_IPv4 != null);
+			Contract.Invariant(_IPv6 != null);
+			Contract.Invariant(_ServerName != null);
+			Contract.Invariant(_Device != null);
+			Contract.Invariant(_DevicePrefix != null);
+			Contract.Invariant(_DeviceName != null);
+			Contract.Invariant(_DeviceGuid != null);
+			Contract.Invariant(_NonRootPath != null);
+			Contract.Invariant(_RelDrive != null);
+			Contract.Invariant(_FolderAndFiles != null);
+		}
+
+		#endregion
+
 		/// <summary>
-		/// Examples of return values:
-		/// <list>
-		/// <item>\\?\UNC\C:\</item>
-		/// <item>\\?\UNC\servername\</item>
-		/// <item>\\192.168.0.2\</item>
-		/// <item>C:\</item>
-		/// </list>
+		/// 	Examples of return values:
+		/// 	<list>
+		/// 		<item>\\?\UNC\C:\</item>
+		/// 		<item>\\?\UNC\servername\</item>
+		/// 		<item>\\192.168.0.2\</item>
+		/// 		<item>C:\</item>
+		/// 	</list>
 		/// 
-		/// Definition: Returns part of the string that is in itself uniquely from the currently 
-		/// executing CLR.
+		/// 	Definition: Returns part of the string that is in itself uniquely from the currently 
+		/// 	executing CLR.
 		/// </summary>
+		[Pure]
 		public string Root
 		{
 			get { return _Root; }
 		}
 
 		/// <summary>
-		/// Examples of return values:
-		/// <list>
-		/// <item></item>
-		/// </list>
+		/// 	Examples of return values:
+		/// 	<list>
+		/// 		<item></item>
+		/// 	</list>
 		/// </summary>
+		[Pure]
 		public string UNCPrefix
 		{
 			get { return _UNCPrefix; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string UNCLiteral
 		{
 			get { return _UNCLiteral; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string Options
 		{
 			get { return _Options; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string Drive
 		{
 			get { return _Drive; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string DriveLetter
 		{
 			get { return _DriveLetter; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string Server
 		{
 			get { return _Server; }
 		}
 
 		/// <summary>
-		/// Gets the 0.0.0.0-based IP-address if any.
+		/// 	Gets the 0.0.0.0-based IP-address if any.
 		/// </summary>
+		[Pure]
 		public string IPv4
 		{
 			get { return _IPv4; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string IPv6
 		{
 			get { return _IPv6; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string ServerName
 		{
 			get { return _ServerName; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string Device
 		{
 			get { return _Device; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string DevicePrefix
 		{
 			get { return _DevicePrefix; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string DeviceName
 		{
 			get { return _DeviceName; }
 		}
 
 		/// <summary>
-		/// Gets the device GUID in the form
-		/// <code>{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}</code>
-		/// i.e. 8-4-4-4-12 hex digits with curly brackets.
+		/// 	Gets the device GUID in the form
+		/// 	<code>{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}</code>
+		/// 	i.e. 8-4-4-4-12 hex digits with curly brackets.
 		/// </summary>
+		[Pure]
 		public string DeviceGuid
 		{
 			get { return _DeviceGuid; }
 		}
 
 		/// <summary>
-		/// Gets a the part of the path that starts when the root ends.
-		/// The root in turn is any UNC-prefix plus device, drive, server or ip-prefix.
-		/// This string may not start with neither of '\' or '/'.
+		/// 	Gets a the part of the path that starts when the root ends.
+		/// 	The root in turn is any UNC-prefix plus device, drive, server or ip-prefix.
+		/// 	This string may not start with neither of '\' or '/'.
 		/// </summary>
+		[Pure]
 		public string NonRootPath
 		{
 			get { return _NonRootPath; }
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
+		[Pure]
 		public string RelDrive
 		{
 			get { return _RelDrive; }
 		}
 
 		/// <summary>
-		/// The only time when this differs from <see cref="NonRootPath"/>
-		/// is when a path like this is used:
-		/// <code>C:../parent/a.txt</code>, otherwise, for all paths,
-		/// this property equals <see cref="NonRootPath"/>.
+		/// 	The only time when this differs from <see cref = "NonRootPath" />
+		/// 	is when a path like this is used:
+		/// 	<code>C:../parent/a.txt</code>, otherwise, for all paths,
+		/// 	this property equals <see cref = "NonRootPath" />.
 		/// </summary>
+		[Pure]
 		public string FolderAndFiles
 		{
-			get { return _FolderAndFiles; }
+			get
+			{
+				Contract.Ensures(Contract.Result<string>() != null);
+				return _FolderAndFiles;
+			}
 		}
 
+		[Pure]
 		public PathType Type
 		{
 			get
 			{
-				if (Device != string.Empty)
+				if (!string.IsNullOrEmpty(Device))
 					return PathType.Device;
-				if (ServerName != string.Empty)
+				if (!string.IsNullOrEmpty(ServerName))
 					return PathType.Server;
-				if (IPv4 != string.Empty)
+				if (!string.IsNullOrEmpty(IPv4))
 					return PathType.IPv4;
-				if (IPv6 != string.Empty)
+				if (!string.IsNullOrEmpty(IPv6))
 					return PathType.IPv6;
-				if (Drive != string.Empty)
+				if (!string.IsNullOrEmpty(Drive))
 					return PathType.Drive;
 				return PathType.Relative;
 			}
 		}
 
 		/// <summary>
-		/// Returns whether <see cref="Root"/> is not an empty string.
+		/// 	Returns whether <see cref = "Root" /> is not an empty string.
 		/// </summary>
+		[Pure]
 		public bool IsRooted
 		{
-			get { return _Root != string.Empty; }
+			get { return !string.IsNullOrEmpty(_Root); }
 		}
 
 		/// <summary>
-		/// Returns whether the current PathInfo is a valid parent of the child path info
-		/// passed as argument.
+		/// 	Returns whether the current PathInfo is a valid parent of the child path info
+		/// 	passed as argument.
 		/// </summary>
-		/// <param name="child">The path info to verify</param>
+		/// <param name = "child">The path info to verify</param>
 		/// <returns>Whether it is true that the current path info is a parent of child.</returns>
-		/// <exception cref="NotSupportedException">If this instance of path info and child aren't rooted.</exception>
+		/// <exception cref = "NotSupportedException">If this instance of path info and child aren't rooted.</exception>
+		[SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength",
+			Justification = "Would change semantics")]
 		public bool IsParentOf(PathInfo child)
 		{
 			if (Root == string.Empty || child.Root == string.Empty)
@@ -370,26 +431,26 @@ namespace Castle.Services.Transaction.IO
 		}
 
 		/// <summary>
-		/// Removes the path info passes as a parameter from the current root. Only works for two rooted paths with same root.
-		/// Does NOT cover all edge cases, please verify its intended results yourself.
-		/// <example>
-		/// 
-		/// </example>
+		/// 	Removes the path info passes as a parameter from the current root. Only works for two rooted paths with same root.
+		/// 	Does NOT cover all edge cases, please verify its intended results yourself.
+		/// 	<example>
+		/// 	</example>
 		/// </summary>
-		/// <param name="other"></param>
+		/// <param name = "other"></param>
 		/// <returns></returns>
 		public string RemoveParameterFromRoot(PathInfo other)
 		{
-			if (Root != other.Root)
-				throw new InvalidOperationException("Roots of this and other don't match.");
-			
-			if (other.FolderAndFiles.Length > FolderAndFiles.Length)
-				throw new InvalidOperationException(
-					"The folders and files part of the second parameter must be shorter than that path you wish to subtract from.");
+			Contract.Requires(Root == other.Root, "roots must match to be able to subtract");
+			Contract.Requires(FolderAndFiles.Length >= other.FolderAndFiles.Length,
+			                  "The folders and files part of the parameter must be shorter or equal to in length, than that path you wish to subtract from.");
 
-			if (other.FolderAndFiles == FolderAndFiles) return string.Empty;
+			if (other.FolderAndFiles == FolderAndFiles)
+				return string.Empty;
 
-			return FolderAndFiles.Substring(other.FolderAndFiles.Length).TrimStart(Path.GetDirectorySeparatorChars());
+			var startIndex = other.FolderAndFiles.Length;
+			Contract.Assume(startIndex <= FolderAndFiles.Length);
+			var substring = FolderAndFiles.Substring(startIndex);
+			return substring.TrimStart(Path.GetDirectorySeparatorChars());
 		}
 	}
 }
