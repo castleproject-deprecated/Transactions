@@ -32,13 +32,14 @@ end
 def verify_release_branch_number(build_number, branch)
   case branch
   when "alpha"
-    build_number < 2000 and build_number > 1000
+    puts "build no: #{build_number}"
+    return (build_number < 2000 and build_number > 1000)
   when "beta"
-    build_number < 3000 and build_number > 2000
+    return (build_number < 3000 and build_number > 2000)
   when "rc"
-    build_number < 4000 and build_number > 3000
+    return (build_number < 4000 and build_number > 3000)
   when "ga"
-    build_number == 4000
+    return (build_number == 4000)
   else
     fail "You just making it up! (#{build_number}, #{branch})"
   end
