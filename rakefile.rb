@@ -13,8 +13,6 @@ require 'buildscripts/paths'
 require 'buildscripts/utils'
 require 'buildscripts/environment'
 
-sh "dir packages -r"
-
 # profile time: "PS \> $start = [DateTime]::UtcNow ; rake ; $end = [DateTime]::UtcNow ; $diff = $end-$start ; "Started: $start to $end, a diff of $diff"
 task :default => [:release]
 
