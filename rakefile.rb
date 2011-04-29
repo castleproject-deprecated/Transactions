@@ -58,7 +58,6 @@ task :alpha => ["env:release"] do
 end
 
 CLOBBER.include(Folders[:out])
-CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
