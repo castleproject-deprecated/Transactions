@@ -9,7 +9,7 @@ Folders = {
   :nunit => File.join("tools", "NUnit", "bin"),
   
   :packages => "packages",
-  :nuspec => File.join("packages", Projects[:proj_key][:dir]),
+  :nuspec => File.join("build", "nuspec", Projects[:proj_key][:dir]),
   :nuget => File.join("build", "nuget"),
   
   :proj_key_out => 'placeholder - specify build environment',
