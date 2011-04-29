@@ -1,5 +1,4 @@
 /build
-/packages
 src/*/obj
 src/*/bin
 src/*AssemblyInfo.cs
