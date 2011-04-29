@@ -1,5 +1,5 @@
 # copyright Henrik Feldt 2011
-
+fail "what's wrong with teamcity!??"
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
