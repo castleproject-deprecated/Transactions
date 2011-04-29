@@ -29,20 +29,8 @@ def version(str)
   ver[1,4].map{|s|s.to_i} unless ver == nil or ver.empty?
 end
 
-def verify_release_branch_number(build_number, branch)
-  case branch
-  when "alpha"
-    puts "build no: #{build_number}"
-    return (build_number < 2000 and build_number > 1000)
-  when "beta"
-    return (build_number < 3000 and build_number > 2000)
-  when "rc"
-    return (build_number < 4000 and build_number > 3000)
-  when "ga"
-    return (build_number == 4000)
-  else
-    fail "You just making it up! (#{build_number}, #{branch})"
-  end
+def verify_release_branch_number(build_number, bottom)
+  bottom == 4000 ? true : (build_number > bottom and build_number < (bottom+1000))
 end
 
 def release_branch(branch_to)
@@ -67,7 +55,7 @@ def release_branch(branch_to)
   if (new_ver <=> max_ver || alpha_ver) == -1 then puts "---> #{new_ver} less than maximum: #{max_ver}" end
   
   # 4, 5. Verify it's a correct number for our release type
-  fail "---> invalid build number #{next_build} for #{branch_to}-branch" unless verify_release_branch_number(next_build, branch_to)
+  fail "---> invalid build number #{new_ver[3]} for #{branch_to}-branch" unless verify_release_branch_number(new_ver[3], build_type)
   
   # 6. we can do this optionally, but for now, let's assume someone put a good message in.
   # sh "git commit --amend -m \"v#{new_ver.join('.')}. #{branch_to.capitalize} #{alpha_ver}\"" do |ok, status|
