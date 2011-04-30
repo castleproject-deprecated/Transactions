@@ -51,7 +51,7 @@ def release_branch(branch_to)
   alpha_ver = alpha_ver.length == 0 ? next_build : alpha_ver.to_i
   
   # 3. calculate new version and verify it
-  new_ver = [curr_ver[0], curr_ver[1], curr_ver[2], 1000+alpha_ver]
+  new_ver = [curr_ver[0], curr_ver[1], curr_ver[2], build_type+alpha_ver]
   if (new_ver <=> max_ver || alpha_ver) == -1 then puts "---> #{new_ver} less than maximum: #{max_ver}" end
   
   # 4, 5. Verify it's a correct number for our release type
@@ -73,7 +73,7 @@ def release_branch(branch_to)
   
   # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge.
   sh "git merge --no-ff -m \"#{tagname}. #{branch_to.capitalize} #{alpha_ver} commit.\" develop" do |ok, status|
-    ok or fail "---> failed merge. recommending a 'git merge --abort'. you are on #{branch_to} currently."
+    ok or fail "---> failed merge. Recommending a 'git merge --abort'. you are on #{branch_to} currently. You can also merge manually and commit those changes manually. Read the buildscripts/utils.rb file to get an idea of the next steps."
   end
   
   # no need to jump to another branch, we're fine here.
