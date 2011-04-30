@@ -2,13 +2,13 @@
 /wraps/_cache
 src/*/obj
 src/*/bin
-src/*/AssemblyInfo.cs
+src/*AssemblyInfo.cs
 *.csproj.user
 *ReSharper.user
 _ReSharper*
 *.ReSharper
 *.suo
 *.cache
-Castle.Services.Transaction.user
+Castle.Transactions.user
 * Thumbs.db
 *.nupkg

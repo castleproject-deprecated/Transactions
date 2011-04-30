@@ -21,7 +21,7 @@ Folders = {
 }
 
 Files = {
-  :sln => "Castle.Services.Transaction.sln",
+  :sln => "Castle.Transactions.sln",
   :version => "VERSION",
   
   :tx => {
