@@ -223,9 +223,9 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
     nuspec.language = "en-US"
-    nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
+    nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "log4net", "1.2.10"

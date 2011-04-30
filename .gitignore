@@ -2,7 +2,7 @@
 /wraps/_cache
 src/*/obj
 src/*/bin
-src/*AssemblyInfo.cs
+src/*/AssemblyInfo.cs
 *.csproj.user
 *ReSharper.user
 _ReSharper*
