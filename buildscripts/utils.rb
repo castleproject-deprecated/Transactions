@@ -30,7 +30,7 @@ def version(str)
 end
 
 def verify_release_branch_number(build_number, bottom)
-  bottom == 4000 ? true : (build_number > bottom and build_number < (bottom+1000))
+  bottom == 4000 ? (build_number == 4000) : (build_number > bottom and build_number < (bottom+1000))
 end
 
 def release_branch(branch_to)
