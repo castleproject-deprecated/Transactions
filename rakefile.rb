@@ -259,7 +259,7 @@ namespace :castle do
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "[2.5.2]" # 2.5.3 is bugged => NullReferenceException-s.
+    nuspec.dependency "Castle.Windsor", "2.5.1.2127" # 2.5.3 is bugged => NullReferenceException-s.
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
