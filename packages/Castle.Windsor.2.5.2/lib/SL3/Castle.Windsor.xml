@@ -4,171 +4,6 @@
         <name>Castle.Windsor</name>
     </assembly>
     <members>
-        <member name="T:Castle.MicroKernel.ComponentActivator.WebUserControlComponentActivator">
-            <summary>
-            Attempts to dynamically load a UserControl by invoking Page.LoadControl.  
-            There are two uses of this class.  
-            <para>
-            1) Add a component to the Kernel and add a VirtualPath attribute specifying 
-            the relative path of the .ascx file for the associated UserControl. (easy)
-            </para>
-            <example>
-              <code>
-                &lt;component id="BasketView" 
-                  service="Castle.ShoppingCart.IBasketView, Castle.ShoppingCart"
-                  type="Castle.ShoppingCart.BasketView, Castle.ShoppingCart" 
-                  lifestyle="transient"
-                  virtualPath="~/Views/BasketView.ascx"
-                /&gt;
-              </code>
-            </example>
-            <para>
-            2) Precompile a UserControl and add the pre-compiled class to the Kernel. (hard)  
-            Has not been tested with proxies.
-            </para>
-            </summary>
-        </member>
-        <member name="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator">
-            <summary>
-            Standard implementation of <see cref="T:Castle.MicroKernel.IComponentActivator"/>.
-            Handles the selection of the best constructor, fills the
-            writable properties the component exposes, run the commission 
-            and decommission lifecycles, etc.
-            </summary>
-            <remarks>
-            Custom implementors can just override the <c>CreateInstance</c> method.
-            Please note however that the activator is responsible for the proxy creation
-            when needed.
-            </remarks>
-        </member>
-        <member name="T:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator">
-            <summary>
-            Abstract implementation of <see cref="T:Castle.MicroKernel.IComponentActivator"/>.
-            The implementors must only override the InternalCreate and 
-            InternalDestroy methods in order to perform their creation and
-            destruction logic.
-            </summary>
-        </member>
-        <member name="T:Castle.MicroKernel.IComponentActivator">
-            <summary>
-            Implements the instance creation logic. The default
-            implementation should rely on an ordinary call to 
-            Activator.CreateInstance(). 
-            </summary>
-            <remarks>
-            This interface is provided in order to allow custom components
-            to be created using a different logic, such as using a specific factory
-            or builder.
-            <para>
-            The constructor for implementation has the following signature:
-            </para>
-            <code>
-            ComponentModel model, IKernel kernel, 
-            ComponentInstanceDelegate onCreation, 
-            ComponentInstanceDelegate onDestruction
-            </code>
-            <para>
-            The Activator should raise the events onCreation and onDestruction
-            in order to correctly implement the contract. Usually the best
-            way of creating a custom activator is by extending the existing ones.
-            </para>
-            <seealso cref="T:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator"/>
-            <seealso cref="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator"/>
-            </remarks>
-        </member>
-        <member name="M:Castle.MicroKernel.IComponentActivator.Create(Castle.MicroKernel.Context.CreationContext)">
-            <summary>
-            Should return a new component instance.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.MicroKernel.IComponentActivator.Destroy(System.Object)">
-            <summary>
-            Should perform all necessary work to dispose the instance
-            and/or any resource related to it.
-            </summary>
-            <param name="instance"></param>
-        </member>
-        <member name="M:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Constructs an AbstractComponentActivator
-            </summary>
-        </member>
-        <member name="M:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator"/> class.
-            </summary>
-            <param name="model"></param>
-            <param name="kernel"></param>
-            <param name="onCreation"></param>
-            <param name="onDestruction"></param>
-        </member>
-        <member name="M:Castle.MicroKernel.ComponentActivator.WebUserControlComponentActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.ComponentActivator.WebUserControlComponentActivator"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The on creation.</param>
-            <param name="onDestruction">The on destruction.</param>
-        </member>
-        <member name="M:Castle.MicroKernel.ComponentActivator.WebUserControlComponentActivator.CreateInstance(Castle.MicroKernel.Context.CreationContext,System.Object[],System.Type[])">
-            <summary>
-            Creates the instance.
-            </summary>
-            <param name="context">The context.</param>
-            <param name="arguments">The arguments.</param>
-            <param name="signature">The signature.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Castle.MicroKernel.Lifestyle.PerWebRequestLifestyleManager">
-            <summary>
-            Implements a Lifestyle Manager for Web Apps that
-            create at most one object per web request.
-            </summary>
-        </member>
-        <member name="T:Castle.MicroKernel.Lifestyle.AbstractLifestyleManager">
-            <summary>
-            Summary description for AbstractLifestyleManager.
-            </summary>
-        </member>
-        <member name="T:Castle.MicroKernel.ILifestyleManager">
-            <summary>
-            The <c>ILifestyleManager</c> implements 
-            a strategy for a given lifestyle, like singleton, per-thread
-            and transient.
-            </summary>
-            <remarks>
-            The responsibility of <c>ILifestyleManager</c>
-            is only the management of lifestyle. It should rely on
-            <see cref="T:Castle.MicroKernel.IComponentActivator"/> to obtain a new component instance
-            </remarks>
-        </member>
-        <member name="M:Castle.MicroKernel.ILifestyleManager.Init(Castle.MicroKernel.IComponentActivator,Castle.MicroKernel.IKernel,Castle.Core.ComponentModel)">
-            <summary>
-            Initializes the <c>ILifestyleManager</c> with the 
-            <see cref="T:Castle.MicroKernel.IComponentActivator"/>
-            </summary>
-            <param name="componentActivator"></param>
-            <param name="kernel"></param>
-            <param name="model"></param>
-        </member>
-        <member name="M:Castle.MicroKernel.ILifestyleManager.Resolve(Castle.MicroKernel.Context.CreationContext)">
-            <summary>
-            Implementors should return the component instance based 
-            on the lifestyle semantic.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.MicroKernel.ILifestyleManager.Release(System.Object)">
-            <summary>
-            Implementors should release the component instance based
-            on the lifestyle semantic, for example, singleton components
-            should not be released on a call for release, instead they should
-            release them when disposed is invoked.
-            </summary>
-            <param name="instance"></param>
-        </member>
         <member name="T:Castle.Core.CastleComponentAttribute">
             <summary>
             This attribute is useful only when you want to register all components
@@ -215,12 +50,6 @@
         <member name="T:Castle.Core.ComponentProxyBehaviorAttribute">
             <summary>
             Specifies the proxying behavior for a component.
-            </summary>
-        </member>
-        <member name="P:Castle.Core.ComponentProxyBehaviorAttribute.UseMarshalByRefProxy">
-            <summary>
-            Gets or sets a value indicating whether the generated 
-            interface proxy should inherit from <see cref="T:System.MarshalByRefObject"/>.
             </summary>
         </member>
         <member name="P:Castle.Core.ComponentProxyBehaviorAttribute.UseSingleInterfaceProxy">
@@ -333,12 +162,6 @@
             Initializes a new instance of the <see cref="T:Castle.Core.PerThreadAttribute"/> class.
             </summary>
         </member>
-        <member name="T:Castle.Core.PerWebRequestAttribute">
-            <summary>
-            Indicates that the target components wants a
-            per web request lifestyle.
-            </summary>
-        </member>
         <member name="T:Castle.Core.PooledAttribute">
             <summary>
             Indicates that the target components wants a
@@ -420,11 +243,6 @@
             instance in a pool instead of always creating them.
             </summary>
         </member>
-        <member name="F:Castle.Core.LifestyleType.PerWebRequest">
-            <summary>
-            PerWebRequest components are created once per Http Request
-            </summary>
-        </member>
         <member name="F:Castle.Core.LifestyleType.Custom">
             <summary>
             Any other logic to create/release components.
@@ -433,11 +251,6 @@
         <member name="T:Castle.Facilities.EventWiring.EventSubscribers">
             <summary>
             Collects information about subscribers for given event
-            </summary>
-        </member>
-        <member name="T:Castle.Facilities.EventWiring.NaiveMethodNameExtractor">
-            <summary>
-            Extracts MethodInfo of metho invoked in delegate. Based on ILReader class from http://www.gocosmos.org project
             </summary>
         </member>
         <member name="T:Castle.MicroKernel.ModelBuilder.IContributeComponentModelConstruction">
@@ -534,10 +347,85 @@
             When implementer does not want to register the requested component it must return null.
             </remarks>
         </member>
+        <member name="T:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator">
+            <summary>
+            Abstract implementation of <see cref="T:Castle.MicroKernel.IComponentActivator"/>.
+            The implementors must only override the InternalCreate and 
+            InternalDestroy methods in order to perform their creation and
+            destruction logic.
+            </summary>
+        </member>
+        <member name="T:Castle.MicroKernel.IComponentActivator">
+            <summary>
+            Implements the instance creation logic. The default
+            implementation should rely on an ordinary call to 
+            Activator.CreateInstance(). 
+            </summary>
+            <remarks>
+            This interface is provided in order to allow custom components
+            to be created using a different logic, such as using a specific factory
+            or builder.
+            <para>
+            The constructor for implementation has the following signature:
+            </para>
+            <code>
+            ComponentModel model, IKernel kernel, 
+            ComponentInstanceDelegate onCreation, 
+            ComponentInstanceDelegate onDestruction
+            </code>
+            <para>
+            The Activator should raise the events onCreation and onDestruction
+            in order to correctly implement the contract. Usually the best
+            way of creating a custom activator is by extending the existing ones.
+            </para>
+            <seealso cref="T:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator"/>
+            <seealso cref="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator"/>
+            </remarks>
+        </member>
+        <member name="M:Castle.MicroKernel.IComponentActivator.Create(Castle.MicroKernel.Context.CreationContext)">
+            <summary>
+            Should return a new component instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.MicroKernel.IComponentActivator.Destroy(System.Object)">
+            <summary>
+            Should perform all necessary work to dispose the instance
+            and/or any resource related to it.
+            </summary>
+            <param name="instance"></param>
+        </member>
+        <member name="M:Castle.MicroKernel.ComponentActivator.AbstractComponentActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
+            <summary>
+            Constructs an AbstractComponentActivator
+            </summary>
+        </member>
         <member name="T:Castle.MicroKernel.ComponentActivator.ComponentActivatorException">
             <summary>
             Summary description for ComponentActivatorException.
             </summary>
+        </member>
+        <member name="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator">
+            <summary>
+            Standard implementation of <see cref="T:Castle.MicroKernel.IComponentActivator"/>.
+            Handles the selection of the best constructor, fills the
+            writable properties the component exposes, run the commission 
+            and decommission lifecycles, etc.
+            </summary>
+            <remarks>
+            Custom implementors can just override the <c>CreateInstance</c> method.
+            Please note however that the activator is responsible for the proxy creation
+            when needed.
+            </remarks>
+        </member>
+        <member name="M:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Castle.MicroKernel.ComponentActivator.DefaultComponentActivator"/> class.
+            </summary>
+            <param name="model"></param>
+            <param name="kernel"></param>
+            <param name="onCreation"></param>
+            <param name="onDestruction"></param>
         </member>
         <member name="T:Castle.MicroKernel.Burden">
             <summary>
@@ -1035,9 +923,9 @@
               hierarchy (sub containers).
             </summary>
             <summary>
-              Default implementation of <see cref="T:Castle.MicroKernel.IKernel"/>. 
-              This implementation is complete and also support a kernel 
-              hierarchy (sub containers).
+            Default implementation of <see cref="T:Castle.MicroKernel.IKernel"/>. 
+            This implementation is complete and also support a kernel 
+            hierarchy (sub containers).
             </summary>
         </member>
         <member name="T:Castle.MicroKernel.IKernel">
@@ -1579,6 +1467,11 @@
               Map of subsystems registered.
             </summary>
         </member>
+        <member name="F:Castle.MicroKernel.DefaultKernel.modelBuilder">
+            <summary>
+              The implementation of <see cref="T:Castle.MicroKernel.IComponentModelBuilder"/>
+            </summary>
+        </member>
         <member name="F:Castle.MicroKernel.DefaultKernel.parentKernel">
             <summary>
               The parent kernel, if exists.
@@ -1899,15 +1792,6 @@
             <param name="message">The message.</param>
             <param name="innerException">The inner exception.</param>
         </member>
-        <member name="M:Castle.MicroKernel.CircularDependencyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.CircularDependencyException"/> class.
-            </summary>
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is <see langword="null"/>.</exception>
-            <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is <see langword="null"/> or <see cref="P:System.Exception.HResult"/> is zero (0).</exception>
-        </member>
         <member name="T:Castle.MicroKernel.ComponentNotFoundException">
             <summary>
             Exception threw when a request for a component
@@ -1949,15 +1833,6 @@
             </summary>
             <param name="service">The service.</param>
         </member>
-        <member name="M:Castle.MicroKernel.ComponentNotFoundException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-              Initializes a new instance of the
-              <see cref="T:Castle.MicroKernel.ComponentNotFoundException"/>
-              class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
-        </member>
         <member name="T:Castle.MicroKernel.ComponentRegistrationException">
             <summary>
             Exception threw when there is a problem
@@ -1969,13 +1844,6 @@
             Initializes a new instance of the <see cref="T:Castle.MicroKernel.ComponentRegistrationException"/> class.
             </summary>
             <param name="message">The message.</param>
-        </member>
-        <member name="M:Castle.MicroKernel.ComponentRegistrationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.ComponentRegistrationException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
         </member>
         <member name="T:Castle.MicroKernel.KernelException">
             <summary>
@@ -1995,13 +1863,6 @@
             </summary>
             <param name="message">The message.</param>
             <param name="innerException">The inner exception.</param>
-        </member>
-        <member name="M:Castle.MicroKernel.KernelException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.KernelException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
         </member>
         <member name="T:Castle.MicroKernel.Facilities.AbstractFacility">
             <summary>
@@ -2095,13 +1956,6 @@
             </summary>
             <param name="message">The message.</param>
             <param name="innerException">The inner exception.</param>
-        </member>
-        <member name="M:Castle.Facilities.EventWiring.EventWiringException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.EventWiring.EventWiringException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
         </member>
         <member name="T:Castle.Facilities.EventWiring.EventWiringFacility">
              <summary>
@@ -2258,144 +2112,6 @@
             <summary>
             
             </summary>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivator">
-            <summary>
-            Activates a object connecting to the remote server.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.CustomActivators.RemoteActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivator"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The oncreation event handler.</param>
-            <param name="onDestruction">The ondestruction event handler.</param>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughConnector">
-            <summary>
-            Activates a client connecting to the remote server, enforcing the uri and the server activation.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughConnector.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughConnector"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The oncreation event handler.</param>
-            <param name="onDestruction">The ondestruction event handler.</param>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughRegistry">
-            <summary>
-            Activates a client connecting to the remote server through the <see cref="T:Castle.Facilities.Remoting.RemotingRegistry"/>.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughRegistry.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.CustomActivators.RemoteActivatorThroughRegistry"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The oncreation event handler.</param>
-            <param name="onDestruction">The ondestruction event handler.</param>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.CustomActivators.RemoteClientActivatedActivator">
-            <summary>
-            Activates a client activated object.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.CustomActivators.RemoteClientActivatedActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.CustomActivators.RemoteClientActivatedActivator"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The oncreation event handler.</param>
-            <param name="onDestruction">The ondestruction event handler.</param>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.CustomActivators.RemoteMarshallerActivator">
-            <summary>
-            Activates and publishes a server object.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.CustomActivators.RemoteMarshallerActivator.#ctor(Castle.Core.ComponentModel,Castle.MicroKernel.IKernel,Castle.MicroKernel.ComponentInstanceDelegate,Castle.MicroKernel.ComponentInstanceDelegate)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.CustomActivators.RemoteMarshallerActivator"/> class.
-            </summary>
-            <param name="model">The model.</param>
-            <param name="kernel">The kernel.</param>
-            <param name="onCreation">The oncreation event handler.</param>
-            <param name="onDestruction">The ondestruction event handler.</param>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.RemotingFacility">
-            <summary>
-              Facility to allow the communication with remote kernel, using the .NET Remoting infrastructure.
-            </summary>
-            <remarks>
-              TODO
-            </remarks>
-            <example>
-              TODO
-            </example>
-        </member>
-        <member name="F:Castle.Facilities.Remoting.RemotingFacility.baseUri">
-            <summary>
-              Used for client side (Expand explanation)
-            </summary>
-        </member>
-        <member name="F:Castle.Facilities.Remoting.RemotingFacility.localRegistry">
-            <summary>
-              Used for server side. 
-              Holds the local registry
-            </summary>
-        </member>
-        <member name="F:Castle.Facilities.Remoting.RemotingFacility.remoteRegistry">
-            <summary>
-              Used for client side. 
-              Holds a remote proxy to the server registry
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.RemotingFacility.Dispose">
-            <summary>
-              Performs the tasks associated with freeing, releasing, or resetting
-              the facility resources.
-            </summary>
-            <remarks>
-              It can be overridden.
-            </remarks>
-        </member>
-        <member name="T:Castle.Facilities.Remoting.RemotingInspector">
-            <summary>
-            Inspects the model looking for remote component configuration. If found, 
-            do the component Remoting configuration.
-            </summary>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.RemotingInspector.#ctor(Castle.MicroKernel.SubSystems.Conversion.ITypeConverter,System.Boolean,System.Boolean,System.String,Castle.Facilities.Remoting.RemotingRegistry,Castle.Facilities.Remoting.RemotingRegistry)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Remoting.RemotingInspector"/> class.
-            </summary>
-            <param name="converter">The converter.</param>
-            <param name="isServer">if set to <c>true</c> is a server.</param>
-            <param name="isClient">if set to <c>true</c> is a client.</param>
-            <param name="baseUri">The base URI.</param>
-            <param name="remoteRegistry">The remote registry.</param>
-            <param name="localRegistry">The local registry.</param>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.RemotingInspector.ResetDependencies(Castle.Core.ComponentModel)">
-            <summary>
-            Client components are not created by the container
-            so there's no point collecting constructor dependencies
-            </summary>
-            <param name="model"></param>
-        </member>
-        <member name="M:Castle.Facilities.Remoting.RemotingRegistry.GetModel(System.Type)">
-            <summary>
-            Used in case of generics:
-            </summary>
-            <param name="serviceType"></param>
-            <returns></returns>
         </member>
         <member name="M:Castle.Facilities.Startable.StartableFacility.DeferredStart">
             <summary>
@@ -2621,13 +2337,6 @@
             </summary>
             <param name="message">The message.</param>
         </member>
-        <member name="M:Castle.MicroKernel.Handlers.HandlerException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.Handlers.HandlerException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
-        </member>
         <member name="T:Castle.MicroKernel.HandlerState">
             <summary>
             Possible states for a IHandler instance
@@ -2748,11 +2457,6 @@
             Lifetime concern that works for components that don't have their actual type determined upfront
             </summary>
         </member>
-        <member name="T:Castle.MicroKernel.LifecycleConcerns.SupportInitializeConcern">
-            <summary>
-            Summary description for SupportInitializeConcern.
-            </summary>
-        </member>
         <member name="T:Castle.Core.IRecyclable">
             <summary>
             Only called for components that 
@@ -2781,12 +2485,54 @@
             Stops this instance.
             </summary>
         </member>
-        <member name="T:Castle.MicroKernel.Lifestyle.PerThreadLifestyleManager">
+        <member name="T:Castle.MicroKernel.Lifestyle.AbstractLifestyleManager">
             <summary>
-            Summary description for PerThreadLifestyleManager.
+            Summary description for AbstractLifestyleManager.
             </summary>
         </member>
-        <member name="M:Castle.MicroKernel.Lifestyle.PerThreadLifestyleManager.Dispose">
+        <member name="T:Castle.MicroKernel.ILifestyleManager">
+            <summary>
+            The <c>ILifestyleManager</c> implements 
+            a strategy for a given lifestyle, like singleton, per-thread
+            and transient.
+            </summary>
+            <remarks>
+            The responsibility of <c>ILifestyleManager</c>
+            is only the management of lifestyle. It should rely on
+            <see cref="T:Castle.MicroKernel.IComponentActivator"/> to obtain a new component instance
+            </remarks>
+        </member>
+        <member name="M:Castle.MicroKernel.ILifestyleManager.Init(Castle.MicroKernel.IComponentActivator,Castle.MicroKernel.IKernel,Castle.Core.ComponentModel)">
+            <summary>
+            Initializes the <c>ILifestyleManager</c> with the 
+            <see cref="T:Castle.MicroKernel.IComponentActivator"/>
+            </summary>
+            <param name="componentActivator"></param>
+            <param name="kernel"></param>
+            <param name="model"></param>
+        </member>
+        <member name="M:Castle.MicroKernel.ILifestyleManager.Resolve(Castle.MicroKernel.Context.CreationContext)">
+            <summary>
+            Implementors should return the component instance based 
+            on the lifestyle semantic.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Castle.MicroKernel.ILifestyleManager.Release(System.Object)">
+            <summary>
+            Implementors should release the component instance based
+            on the lifestyle semantic, for example, singleton components
+            should not be released on a call for release, instead they should
+            release them when disposed is invoked.
+            </summary>
+            <param name="instance"></param>
+        </member>
+        <member name="T:Castle.MicroKernel.Lifestyle.PerThreadThreadStaticLifestyleManager">
+            <summary>
+            per thread LifestyleManager implementation compatible with Silverlight.
+            </summary>
+        </member>
+        <member name="M:Castle.MicroKernel.Lifestyle.PerThreadThreadStaticLifestyleManager.Dispose">
             <summary>
             
             </summary>
@@ -3873,12 +3619,6 @@
               Determines if the proxied component can change targets.
             </summary>
         </member>
-        <member name="P:Castle.MicroKernel.Proxy.ProxyOptions.UseMarshalByRefAsBaseClass">
-            <summary>
-              Determines if the interface proxied component should inherit 
-              from <see cref="T:System.MarshalByRefObject"/>
-            </summary>
-        </member>
         <member name="P:Castle.MicroKernel.Proxy.ProxyOptions.Hook">
             <summary>
               Gets or sets the proxy hook.
@@ -4190,27 +3930,6 @@
             Apply more complex configuration to this component registration.
             </summary>
             <param name="configuration">The configuration <see cref="T:Castle.Core.Configuration.MutableConfiguration"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.CustomDependencies(Castle.MicroKernel.Registration.Property[])">
-            <summary>
-            Obsolete, use <see cref="M:Castle.MicroKernel.Registration.ComponentRegistration`1.DependsOn(Castle.MicroKernel.Registration.Property[])"/> instead.
-            </summary>
-            <param name="dependencies">The dependencies.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.CustomDependencies(System.Collections.IDictionary)">
-            <summary>
-            Obsolete, use <see cref="M:Castle.MicroKernel.Registration.ComponentRegistration`1.DependsOn(System.Collections.IDictionary)"/> instead.
-            </summary>
-            <param name="dependencies">The dependencies.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.CustomDependencies(System.Object)">
-            <summary>
-            Obsolete, use <see cref="M:Castle.MicroKernel.Registration.ComponentRegistration`1.DependsOn(System.Object)"/> instead.
-            </summary>
-            <param name="dependencies">The dependencies.</param>
             <returns></returns>
         </member>
         <member name="M:Castle.MicroKernel.Registration.ComponentRegistration`1.DependsOn(Castle.MicroKernel.Registration.Property[])">
@@ -5519,13 +5238,6 @@
             </summary>
             <param name="message">The message.</param>
         </member>
-        <member name="M:Castle.MicroKernel.Resolvers.DependencyResolverException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.Resolvers.DependencyResolverException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
-        </member>
         <member name="T:Castle.MicroKernel.Resolvers.SpecializedResolvers.ArrayResolver">
             <summary>
               Handle dependencies of services in the format of typed arrays.
@@ -5908,13 +5620,6 @@
             <param name="message">The message.</param>
             <param name="innerException">The inner exception.</param>
         </member>
-        <member name="M:Castle.MicroKernel.SubSystems.Conversion.ConverterException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.MicroKernel.SubSystems.Conversion.ConverterException"/> class.
-            </summary>
-            <param name="info">The object that holds the serialized object data.</param>
-            <param name="context">The contextual information about the source or destination.</param>
-        </member>
         <member name="T:Castle.MicroKernel.SubSystems.Conversion.AttributeAwareConverter">
             <summary>
             Looks for a <see cref="T:Castle.MicroKernel.SubSystems.Conversion.ConvertibleAttribute"/> on the type to be converted. 
@@ -6001,6 +5706,13 @@
             Implements all standard conversions.
             </summary>
         </member>
+        <member name="T:Castle.MicroKernel.SubSystems.Conversion.TypeDescriptor">
+            <summary>
+            Our own minimalistic implementation of TypeDescriptor class, which does not exist in Silverlight.
+            It exists solely to support functionality of <see cref="T:Castle.MicroKernel.SubSystems.Conversion.ComponentModelConverter"/> and does not provide
+            full functionality of the actually thing from the full .NET framework.
+            </summary>
+        </member>
         <member name="T:Castle.MicroKernel.SubSystems.Conversion.TypeNameConverter">
             <summary>
             Convert a type name to a Type instance.
@@ -6072,13 +5784,6 @@
             </summary>
             <param name="service">Service name</param>
             <param name="properties">Property list.</param>
-        </member>
-        <member name="M:Castle.MicroKernel.SubSystems.Naming.ComponentName.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Serialization constructor.
-            </summary>
-            <param name="info"></param>
-            <param name="context"></param>
         </member>
         <member name="M:Castle.MicroKernel.SubSystems.Naming.ComponentName.Setup(System.String)">
             <summary>
@@ -6415,38 +6120,6 @@
             Summary description for ReferenceExpressionUtil.
             </summary>
         </member>
-        <member name="T:Castle.Windsor.Adapters.ComponentModel.IContainerAdapter">
-            <summary>
-            Integrates the <see cref="T:Castle.Windsor.WindsorContainer"/> to the System.ComponentModel
-            and System.ComponentMode.Design infrastructure.
-            </summary>
-            <seealso cref="T:System.ComponentModel.IComponent"/>
-            <seealso cref="T:System.ComponentModel.IContainer"/>
-            <seealso cref="T:System.ComponentModel.Design.IServiceContainer"/>
-        </member>
-        <member name="T:Castle.Windsor.IContainerAccessor">
-            <summary>
-            This interface should be implemented by classes
-            that are available in a bigger context, exposing
-            the container to different areas in the same application.
-            <para>
-            For example, in Web application, the (global) HttpApplication
-            subclasses should implement this interface to expose 
-            the configured container
-            </para>
-            </summary>
-        </member>
-        <member name="T:Castle.Windsor.Adapters.ComponentModel.ServiceCreatorCallbackActivator">
-            <summary>
-            Custom activator to create the instance on demand.
-            </summary>
-        </member>
-        <member name="T:Castle.Windsor.Configuration.AppDomain.CastleSectionHandler">
-            <summary>
-            Implementation of <see cref="T:System.Configuration.IConfigurationSectionHandler"/>.
-            Do not support configuration inheritance.
-            </summary>
-        </member>
         <member name="T:Castle.Windsor.Configuration.IConfigurationInterpreter">
             <summary>
             Interpreter of a specific language to describe 
@@ -6502,202 +6175,6 @@
             </summary>
             <value>The name of the environment.</value>
         </member>
-        <member name="T:Castle.Windsor.Configuration.Interpreters.XmlInterpreter">
-            <summary>
-            Reads the configuration from a XmlFile. Sample structure:
-            <code>
-            &lt;configuration&gt;
-              &lt;facilities&gt;
-                &lt;facility id="myfacility"&gt;
-                
-                &lt;/facility&gt;
-              &lt;/facilities&gt;
-              
-              &lt;components&gt;
-                &lt;component id="component1"&gt;
-                
-                &lt;/component&gt;
-              &lt;/components&gt;
-            &lt;/configuration&gt;
-            </code>
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlInterpreter.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlInterpreter"/> class.
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlInterpreter.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlInterpreter"/> class.
-            </summary>
-            <param name="filename">The filename.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlInterpreter.#ctor(Castle.Core.Resource.IResource)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlInterpreter"/> class.
-            </summary>
-            <param name="source">The source.</param>
-        </member>
-        <member name="P:Castle.Windsor.Configuration.Interpreters.XmlInterpreter.Kernel">
-            <summary>
-            Gets or sets the kernel.
-            </summary>
-            <value>The kernel.</value>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine"/> class.
-            </summary>
-            <param name="environmentName">Name of the environment.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine.#ctor(System.String,Castle.MicroKernel.SubSystems.Resource.IResourceSubSystem)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine"/> class.
-            </summary>
-            <param name="environmentName">Name of the environment.</param>
-            <param name="resourceSubSystem">The resource sub system.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine.DispatchProcessAll(Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorNodeList)">
-            <summary>
-            Processes the element.
-            </summary>
-            <param name="nodeList">The element.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorEngine.DispatchProcessCurrent(Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorNodeList)">
-            <summary>
-            Processes the element.
-            </summary>
-            <param name="nodeList">The element.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.DefaultXmlProcessorNodeList.CloneNodeList(System.Xml.XmlNodeList)">
-            <summary>
-            Make a shallow copy of the nodeList.
-            </summary>
-            <param name="nodeList">The nodeList to be copied.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.AbstractXmlNodeProcessor.Accept(System.Xml.XmlNode)">
-            <summary>
-            Accepts the specified node.
-            Check if node has the same name as the processor and the node.NodeType
-            is in the AcceptNodeTypes List
-            </summary>
-            <param name="node">The node.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.AbstractXmlNodeProcessor.GetNodeAsElement(System.Xml.XmlElement,System.Xml.XmlNode)">
-            <summary>
-            Convert and return child parameter into an XmlElement
-            An exception will be throw in case the child node cannot be converted
-            </summary>
-            <param name="element">Parent node</param>
-            <param name="child">Node to be converted</param>
-            <returns>child node as XmlElement</returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.AttributesElementProcessor.Process(Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorNodeList,Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorEngine)">
-            <summary>
-            
-            </summary>
-            <param name="nodeList"></param>
-            <param name="engine"></param>
-            <example>
-            <code>
-            	<properties>
-            		<attributes>
-            			<myAttribute>attributeValue</myAttribute>
-            		</attributes>
-            		<myProperty>propertyValue</myProperty>
-            	</properties>
-            </code>
-            </example>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.DefaultElementProcessor.Process(Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorNodeList,Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorEngine)">
-            <summary>
-            Processes the specified node list.
-            </summary>
-            <param name="nodeList">The node list.</param>
-            <param name="engine">The engine.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.DefaultElementProcessor.ProcessAttributes(System.Xml.XmlElement,Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorEngine)">
-            <summary>
-            Processes element attributes.
-            if the attribute is include will append to the element
-            all contents from the file.
-            if the attribute has a property reference the reference will be
-            expanded
-            </summary>
-            <param name="element">The element.</param>
-            <param name="engine"></param>
-        </member>
-        <member name="F:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.DefaultTextNodeProcessor.PropertyValidationRegExp">
-            <summary>
-            Properties names can contain a-zA-Z0-9_. 
-            i.e. #!{ my_node_name } || #{ my.node.name }
-            spaces are trimmed
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.DefaultTextNodeProcessor.ProcessString(System.Xml.XmlNode,System.String,Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorEngine)">
-            <summary>
-            Processes the string.
-            </summary>
-            <param name="node">The node.</param>
-            <param name="value">The value.</param>
-            <param name="engine">The context.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.IncludeElementProcessor.Accept(System.Xml.XmlNode)">
-            <summary>
-            Accepts the specified node.
-            Check if node has the same name as the processor and the node.NodeType
-            is in the AcceptNodeTypes List
-            NOTE: since the BatchRegistrationFacility already uses an include
-            element we will distinguish between both by looking for the presence of an uri attribute
-            we should revisit this later by using xml-namespaces
-            </summary>
-            <param name="node">The node.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.ElementProcessors.PropertiesElementProcessor.Process(Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorNodeList,Castle.Windsor.Configuration.Interpreters.XmlProcessor.IXmlProcessorEngine)">
-            <summary>
-            
-            </summary>
-            <param name="nodeList"></param>
-            <param name="engine"></param>
-            <example>
-            <code>
-            	<properties>
-            		<attributes>
-            			<myAttribute>attributeValue</myAttribute>
-            		</attributes>
-            		<myProperty>propertyValue</myProperty>
-            	</properties>
-            </code>
-            </example>
-        </member>
-        <member name="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor">
-            <summary>
-            Pendent
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor"/> class.
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor.#ctor(System.String,Castle.MicroKernel.SubSystems.Resource.IResourceSubSystem)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor"/> class.
-            </summary>
-            <param name="environmentName">Name of the environment.</param>
-            <param name="resourceSubSystem">The resource sub system.</param>
-        </member>
-        <member name="M:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Castle.Windsor.Configuration.Interpreters.XmlProcessor.XmlProcessor"/> class.
-            </summary>
-        </member>
         <member name="T:Castle.Windsor.IEnvironmentInfo">
             <summary>
             Gets the environment information (name). Implementors should 
@@ -6708,26 +6185,6 @@
             <summary>
             Gets the name of the environment.
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Installer.Configuration.FromAppConfig">
-            <summary>
-            Installs all the components from the App.Config file.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Installer.Configuration.FromXmlFile(System.String)">
-            <summary>
-            Installs all the component from the xml configuration file.
-            </summary>
-            <param name="file">The xml configuration file.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Castle.Windsor.Installer.Configuration.FromXml(Castle.Core.Resource.IResource)">
-            <summary>
-            Installs all the component from the xml configuration.
-            </summary>
-            <param name="resource">The xml configuration resource.</param>
             <returns></returns>
         </member>
         <member name="T:Castle.Windsor.Installer.EnvironmentDelegate">
@@ -7162,6 +6619,18 @@
               is a sub container.
             </summary>
         </member>
+        <member name="T:Castle.Windsor.IContainerAccessor">
+            <summary>
+            This interface should be implemented by classes
+            that are available in a bigger context, exposing
+            the container to different areas in the same application.
+            <para>
+            For example, in Web application, the (global) HttpApplication
+            subclasses should implement this interface to expose 
+            the configured container
+            </para>
+            </summary>
+        </member>
         <member name="M:Castle.Windsor.Proxy.AbstractProxyFactory.ObtainInterceptors(Castle.MicroKernel.IKernel,Castle.Core.ComponentModel,Castle.MicroKernel.Context.CreationContext)">
             <summary>
             Obtains the interceptors associated with the component.
@@ -7239,16 +6708,6 @@
             </summary>
             <param name="interpreter">The interpreter.</param>
             <param name="environmentInfo">The environment info.</param>
-        </member>
-        <member name="M:Castle.Windsor.WindsorContainer.#ctor(System.String)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Castle.Windsor.WindsorContainer"/> class using a
-              xml file to configure it.
-              <para>
-                Equivalent to the use of <c>new WindsorContainer(new XmlInterpreter(xmlFile))</c>
-              </para>
-            </summary>
-            <param name="xmlFile">The XML file.</param>
         </member>
         <member name="M:Castle.Windsor.WindsorContainer.#ctor(Castle.MicroKernel.IKernel,Castle.Windsor.IComponentsInstaller)">
             <summary>
@@ -7568,174 +7027,6 @@
               Gets or sets the parent container if this instance
               is a sub container.
             </summary>
-        </member>
-        <member name="T:Castle.Windsor.Adapters.ComponentModel.ContainerAdapter">
-            <summary>
-            Implementation of <see cref="T:Castle.Windsor.Adapters.ComponentModel.IContainerAdapter"/> that assumes ownership of the
-            wrapped <see cref="T:Castle.Windsor.IWindsorContainer"/>.  If this adapter is disposed, the underlying
-            <see cref="T:Castle.Windsor.IWindsorContainer"/> is diposed as well.
-            </summary>
-        </member>
-        <member name="T:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper">
-            <summary>
-            Implementation of <see cref="T:Castle.Windsor.Adapters.ComponentModel.IContainerAdapter"/> that does not assume ownership of the
-            wrapped <see cref="T:Castle.Windsor.IWindsorContainer"/>. 
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.#ctor(Castle.Windsor.IWindsorContainer)">
-            <summary>
-            Constructs an initial ContainerWrapper.
-            </summary>
-            <param name="container">The <see cref="T:Castle.Windsor.IWindsorContainer"/> to adapt.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.#ctor(Castle.Windsor.IWindsorContainer,System.IServiceProvider)">
-            <summary>
-            Constructs an initial ContainerWrapper.
-            </summary>
-            <param name="container">The <see cref="T:Castle.Windsor.IWindsorContainer"/> to adapt.</param>
-            <param name="parentProvider">The parent <see cref="T:System.IServiceProvider"/>.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Add(System.ComponentModel.IComponent)">
-            <summary>
-            Adds the specified <see cref="T:System.ComponentModel.IComponent"/> to the <see cref="T:System.ComponentModel.IContainer"/> at the end of the list.
-            </summary>
-            <param name="component">The <see cref="T:System.ComponentModel.IComponent"/> to add.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Add(System.ComponentModel.IComponent,System.String)">
-            <summary>
-            Adds the specified <see cref="T:System.ComponentModel.IComponent"/> to the <see cref="T:System.ComponentModel.IContainer"/> at the end of the list,
-            and assigns a name to the component.
-            </summary>
-            <param name="component">The <see cref="T:System.ComponentModel.IComponent"/> to add.</param>
-            <param name="name">The unique, case-insensitive name to assign to the component, or null.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Remove(System.ComponentModel.IComponent)">
-            <summary>
-            Removes a component from the <see cref="T:System.ComponentModel.IContainer"/>.
-            </summary>
-            <param name="component">The <see cref="T:System.ComponentModel.IComponent"/> to remove</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.GetService(System.Type)">
-            <summary>
-            Gets the service object of the specified type.
-            </summary>
-            <param name="serviceType">The type of service.</param>
-            <returns>An object implementing service, or null.</returns>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.AddService(System.Type,System.Object)">
-            <summary>
-            Adds the specified service to the service container.
-            </summary>
-            <param name="serviceType">The type of service to add.</param>
-            <param name="serviceInstance">The instance of the service to add.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.AddService(System.Type,System.ComponentModel.Design.ServiceCreatorCallback)">
-            <summary>
-            Adds the specified service to the service container.
-            </summary>
-            <param name="serviceType">The type of service to add.</param>
-            <param name="callback">A callback object that is used to create the service.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.AddService(System.Type,System.Object,System.Boolean)">
-            <summary>
-            Adds the specified service to the service container, and optionally
-            promotes the service to any parent service containers.
-            </summary>
-            <param name="serviceType">The type of service to add.</param>
-            <param name="serviceInstance">The instance of the service to add.</param>
-            <param name="promote">true to promote this request to any parent service containers.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.AddService(System.Type,System.ComponentModel.Design.ServiceCreatorCallback,System.Boolean)">
-            <summary>
-            Adds the specified service to the service container, and optionally 
-            promotes the service to parent service containers.
-            </summary>
-            <param name="serviceType">The type of service to add.</param>
-            <param name="callback">A callback object that is used to create the service.</param>
-            <param name="promote">true to promote this request to any parent service containers.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.RemoveService(System.Type)">
-            <summary>
-            Removes the specified service type from the service container.
-            </summary>
-            <param name="serviceType">The type of service to remove.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.RemoveService(System.Type,System.Boolean)">
-            <summary>
-            Removes the specified service type from the service container, 
-            and optionally promotes the service to parent service containers.
-            </summary>
-            <param name="serviceType">The type of service to remove.</param>
-            <param name="promote">true to promote this request to any parent service containers.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.IsIntrinsicService(System.Type)">
-            <summary>
-            Determines if the service type represents an intrinsic service.
-            </summary>
-            <param name="serviceType">The type of service to remove.</param>
-            <returns>true if the service type is an intrinsic service.</returns>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.HasService(System.Type)">
-            <summary>
-            Determines if the specified service type exists in the service container.
-            </summary>
-            <param name="serviceType">The type of service to remove.</param>
-            <returns>true if the service type exists.</returns>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Dispose">
-            <summary>
-            Releases the resources used by the component.
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Dispose(System.Boolean)">
-            <summary>
-            Releases the resources used by the component.
-            </summary>
-            <param name="disposing">true if disposing.</param>
-        </member>
-        <member name="P:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Site">
-            <summary>
-            Gets or sets the <see cref="T:System.ComponentModel.ISite"/> associated with the <see cref="T:System.ComponentModel.IComponent"/>.
-            </summary>
-        </member>
-        <member name="E:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Disposed">
-            <summary>
-            Event that notifies the disposal of the <see cref="T:System.ComponentModel.IComponent"/>.
-            </summary>
-        </member>
-        <member name="P:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Components">
-            <summary>
-            Gets all the components in the <see cref="T:System.ComponentModel.IContainer"/>.
-            </summary>
-        </member>
-        <member name="P:Castle.Windsor.Adapters.ComponentModel.ContainerWrapper.Container">
-            <summary>
-            Gets the adapted <see cref="T:Castle.Windsor.IWindsorContainer"/>
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerAdapter.#ctor">
-            <summary>
-            Constructs a default ContainerAdapter.
-            </summary>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerAdapter.#ctor(System.IServiceProvider)">
-            <summary>
-            Constructs a chained ContainerAdapter.
-            </summary>
-            <param name="parentProvider">The parent <see cref="T:System.IServiceProvider"/>.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerAdapter.#ctor(Castle.Windsor.IWindsorContainer)">
-            <summary>
-            Constructs an initial ContainerAdapter.
-            </summary>
-            <param name="container">The <see cref="T:Castle.Windsor.IWindsorContainer"/> to adapt.</param>
-        </member>
-        <member name="M:Castle.Windsor.Adapters.ComponentModel.ContainerAdapter.#ctor(Castle.Windsor.IWindsorContainer,System.IServiceProvider)">
-            <summary>
-            Constructs an initial ContainerAdapter.
-            </summary>
-            <param name="container">The <see cref="T:Castle.Windsor.IWindsorContainer"/> to adapt.</param>
-            <param name="parentProvider">The parent <see cref="T:System.IServiceProvider"/>.</param>
         </member>
     </members>
 </doc>
