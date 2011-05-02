@@ -30,35 +30,22 @@ task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
-desc "prepare alpha version for being published (not for ci server)"
+desc "prepare alpha version for being published"
 task :alpha => ["env:release"] do
-  puts %q{
-    Basically what the script should do;
-    1. Verify no pending changes
-    2. Verify on develop branch
-    3. Ask for alpha number
-    4. Verify alpha number is greater than the last alpha number
-    5. Verify we're not above alpha, e.g. in beta.
-    6. git add . -A ; git commit -m "Automatic alpha" ; rake release castle:test_all
-       This ensures we have passing tests and a build with a matching git commit hash.
-    7. git checkout alpha
-    8. git merge --no-ff -m "Alpha [version here] commit." develop
-    9. git tag -a "v[VERSION]"
-    10. git push
-    11. git push --tags
-        This means that the tag is now publically browsable.
-    
-    Now, TeamCity till take over and run the compile process on the server and then
-    upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
-
-}
-
+  puts "Preparing Alpha Release"
   release_branch("alpha")
-  
 end
 
-task :tmp do
-  versions(`git tag`)
+desc "prepare beta version for being published"
+task :beta => ["env:release"] do
+  puts "Preparing Beta Release"
+  release_branch("beta")
+end
+
+desc "prepare rc for being published"
+task :rc => ["env:release"] do
+  puts "Preparing RC release"
+  release_branch("rc")
 end
 
 CLOBBER.include(Folders[:out])
@@ -254,12 +241,12 @@ namespace :castle do
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
-    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
     nuspec.language = "en-US"
-    nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
+    nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.1.2127" # 2.5.3 is bugged => NullReferenceException-s.
+    nuspec.dependency "Castle.Windsor", "[2.5.1]" # 2.5.2-3 is bugged => NullReferenceException-s.
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"

@@ -46,7 +46,7 @@ def release_branch(branch_to)
   next_build = (max_ver[3] - build_type) + 1                 # get its alpha/beta/rc-number, e.g. 1, 2, ..., n
   curr_ver = version(VERSION)                                # call utility function with constant
   
-  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state alpha number > max tag (CTRL+C to interrupt) [#{next_build}]: "
+  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state #{branch_to.capitalize} number > max tag (CTRL+C to interrupt) [#{next_build}]: "
   alpha_ver = STDIN.gets.chomp
   alpha_ver = alpha_ver.length == 0 ? next_build : alpha_ver.to_i
   
@@ -71,8 +71,8 @@ def release_branch(branch_to)
   
   tagname = "v#{new_ver.join('.')}"
   
-  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge.
-  sh "git merge --no-ff -m \"#{tagname}. #{branch_to.capitalize} #{alpha_ver} commit.\" develop" do |ok, status|
+  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge. You want a recursive theirs-merge, because you don't care about modifications to your local alpha branch.
+  sh "git merge -s recursive -Xtheirs --no-ff -m \"#{tagname}. #{branch_to.capitalize} #{alpha_ver} commit.\" develop" do |ok, status|
     ok or fail "---> failed merge. Recommending a 'git merge --abort'. you are on #{branch_to} currently. You can also merge manually and commit those changes manually. Read the buildscripts/utils.rb file to get an idea of the next steps."
   end
   
@@ -109,4 +109,14 @@ def release_branch(branch_to)
 	puts "Type your password below if you would like to push a tag for it (you can do this later also)."
 	sh "git push origin \"refs/tags/#{tagname}:refs/tags/#{tagname}\""
   end
+  
+  # the rest is book-keeping to keep branches up to speed with each other
+  # in the end develop == master and alpha is whatever we had in develop at the time we said commit.
+  # Hopefully master is a ff-only merge.
+  sh "git checkout develop"
+  sh "git merge #{branch_to}"
+  sh "git checkout master"
+  sh "git merge develop"
+  sh "git checkout develop"
+  sh "git merge master" # --ff-only?
 end
