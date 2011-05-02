@@ -109,4 +109,14 @@ def release_branch(branch_to)
 	puts "Type your password below if you would like to push a tag for it (you can do this later also)."
 	sh "git push origin \"refs/tags/#{tagname}:refs/tags/#{tagname}\""
   end
+  
+  # the rest is book-keeping to keep branches up to speed with each other
+  # in the end develop == master and alpha is whatever we had in develop at the time we said commit.
+  # Hopefully master is a ff-only merge.
+  sh "git checkout develop"
+  sh "git merge #{branch_to}"
+  sh "git checkout master"
+  sh "git merge develop"
+  sh "git checkout develop"
+  sh "git merge master" # --ff-only?
 end
