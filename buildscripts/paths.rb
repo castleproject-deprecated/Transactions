@@ -9,8 +9,8 @@ Folders = {
   :nunit => File.join("tools", "NUnit", "bin"),
   
   :packages => "packages",
-  :tx_nuspec => File.join("packages", Projects[:tx][:dir]),
-  :autotx_nuspec => File.join("packages", Projects[:autotx][:dir]),
+  :tx_nuspec => File.join("build", "nuspec", Projects[:tx][:dir]),
+  :autotx_nuspec => File.join("build", "nuspec", Projects[:autotx][:dir]),
   :nuget => File.join("build", "nuget"),
   
   :tx_out => 'placeholder - specify build environment',
@@ -21,11 +21,11 @@ Folders = {
 }
 
 Files = {
-  :sln => "Castle.Services.Transaction.sln",
+  :sln => "Castle.Transactions.sln",
   :version => "VERSION",
   
   :tx => {
-    :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:dir]}.nuspec"),
+    :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:id]}.nuspec"),
 	:test_log => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.log"),
 	:test_xml => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.xml"),
 	
@@ -33,7 +33,7 @@ Files = {
   },
   
   :autotx => {
-    :nuspec => File.join(Folders[:autotx_nuspec], "#{Projects[:autotx][:dir]}.nuspec"),
+    :nuspec => File.join(Folders[:autotx_nuspec], "#{Projects[:autotx][:id]}.nuspec"),
 	:test_log => File.join(Folders[:tests], "Castle.Facilities.AutoTx.Tests.log"),
 	:test_xml => File.join(Folders[:tests], "Castle.Facilities.AutoTx.Tests.xml"),
 	

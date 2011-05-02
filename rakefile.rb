@@ -1,5 +1,4 @@
 # copyright Henrik Feldt 2011
-
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
@@ -21,20 +20,20 @@ desc "prepare the version info files to get ready to start coding!"
 task :prepare => ["castle:assembly_infos"]
 
 desc "build in release mode"
-task :release => ["env:release", "castle:build"]
+task :release => ["env:release", "castle:build", "castle:nuget"]
 
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build"]
+task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
-desc "prepare alpha version for being published"
-task :alpha do
+desc "prepare alpha version for being published (not for ci server)"
+task :alpha => ["env:release"] do
   puts %q{
-    TODO: Basically what the script should do;
+    Basically what the script should do;
     1. Verify no pending changes
     2. Verify on develop branch
     3. Ask for alpha number
@@ -42,10 +41,10 @@ task :alpha do
     5. Verify we're not above alpha, e.g. in beta.
     6. git add . -A ; git commit -m "Automatic alpha" ; rake release castle:test_all
        This ensures we have passing tests and a build with a matching git commit hash.
-    7. git checkout master
+    7. git checkout alpha
     8. git merge --no-ff -m "Alpha [version here] commit." develop
-    9. git push
-    10. git tag -a "v[VERSION]"
+    9. git tag -a "v[VERSION]"
+    10. git push
     11. git push --tags
         This means that the tag is now publically browsable.
     
@@ -53,13 +52,16 @@ task :alpha do
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 }
-  status = `git status`
-  status.include? "nothing to commit" or fail "Commit your dirty files:\n\n#{status}\n"
-  status.include? "# On branch develop" or fail "Commit the alpha on your develop branch (this rule might change)"
+
+  release_branch("alpha")
+  
+end
+
+task :tmp do
+  versions(`git tag`)
 end
 
 CLOBBER.include(Folders[:out])
-CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
@@ -220,16 +222,17 @@ namespace :castle do
   file "#{Files[:tx][:nuspec]}"
   
   nuspec :tx_nuspec => [:output, :tx_nuget_dirs] do |nuspec|
-    nuspec.id = "Castle.Services.Transaction"
+    nuspec.id = Projects[:tx][:id]
     nuspec.version = VERSION
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
     nuspec.language = "en-US"
-    nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
+    nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
+	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
@@ -246,7 +249,7 @@ namespace :castle do
   file "#{Files[:autotx][:nuspec]}"
   
   nuspec :autotx_nuspec => [:output, :autotx_nuget_dirs] do |nuspec|
-    nuspec.id = "Castle.Facilities.AutoTx"
+    nuspec.id = Projects[:autotx][:id]
     nuspec.version = VERSION
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
@@ -256,8 +259,9 @@ namespace :castle do
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.2"
-    nuspec.dependency "Castle.Services.Transaction", VERSION # might require <VERSION sometimes
+    nuspec.dependency "Castle.Windsor", "2.5.1.2127" # 2.5.3 is bugged => NullReferenceException-s.
+    nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
+	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"
 	nuspec.dependency "Rx-Interactive", "1.0.2856.0"

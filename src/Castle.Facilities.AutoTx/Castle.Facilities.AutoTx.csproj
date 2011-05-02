@@ -24,7 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildscripts\Correctness-Rules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -68,14 +68,15 @@
     <AssemblyOriginatorKeyFile>..\..\buildscripts\CastleKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core">
-      <HintPath>..\..\lib\net40\Castle.Core.dll</HintPath>
+    <Reference Include="Castle.Core, Version=2.5.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.2.5.2\lib\NET35\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Castle.Windsor">
+    <Reference Include="Castle.Windsor, Version=2.5.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net40\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\lib\net40\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -96,7 +97,7 @@
       <Link>Properties\TxAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AutoTxFacility.cs" />
-    <Compile Include="ITxMetaInfoStore.cs" />
+    <Compile Include="ITransactionMetaInfoStore.cs" />
     <Compile Include="Lifestyles\WrapperResolveLifestyleManager.cs" />
     <Compile Include="Lifestyles\LifestyleRegistrationExtensions.cs" />
     <Compile Include="Lifestyles\MissingTransactionException.cs" />
@@ -107,12 +108,12 @@
     <Compile Include="Testing\IOResolveScope.cs" />
     <Compile Include="Testing\ResolveEx.cs" />
     <Compile Include="Testing\ResolveScope.cs" />
-    <Compile Include="TxClassMetaInfo.cs" />
-    <Compile Include="TxClassMetaInfoStore.cs" />
-    <Compile Include="TxComponentInspector.cs" />
-    <Compile Include="TxInterceptor.cs" />
-    <Compile Include="TxManagerCurrentTransactionSelector.cs" />
-    <Compile Include="TxMetaInfoStoreContract.cs" />
+    <Compile Include="TransactionalClassMetaInfo.cs" />
+    <Compile Include="TransactionClassMetaInfoStore.cs" />
+    <Compile Include="TransactionalComponentInspector.cs" />
+    <Compile Include="TransactionInterceptor.cs" />
+    <Compile Include="TransactionManagerCurrentTransactionSelector.cs" />
+    <Compile Include="Contracts\TransactionMetaInfoStoreContract.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Castle.Services.Transaction\Castle.Services.Transaction.csproj">
@@ -123,6 +124,9 @@
   <ItemGroup>
     <None Include="..\..\buildscripts\CastleKey.snk">
       <Link>CastleKey.snk</Link>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
