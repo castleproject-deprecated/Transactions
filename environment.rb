@@ -10,7 +10,6 @@ namespace :env do
 	
 	# version management
 	fv = version(VERSION_BASE)
-	puts "fv[3] == 0? #{fv[3] == 0}"
 	build = ENV['BUILD_NUMBER'] || fv[2]
 	revision = ENV['OFFICIAL_RELEASE'] || (fv[3] == 0 ? Time.now.strftime('%j%H') : fv[3]) #  (day of year 0-265)(hour 00-24)
 	
