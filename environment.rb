@@ -12,7 +12,8 @@ namespace :env do
 	fv = version(VERSION_BASE)
 	
 	build = ENV['BUILD_NUMBER'] || fv[2]
-	revision = ENV['OFFICIAL_RELEASE'].to_i || fv[3]
+	# (day of year 0-265)(hour 00-24)
+	revision = ENV['OFFICIAL_RELEASE'].to_i || (fv[3] == 0 ? Time.now.strftime('%j%H') : fv[3])
 	
 	real_version = [fv[0], fv[1], build, revision]
 	
