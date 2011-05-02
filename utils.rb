@@ -71,8 +71,8 @@ def release_branch(branch_to)
   
   tagname = "v#{new_ver.join('.')}"
   
-  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge.
-  sh "git merge --no-ff -m \"#{tagname}. #{branch_to.capitalize} #{alpha_ver} commit.\" develop" do |ok, status|
+  # 8. Merge from the develop branch into the current branch with a custom commit message stating it's a special merge. You want a recursive theirs-merge, because you don't care about modifications to your local alpha branch.
+  sh "git merge -s recursive -Xtheirs --no-ff -m \"#{tagname}. #{branch_to.capitalize} #{alpha_ver} commit.\" develop" do |ok, status|
     ok or fail "---> failed merge. Recommending a 'git merge --abort'. you are on #{branch_to} currently. You can also merge manually and commit those changes manually. Read the buildscripts/utils.rb file to get an idea of the next steps."
   end
   
