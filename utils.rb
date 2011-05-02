@@ -46,7 +46,7 @@ def release_branch(branch_to)
   next_build = (max_ver[3] - build_type) + 1                 # get its alpha/beta/rc-number, e.g. 1, 2, ..., n
   curr_ver = version(VERSION)                                # call utility function with constant
   
-  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state alpha number > max tag (CTRL+C to interrupt) [#{next_build}]: "
+  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state #{branch_to.capitalize} number > max tag (CTRL+C to interrupt) [#{next_build}]: "
   alpha_ver = STDIN.gets.chomp
   alpha_ver = alpha_ver.length == 0 ? next_build : alpha_ver.to_i
   
