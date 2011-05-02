@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Transactions;
-using TransactionException = Castle.Services.Transaction.Exceptions.TransactionException;
+using Castle.Services.Transaction.IO;
+using TransactionException = Castle.Services.Transaction.TransactionException;
 
 namespace Castle.Services.Transaction
 {
@@ -154,9 +155,9 @@ namespace Castle.Services.Transaction
 			}
 		}
 
-		Maybe<SafeKernelTxHandle> ITransaction.TxFHandle
+		Maybe<SafeKernelTransactionHandle> ITransaction.KernelTransactionHandle
 		{
-			get { return Maybe.None<SafeKernelTxHandle>(); }
+			get { return Maybe.None<SafeKernelTransactionHandle>(); }
 		}
 
 		private System.Transactions.Transaction Inner

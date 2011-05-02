@@ -1,0 +1,14 @@
+Initial Project (1.0)
+	Hammett/Hamilton Verissimo
+
+TxF/File/Directory/Path-improvements (2.0)
+	Henrik Feldt
+
+Dependencies-recompile/Core-2.5-upgrade:
+	Henry Conceicao
+
+Transactions Project rewritten from scratch (3.0)
+	Henrik Feldt
+	
+	Re-integration of rewritten project and code review (3.0)
+		Henry Conceição

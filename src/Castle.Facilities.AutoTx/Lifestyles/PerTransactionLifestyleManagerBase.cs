@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,11 +43,11 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 		private readonly Dictionary<string, Tuple<uint, object>> _Storage = new Dictionary<string, Tuple<uint, object>>();
 
-		protected readonly ITxManager _Manager;
+		protected readonly ITransactionManager _Manager;
 		protected bool _Disposed;
 		private bool evicting;
 
-		public PerTransactionLifestyleManagerBase(ITxManager manager)
+		public PerTransactionLifestyleManagerBase(ITransactionManager manager)
 		{
 			Contract.Requires(manager != null);
 			Contract.Ensures(_Manager != null);

@@ -53,7 +53,7 @@ namespace Castle.Facilities.AutoTx.Tests
 
 			// when
 			using (var scope = container.ResolveScope<Service>())
-			using (var manager = container.ResolveScope<ITxManager>())
+			using (var manager = container.ResolveScope<ITransactionManager>())
 			using (var tx = manager.Service.CreateTransaction().Value.Transaction)
 			{
 				var resolved = scope.Service.DoWork();
@@ -74,7 +74,7 @@ namespace Castle.Facilities.AutoTx.Tests
 
 			// when
 			using (var scope = container.ResolveScope<Service>())
-			using (var manager = container.ResolveScope<ITxManager>())
+			using (var manager = container.ResolveScope<ITransactionManager>())
 			using (var tx = manager.Service.CreateTransaction().Value.Transaction)
 			{
 				var resolved = scope.Service.DoWork();
@@ -106,7 +106,7 @@ namespace Castle.Facilities.AutoTx.Tests
 			// when
 			Exception possibleException = null;
 			using (var scope = container.ResolveScope<Service>())
-			using (var manager = container.ResolveScope<ITxManager>())
+			using (var manager = container.ResolveScope<ITransactionManager>())
 			using (var tx = manager.Service.CreateTransaction().Value.Transaction)
 			{
 				var resolved = scope.Service.DoWork();
@@ -140,7 +140,8 @@ namespace Castle.Facilities.AutoTx.Tests
 							tx2.Complete();
 						}
 
-						Assert.That(perTxService.Disposed, Is.False, "becuase dependent transaction hasn't fired its parent TransactionCompleted event");
+						// perTxService.Disposed is either true or false at this point depending on the interleaving
+						//Assert.That(perTxService.Disposed, Is.???, "becuase dependent transaction hasn't fired its parent TransactionCompleted event, or it HAS done so and it IS disposed");
 					}
 					catch (Exception ex)
 					{
@@ -182,7 +183,7 @@ Castle.Facilities.AutoTx.Lifestyles.PerTransactionLifestyleManagerBase: 2011-04-
 Castle.Facilities.AutoTx.Lifestyles.PerTransactionLifestyleManagerBase: 2011-04-26 16:23:01,861 [TestRunnerThread] DEBUG - last item of 'Castle.Facilities.AutoTx.Tests.DisposeMeOnce' per-tx; releasing it
 Castle.Facilities.AutoTx.Lifestyles.PerTransactionLifestyleManagerBase: 2011-04-26 16:23:01,870 [TestRunnerThread] DEBUG - transaction#604654c5-b9bd-44cb-be20-9fc6118308d6:1:2 completed, maybe releasing object '(1, Castle.Facilities.AutoTx.Tests.DisposeMeOnce)'
 Castle.Facilities.AutoTx.Lifestyles.PerTransactionLifestyleManagerBase: 2011-04-26 16:23:01,870 [TestRunnerThread] DEBUG - last item of 'Castle.Facilities.AutoTx.Tests.DisposeMeOnce' per-tx; releasing it
-Castle.Facilities.AutoTx.Testing.ResolveScope<ITxManager>: 2011-04-26 16:23:01,871 [TestRunnerThread] DEBUG - disposing resolve scope
+Castle.Facilities.AutoTx.Testing.ResolveScope<ITransactionManager>: 2011-04-26 16:23:01,871 [TestRunnerThread] DEBUG - disposing resolve scope
 Castle.Facilities.AutoTx.Testing.ResolveScope<Service>: 2011-04-26 16:23:01,872 [TestRunnerThread] DEBUG - disposing resolve scope
 Test 'Castle.Facilities.AutoTx.Tests.PerTransactionLifestyle_Releasing.Concurrent_DependentTransaction_AndDisposing' failed:
 	disposed DisposeMeOnce twice

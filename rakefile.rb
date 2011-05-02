@@ -1,5 +1,4 @@
 # copyright Henrik Feldt 2011
-
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
@@ -26,12 +25,12 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build", "castle:nuget"]
+task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
-desc "prepare alpha version for being published"
+desc "prepare alpha version for being published (not for ci server)"
 task :alpha => ["env:release"] do
   puts %q{
     Basically what the script should do;
@@ -53,82 +52,16 @@ task :alpha => ["env:release"] do
     upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
 
 }
-  branch_to = "alpha"
 
-  # 1. check status
-  status = `git status`
-  status.include? "nothing to commit" or fail "---> Commit your dirty files:\n\n#{status}\n"
-  status.include? "# On branch develop" or fail "---> Commit the alpha on your develop branch (this rule might change)"
-  
-  # 2. check version
-  max_ver = versions(`git tag`)[-1]                          # get max tag version
-  if max_ver == nil then fail "no tags available in your repository, exiting. nothing done." end
-  build_type = (max_ver[3] / 1000) * 1000                    # e.g. 1000, 2000 or 3000
-  next_alpha = (max_ver[3] - build_type) + 1                 # get its alpha/beta/rc-number, e.g. 1, 2, ..., n
-  curr_ver = version(VERSION)                                # call utility function with constant
-  
-  puts " :: Max tag version: #{max_ver}, current version: #{curr_ver}. Please state alpha number > max tag (CTRL+C to interrupt) [#{next_alpha}]: "
-  alpha_ver = STDIN.gets.chomp
-  alpha_ver = alpha_ver.length == 0 ? next_alpha : alpha_ver.to_i
-  
-  # 3. calculate new version and verify it
-  new_ver = [curr_ver[0], curr_ver[1], curr_ver[2], 1000+alpha_ver]
-  if (new_ver <=> max_ver || alpha_ver) == -1 then puts "---> #{new_ver} less than maximum: #{max_ver}" end
-  
-  # 4, 5. Verify it's an alpha
-  if (next_alpha > 1000) then puts "---> no more than a thousand allowed" end
-  
-  # 6. we can do this optionally, but for now, let's assume someone put a good message in.
-  # sh "git commit --amend -m \"Alpha #{new_ver.join('.')}\"" do |ok, status|
-    # ok or fail "---> could not perform commit:\n#{status}"
-  # end
-  
-  flags = (`git branch`.include? "  #{branch_to}") ? "" : "-b "
-  puts "creating new #{branch_to}-branch, because none exists" if flags.length > 0
-  
-  # 7.
-  sh "git checkout #{flags}#{branch_to}" do |ok, status|
-    ok or fail "---> could not checkout alpha. do you have such a branch?"
-  end
-  
-  # 8.
-  sh "git merge --no-ff -m \"Alpha #{new_ver.join('.')} commit.\" develop" do |ok, status|
-    ok or fail "---> failed merge. recommending a 'git merge --abort'. you are on #{branch_to} currently."
-  end
-  
-  sh "git tag -a \"v#{new_ver.join('.')}\" -m \"Alpha #{new_ver.join('.')}\""
-  
-  # 9.
-  puts " :: Confirm push!"
-  sh "git status"
-  sh "git log -1"
-  
-  ok = ""
-  puts "\n\nEverything OK (yes/no)?"
-  until ok == "yes" || ok == "no"
-    ok = STDIN.gets.chomp
-  end
-  
-  if ok == "no" then fail %Q{
-    
-    Remember what has changed in your repository! (now that you aborted ;))
-        
-        1. tags (git tag -d v#{new_ver.join('.')}),
-        2. you have merged to the alpha branch (git reset --hard HEAD~1)
-        3. previous branch commit message (git commit --amend ...) or the same as above
-	
-    ---> NOTE THAT YOU ARE CURRENTLY ON YOUR #{branch-to} BRANCH -- and everything is ready to push.
-	
-	You can for example change your commit message by 'git commit --amend -m "..."'.
-
-} else
-    sh "git push"
-  end
+  release_branch("alpha")
   
 end
 
+task :tmp do
+  versions(`git tag`)
+end
+
 CLOBBER.include(Folders[:out])
-CLOBBER.include(Folders[:packages])
 
 Albacore.configure do |config|
   config.nunit.command = Commands[:nunit]
@@ -294,9 +227,9 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
     nuspec.language = "en-US"
-    nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"	
+    nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "log4net", "1.2.10"
@@ -326,8 +259,8 @@ namespace :castle do
     nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.2"
-    nuspec.dependency Projects[:tx][:id], VERSION # might require <VERSION sometimes
+    nuspec.dependency "Castle.Windsor", "2.5.1.2127" # 2.5.3 is bugged => NullReferenceException-s.
+    nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
 	nuspec.dependency "Rx-Main", "1.0.2856.0"

@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using Castle.Facilities.AutoTx.Lifestyles;
 using Castle.MicroKernel.Facilities;
 using Castle.MicroKernel.Registration;
 using Castle.Services.Transaction;
+using Castle.Services.Transaction.Activities;
 using Castle.Services.Transaction.IO;
 using log4net;
 
@@ -27,7 +28,8 @@ namespace Castle.Facilities.AutoTx
 {
 	/// <summary>
 	/// 	A facility for automatically handling transactions using the lightweight
-	/// 	transaction manager.
+	/// 	transaction manager. This facility does not depend on
+	///		any other facilities.
 	/// </summary>
 	public class AutoTxFacility : AbstractFacility
 	{
@@ -39,18 +41,18 @@ namespace Castle.Facilities.AutoTx
 
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
-				Component.For<TxInterceptor>()
+				Component.For<TransactionInterceptor>()
 					.Named("transaction.interceptor")
 					.LifeStyle.Transient,
-				Component.For<ITxMetaInfoStore>()
-					.ImplementedBy<TxClassMetaInfoStore>()
+				Component.For<ITransactionMetaInfoStore>()
+					.ImplementedBy<TransactionClassMetaInfoStore>()
 					.Named("transaction.metaInfoStore")
 					.LifeStyle.Singleton,
-				Component.For<ITxManager>()
-					.ImplementedBy<TxManager>()
+				Component.For<ITransactionManager>()
+					.ImplementedBy<TransactionManager>()
 					.Named("transaction.manager")
 					.LifeStyle.Singleton,
-				// the activity manager shouldn't have the same lifestyle as TxInterceptor, as it
+				// the activity manager shouldn't have the same lifestyle as TransactionInterceptor, as it
 				// calls a static .Net/Mono framework method, and it's the responsibility of
 				// that framework method to keep track of the call context.
 				Component.For<IActivityManager>()
@@ -67,7 +69,7 @@ namespace Castle.Facilities.AutoTx
 					.LifeStyle.Transient
 				);
 
-			Kernel.ComponentModelBuilder.AddContributor(new TxComponentInspector());
+			Kernel.ComponentModelBuilder.AddContributor(new TransactionalComponentInspector());
 
 			_Logger.Debug("initialized AutoTxFacility");
 		}

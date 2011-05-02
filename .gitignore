@@ -1,5 +1,5 @@
 /build
-/packages
+/wraps/_cache
 src/*/obj
 src/*/bin
 src/*AssemblyInfo.cs
@@ -9,6 +9,6 @@ _ReSharper*
 *.ReSharper
 *.suo
 *.cache
-Castle.Services.Transaction.user
+Castle.Transactions.user
 * Thumbs.db
 *.nupkg

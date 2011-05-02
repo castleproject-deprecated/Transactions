@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	/// </summary>
 	public class PerTopTransactionLifestyleManager : PerTransactionLifestyleManagerBase
 	{
-		public PerTopTransactionLifestyleManager(ITxManager manager)
+		public PerTopTransactionLifestyleManager(ITransactionManager manager)
 			: base(manager)
 		{
 			Contract.Requires(manager != null);

@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ namespace Castle.Services.Transaction.IO
 	/// 	This adapter chooses intelligently whether there's an ambient
 	/// 	transaction, and if there is, joins it.
 	/// </summary>
-	public sealed class FileAdapter : TxAdapterBase, IFileAdapter
+	public sealed class FileAdapter : TransactionAdapterBase, IFileAdapter
 	{
 		private static readonly ILog _Logger = LogManager.GetLogger(typeof (FileAdapter));
 

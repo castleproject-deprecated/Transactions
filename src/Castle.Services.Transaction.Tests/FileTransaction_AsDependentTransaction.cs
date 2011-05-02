@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ namespace Castle.Services.Transaction.Tests
 		private string _DirPath;
 		private string _FilePath;
 
-		private ITxManager _Tm;
+		private ITransactionManager _Tm;
 
 		[SetUp]
 		public void Setup()
 		{
-			_Tm = new TxManager(new TransientActivityManager());
+			_Tm = new Services.Transaction.TransactionManager(new TransientActivityManager());
 
 			_DirPath = ".";
 			_FilePath = _DirPath.Combine("test.txt");

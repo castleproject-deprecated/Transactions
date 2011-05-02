@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace Castle.Services.Transaction.IO
 	/// 	Adapter which wraps the functionality in <see cref = "File" />
 	/// 	together with native kernel transactions.
 	/// </summary>
-	public class DirectoryAdapter : TxAdapterBase, IDirectoryAdapter
+	public class DirectoryAdapter : TransactionAdapterBase, IDirectoryAdapter
 	{
 		private readonly IMapPath _PathFinder;
 		private readonly ILog _Logger = LogManager.GetLogger(typeof (DirectoryAdapter));
@@ -38,7 +38,6 @@ namespace Castle.Services.Transaction.IO
 		/// <param name = "pathFinder">The MapPath implementation.</param>
 		/// <param name = "constrainToSpecifiedDir">Whether to ChJail the DirectoryAdapter.</param>
 		/// <param name = "specifiedDir">The directory to constrain the adapter to.</param>
-		[SuppressMessage("Microsoft.Contracts", "CC1055", Justification = "Validation performed in base method")]
 		public DirectoryAdapter(IMapPath pathFinder, bool constrainToSpecifiedDir, string specifiedDir)
 			: base(constrainToSpecifiedDir, specifiedDir)
 		{
