@@ -46,3 +46,7 @@ Commands = {
   :nuget => File.join(Folders[:tools], "NuGet.exe"),
   :ilmerge => File.join(Folders[:tools], "ILMerge.exe")
 }
+
+Uris = {
+  :nuget_offical => "http://packages.nuget.org/v1/"
+}
