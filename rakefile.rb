@@ -25,7 +25,7 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
-task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
+task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget", "castle:push_nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
@@ -292,6 +292,24 @@ namespace :castle do
 	nuget.command     = Commands[:nuget]
     nuget.nuspec      = Files[:autotx][:nuspec]
     nuget.output      = Folders[:nuget]
+  end
+  
+  task :nuget_push => [:tx_nuget_push, :autotx_nuget_push]
+  
+  def nuget_key()
+	File.open( Files[:nuget_private_key] , "r") do |f|
+		return f.gets
+	end
+  end
+  
+  task :tx_nuget_push do
+	package = "#{Projects[:tx][:id]}.#{VERSION}.nupkg"
+    sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
+  end
+  
+  task :tx_nuget_push do
+    package = "#{Projects[:autotx][:id]}.#{VERSION}.nupkg"
+    sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
   end
 end
 
