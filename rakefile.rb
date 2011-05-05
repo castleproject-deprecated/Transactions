@@ -2,6 +2,7 @@
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
+require 'buildscripts/ilmerge'
 begin
   require 'version_bumper'  
 rescue LoadError
@@ -12,6 +13,7 @@ require 'buildscripts/project_data'
 require 'buildscripts/paths'
 require 'buildscripts/utils'
 require 'buildscripts/environment'
+
 
 # profile time: "PS \> $start = [DateTime]::UtcNow ; rake ; $end = [DateTime]::UtcNow ; $diff = $end-$start ; "Started: $start to $end, a diff of $diff"
 task :default => [:release]
@@ -25,6 +27,7 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
+# WARNING: do not run this locally if you have set the private nuget key file
 task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget", "castle:push_nuget"]
 
 desc "Run all unit and integration tests in debug mode"
@@ -158,6 +161,34 @@ namespace :castle do
     copy_files Folders[:autotx_out], "*.{xml,dll,pdb,config}", target
     CLEAN.include(target)
   end
+  
+  #                     ILMERGE
+  # ===================================================
+  
+  task :ilmerge => [:tx_ilmerge]
+  
+  ilmerge :tx_ilmerge => :tx_output do |ilm|
+    ilm.output = "#{Projects[:tx][:id]}.dll"
+    ilm.internalize = File.join(File.realpath('buildscripts'), 'internalize.txt')
+    ilm.working_directory = File.join(Folders[:binaries],  Projects[:tx][:dir])
+    ilm.target = :library
+    ilm.use :"#{FRAMEWORK}"
+    ilm.log = File.join("..", 'tx-ilmerge.log')
+    ilm.allow_dupes = true
+    ilm.references = [ 'Castle.Services.Transaction.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+ end
+
+  # ilmerge :autotx_ilmerge => :autotx_output do |ilm|
+    # ilm.output = File.join(Folders[:autotx_out], "#{Projects[:autotx][:id]}.dll")
+    # ilm.internalize = File.join('buildscripts', 'internalize.txt')
+    # ilm.working_directory = Folders[:autotx_out]
+    # ilm.target = :library
+    # ilm.use FRAMEWORK
+    # ilm.log = File.join( Folders[:autotx_out], "..", 'ilmerge.log' )
+    # ilm.allow_dupes = true
+    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'Castle.Core.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+ # end
+
   
   
   #                     TESTING
@@ -307,7 +338,7 @@ namespace :castle do
     sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
   end
   
-  task :tx_nuget_push do
+  task :autotx_nuget_push do
     package = "#{Projects[:autotx][:id]}.#{VERSION}.nupkg"
     sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
   end
