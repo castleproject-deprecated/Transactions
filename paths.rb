@@ -20,6 +20,7 @@ Folders = {
 Files = {
   :sln => "Castle.XXX.sln",
   :version => "VERSION",
+  :nuget_private_key => "NUGET_KEY",
   
   :proj_key => {
     :nuspec => File.join(Folders[:nuspec], "#{Projects[:proj_key][:id]}.nuspec"),
