@@ -28,7 +28,7 @@ desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
 # WARNING: do not run this locally if you have set the private nuget key file
-task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget", "castle:push_nuget"]
+task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
