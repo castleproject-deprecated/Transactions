@@ -11,9 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VERSION = VERSION
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.AutoTx", "src\Castle.Facilities.AutoTx\Castle.Facilities.AutoTx.csproj", "{C19A20DD-8F32-44EF-9B68-43C70677F92D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.Transactions", "src\Castle.Facilities.AutoTx\Castle.Facilities.Transactions.csproj", "{C19A20DD-8F32-44EF-9B68-43C70677F92D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.AutoTx.Tests", "src\Castle.Facilities.AutoTx.Tests\Castle.Facilities.AutoTx.Tests.csproj", "{BBDD1C0A-67E9-48C7-9A14-69CB8B158549}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.Transactions.Tests", "src\Castle.Facilities.AutoTx.Tests\Castle.Facilities.Transactions.Tests.csproj", "{BBDD1C0A-67E9-48C7-9A14-69CB8B158549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
