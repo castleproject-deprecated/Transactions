@@ -1,9 +1,9 @@
 # the Projects hash should only contain strings relating to the projects.
 Projects = {
 	:tx => {	
-		:id => "Castle.Services.Transaction",
-		:dir => "Castle.Services.Transaction",
-		:test_dir => "Castle.Services.Transaction.Tests",
+		:id => "Castle.Facilities.Transactions",
+		:dir => "Castle.Facilities.Transactions",
+		:test_dir => "Castle.Facilities.Transactions.Tests",
 		:title => "Castle Transaction Services",
 		:description => "The Castle Transaction Services enables a common interface to both .Net Transactions with LTM/Lightweight Transaction Manager and powerful file-system transactions with Transactional NTFS/TxF.",
 		:copyright => "Apache 2.0 Licensed. (c) The Castle Project 2004-2011",

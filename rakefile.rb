@@ -175,7 +175,7 @@ namespace :castle do
     ilm.use :"#{FRAMEWORK}"
     ilm.log = File.join("..", 'tx-ilmerge.log')
     ilm.allow_dupes = true
-    ilm.references = [ 'Castle.Services.Transaction.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+    ilm.references = [ 'Castle.Facilities.Transactions.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
  end
 
   # ilmerge :autotx_ilmerge => :autotx_output do |ilm|
@@ -245,7 +245,7 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Facilities.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
@@ -272,7 +272,7 @@ namespace :castle do
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Facilities.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"

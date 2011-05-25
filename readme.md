@@ -1,4 +1,4 @@
-Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
+Documentation on [Wiki!](https://github.com/haf/Castle.Facilities.Transactions/wiki)
 
 # Getting Started
 
