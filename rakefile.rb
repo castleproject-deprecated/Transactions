@@ -251,9 +251,6 @@ namespace :castle do
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
 	nuspec.dependency "log4net", "1.2.10"
-	nuspec.dependency "Rx-Core", "1.0.2856.0"
-	nuspec.dependency "Rx-Main", "1.0.2856.0"
-	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
@@ -280,9 +277,6 @@ namespace :castle do
     nuspec.dependency "Castle.Windsor", "[2.5.1]" # 2.5.2-3 is bugged => NullReferenceException-s.
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
-	nuspec.dependency "Rx-Core", "1.0.2856.0"
-	nuspec.dependency "Rx-Main", "1.0.2856.0"
-	nuspec.dependency "Rx-Interactive", "1.0.2856.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
