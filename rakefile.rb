@@ -1,4 +1,3 @@
-# copyright Henrik Feldt 2011
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'

@@ -1,5 +1,3 @@
-Copyright Henrik Feldt 2011
-
 Apache License, Version 2.0
 
 Apache License

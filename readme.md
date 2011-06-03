@@ -34,8 +34,7 @@ The .IO namespace of Castle Transactions enables:
  
 ## Castle AutoTx 3.0 enables the .Net coder with:
 
- * Easily applying transactions through inversion of control.
- * Easily applying Retry-Policies to transactional methods
+ * Easily applying transactions through inversion of control
  * Compensations when transactions abort.
 
 ## Contributing
