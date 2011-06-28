@@ -273,7 +273,7 @@ namespace :castle do
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "[2.5.1]" # 2.5.2-3 is bugged => NullReferenceException-s.
+    nuspec.dependency "Castle.Windsor", "2.5.3"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
