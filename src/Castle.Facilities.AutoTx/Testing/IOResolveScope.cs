@@ -16,12 +16,11 @@
 
 #endregion
 
-using System.Diagnostics.Contracts;
-using Castle.Services.Transaction;
-using Castle.Windsor;
-
-namespace Castle.Facilities.AutoTx.Testing
+namespace Castle.Facilities.Transactions.Testing
 {
+	using System.Diagnostics.Contracts;
+	using Windsor;
+
 	/// <summary>
 	/// 	A resolve scope where T is the service you wish to get from the container.
 	/// </summary>
@@ -38,14 +37,14 @@ namespace Castle.Facilities.AutoTx.Testing
 		{
 			Contract.Requires(container != null, "container mustn't be null");
 
-			_Dir = _Container.Resolve<IDirectoryAdapter>();
+			_Dir = Container.Resolve<IDirectoryAdapter>();
 			Contract.Assume(_Dir != null, "resolve throws otherwise");
 
-			_File = _Container.Resolve<IFileAdapter>();
+			_File = Container.Resolve<IFileAdapter>();
 			Contract.Assume(_File != null, "resolve throws otherwise");
 
-			_Manager = _Container.Resolve<ITransactionManager>();
-			Contract.Assume(_Manager != null);
+			_Manager = Container.Resolve<ITransactionManager>();
+			Contract.Assume(_Manager != null, "resolve throws otherwise");
 		}
 
 		/// <summary>
@@ -80,8 +79,8 @@ namespace Castle.Facilities.AutoTx.Testing
 
 			try
 			{
-				_Container.Release(_Dir);
-				_Container.Release(_File);
+				Container.Release(_Dir);
+				Container.Release(_File);
 			}
 			finally
 			{

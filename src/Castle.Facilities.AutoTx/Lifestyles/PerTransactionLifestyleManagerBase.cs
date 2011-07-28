@@ -16,21 +16,20 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using Castle.Core;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Context;
-using Castle.MicroKernel.Lifestyle;
-using Castle.Services.Transaction;
-using log4net;
-
-namespace Castle.Facilities.AutoTx.Lifestyles
+namespace Castle.Facilities.Transactions.Lifestyles
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using Core;
+	using Core.Logging;
+	using MicroKernel;
+	using MicroKernel.Context;
+	using MicroKernel.Lifestyle;
+
 	/// <summary>
 	/// 	This lifestyle manager is responsible for disposing components
 	/// 	at the same time as the transaction is completed, i.e. the transction
@@ -39,7 +38,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	[Serializable]
 	public abstract class PerTransactionLifestyleManagerBase : AbstractLifestyleManager
 	{
-		private static readonly ILog _Logger = LogManager.GetLogger(typeof (PerTransactionLifestyleManagerBase));
+		private ILogger _Logger = NullLogger.Instance;
 
 		private readonly Dictionary<string, Tuple<uint, object>> _Storage = new Dictionary<string, Tuple<uint, object>>();
 
@@ -51,8 +50,14 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 		{
 			Contract.Requires(manager != null);
 			Contract.Ensures(_Manager != null);
-			_Logger.DebugFormat("created");
+			
 			_Manager = manager;
+		}
+
+		public ILogger Logger
+		{
+			get { return _Logger; }
+			set { _Logger = value; }
 		}
 
 		public override void Init(IComponentActivator componentActivator, IKernel kernel, ComponentModel model)
@@ -136,7 +141,8 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Ensures(Contract.Result<object>() != null);
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("resolving service '{0}' using PerTransaction lifestyle", context.Handler.Service);
+				_Logger.DebugFormat("resolving service '{0}', which wants model '{1}' in a PerTransaction lifestyle", 
+					context.Handler.Service, Model.Service);
 
 			if (_Disposed)
 				throw new ObjectDisposedException("PerTransactionLifestyleManagerBase",
@@ -144,7 +150,10 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			if (!GetSemanticTransactionForLifetime().HasValue)
 				throw new MissingTransactionException(
-					string.Format("No transaction in context when trying to resolve type '{0}'.", context.Handler.Service));
+					string.Format("No transaction in context when trying to instantiate model '{0}' for resolve type '{1}'. "
+						+ "If you have verified that your call stack contains a method with the [Transaction] attribute, "
+						+ "then also make sure that you have registered the AutoTx Facility.", 
+						Model.Service, context.Handler.Service));
 
 			var transaction = GetSemanticTransactionForLifetime().Value;
 
@@ -152,9 +161,9 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			                "because then it would not be active but would have been popped");
 
 			Tuple<uint, object> instance;
-			// unique key per service and per top transaction identifier
+			// unique key per the model service and per top transaction identifier
 			var localIdentifier = transaction.LocalIdentifier;
-			var key = localIdentifier + "|" + context.Handler.Service.GetHashCode();
+			var key = localIdentifier + "|" + Model.Service.GetHashCode();
 
 			if (!_Storage.TryGetValue(key, out instance))
 			{
@@ -168,43 +177,43 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 						instance = _Storage[key] = Tuple.Create(1u, base.Resolve(context));
 
 						transaction.Inner.TransactionCompleted += (sender, args) =>
-						                                          	{
-						                                          		var id = localIdentifier;
-						                                          		if (_Logger.IsDebugEnabled)
-						                                          			_Logger.DebugFormat(
-						                                          				"transaction#{0} completed, maybe releasing object '{1}'", id,
-						                                          				instance);
+						{
+							var id = localIdentifier;
+							if (_Logger.IsDebugEnabled)
+								_Logger.DebugFormat(
+									"transaction#{0} completed, maybe releasing object '{1}'", id,
+									instance);
 
-						                                          		lock (ComponentActivator)
-						                                          		{
-						                                          			var counter = _Storage[key];
+							lock (ComponentActivator)
+							{
+								var counter = _Storage[key];
 
-						                                          			if (counter.Item1 == 1)
-						                                          			{
-						                                          				if (_Logger.IsDebugEnabled)
-						                                          					_Logger.DebugFormat("last item of '{0}' per-tx; releasing it",
-						                                          					                    counter.Item2);
+								if (counter.Item1 == 1)
+								{
+									if (_Logger.IsDebugEnabled)
+										_Logger.DebugFormat("last item of '{0}' per-tx; releasing it",
+															counter.Item2);
 
-						                                          				// this might happen if the transaction outlives the service; the transaction might also notify transaction fron a timer, i.e.
-						                                          				// not synchronously.
-						                                          				if (!_Disposed)
-						                                          				{
-						                                          					Contract.Assume(_Storage.Count > 0);
+									// this might happen if the transaction outlives the service; the transaction might also notify transaction fron a timer, i.e.
+									// not synchronously.
+									if (!_Disposed)
+									{
+										Contract.Assume(_Storage.Count > 0);
 
-						                                          					_Storage.Remove(key);
-						                                          					Evict(counter.Item2);
-						                                          				}
-						                                          			}
-						                                          			else
-						                                          			{
-						                                          				if (_Logger.IsDebugEnabled)
-						                                          					_Logger.DebugFormat("{0} item(s) of '{1}' left in per-tx storage",
-						                                          					                    counter.Item1 - 1, counter.Item2);
+										_Storage.Remove(key);
+										Evict(counter.Item2);
+									}
+								}
+								else
+								{
+									if (_Logger.IsDebugEnabled)
+										_Logger.DebugFormat("{0} item(s) of '{1}' left in per-tx storage",
+															counter.Item1 - 1, counter.Item2);
 
-						                                          				_Storage[key] = Tuple.Create(counter.Item1 - 1, counter.Item2);
-						                                          			}
-						                                          		}
-						                                          	};
+									_Storage[key] = Tuple.Create(counter.Item1 - 1, counter.Item2);
+								}
+							}
+						};
 					}
 				}
 			}

@@ -1,23 +1,21 @@
-using System;
-using System.Threading;
-using System.Transactions;
-using Castle.Facilities.AutoTx.Lifestyles;
-using Castle.Facilities.FactorySupport;
-using Castle.Facilities.TypedFactory;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Registration;
-using Castle.Services.Transaction;
-using Castle.Windsor;
-using log4net;
-using log4net.Config;
-using NUnit.Framework;
-using Castle.Facilities.AutoTx.Testing;
-
 namespace Castle.Facilities.AutoTx.Tests
 {
+	using System;
+	using System.Threading;
+	using FactorySupport;
+	using log4net;
+	using log4net.Config;
+	using MicroKernel.Registration;
+	using NUnit.Framework;
+	using Transactions;
+	using Transactions.Registration;
+	using Transactions.Testing;
+	using TypedFactory;
+	using Windsor;
+
 	public class PerTransactionLifestyle_Releasing
 	{
-		private static readonly ILog _Logger = LogManager.GetLogger(typeof (PerTransactionLifestyle_Releasing));
+		private static readonly ILog _Logger = LogManager.GetLogger(typeof(PerTransactionLifestyle_Releasing));
 
 
 		[SetUp]
@@ -41,8 +39,26 @@ namespace Castle.Facilities.AutoTx.Tests
 			// when
 			using (var scope = container.ResolveScope<Service>())
 			{
-				Assert.Throws<MissingTransactionException>(() => scope.Service.DoWork());
+				var ex = Assert.Throws<MissingTransactionException>(() => scope.Service.DoWork());
+				Assert.That(ex.Message, Is.StringContaining("Castle.Facilities.AutoTx.Tests.IPerTxService"),
+					"The message from the exception needs to contain the component which IS A per-transaction component.");
 			}
+		}
+
+		[Test]
+		public void ThrowsMissingTransactionException_NoAmbientTransaction_DirectDependency()
+		{
+			// given
+			WindsorContainer container = GetContainer();
+
+			// when
+			var ex = Assert.Throws<MissingTransactionException>(() =>
+			{
+				using (var scope = container.ResolveScope<ServiceWithDirectDep>())
+					scope.Service.DoWork();
+			});
+			Assert.That(ex.Message, Is.StringContaining("Castle.Facilities.AutoTx.Tests.IPerTxService"),
+				"The message from the exception needs to contain the component which IS A per-transaction component.");
 		}
 
 		[Test]
@@ -113,7 +129,7 @@ namespace Castle.Facilities.AutoTx.Tests
 				var parentId = resolved.Id;
 
 				// create a child transaction
-				var createdTx2 = manager.Service.CreateTransaction(new DefaultTransactionOptions() {Fork = true}).Value;
+				var createdTx2 = manager.Service.CreateTransaction(new DefaultTransactionOptions() { Fork = true }).Value;
 
 				Assert.That(createdTx2.ShouldFork, Is.True, "because we're in an ambient and have specified the option");
 				Assert.That(manager.Service.Count, Is.EqualTo(1), "transaction count correct");
@@ -140,7 +156,8 @@ namespace Castle.Facilities.AutoTx.Tests
 							tx2.Complete();
 						}
 
-						Assert.That(perTxService.Disposed, Is.False, "becuase dependent transaction hasn't fired its parent TransactionCompleted event");
+						// perTxService.Disposed is either true or false at this point depending on the interleaving
+						//Assert.That(perTxService.Disposed, Is.???, "becuase dependent transaction hasn't fired its parent TransactionCompleted event, or it HAS done so and it IS disposed");
 					}
 					catch (Exception ex)
 					{
@@ -174,7 +191,7 @@ namespace Castle.Facilities.AutoTx.Tests
 				Console.WriteLine(possibleException);
 				Assert.Fail();
 			}
-			
+
 			// the component burden in this one should not throw like the log trace below!
 			container.Dispose();
 			/*Castle.Facilities.AutoTx.Tests.PerTransactionLifestyle_Releasing: 2011-04-26 16:23:01,859 [9] DEBUG - child finally
@@ -220,13 +237,31 @@ Test 'Castle.Facilities.AutoTx.Tests.PerTransactionLifestyle_Releasing.Concurren
 					.Named("per-tx-session")
 					.UsingFactoryMethod(k =>
 					{
-					    var factory = k.Resolve<IPerTxServiceFactory>("per-tx-session.factory");
-					    var s = factory.CreateService();
-					    return s;
+						var factory = k.Resolve<IPerTxServiceFactory>("per-tx-session.factory");
+						var s = factory.CreateService();
+						return s;
 					}),
-				Component.For<Service>());
+				Component.For<Service>(),
+				Component.For<ServiceWithDirectDep>());
 
 			return container;
+		}
+	}
+
+	public class ServiceWithDirectDep
+	{
+		private readonly IPerTxService _Service;
+
+		public ServiceWithDirectDep(IPerTxService service)
+		{
+			if (service == null) throw new ArgumentNullException("service");
+			_Service = service;
+		}
+
+		[Transaction]
+		public virtual void DoWork()
+		{
+			Assert.Fail("IPerTxService is resolved in the c'tor but is per-tx, so DoWork should never be called as lifestyle throws exception");
 		}
 	}
 

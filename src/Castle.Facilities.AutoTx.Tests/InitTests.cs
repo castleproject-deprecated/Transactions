@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2009-2011 Henrik Feldt - http://logibit.se/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 #endregion
 
-using Castle.MicroKernel.Facilities;
-using Castle.MicroKernel.Registration;
-using Castle.Services.Transaction;
-using Castle.Windsor;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests
+namespace Castle.Facilities.Transactions.Tests
 {
+	using MicroKernel.Facilities;
+	using MicroKernel.Registration;
+	using NUnit.Framework;
+	using Windsor;
+
 	public class InitTests
 	{
 		[Test]

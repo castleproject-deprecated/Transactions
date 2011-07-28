@@ -21,8 +21,9 @@ Folders = {
 }
 
 Files = {
-  :sln => "Castle.Services.Transaction.sln",
+  :sln => "Castle.Transactions.sln",
   :version => "VERSION",
+  :nuget_private_key => "NUGET_KEY",
   
   :tx => {
     :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:id]}.nuspec"),
@@ -45,4 +46,8 @@ Commands = {
   :nunit => File.join(Folders[:nunit], "nunit-console.exe"),
   :nuget => File.join(Folders[:tools], "NuGet.exe"),
   :ilmerge => File.join(Folders[:tools], "ILMerge.exe")
+}
+
+Uris = {
+  :nuget_offical => "http://packages.nuget.org/v1/"
 }

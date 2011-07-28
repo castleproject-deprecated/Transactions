@@ -1,11 +1,11 @@
-using Castle.Facilities.AutoTx.Testing;
-using Castle.Facilities.AutoTx.Tests.TestClasses;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests
+namespace Castle.Facilities.Transactions.Tests
 {
+	using MicroKernel.Registration;
+	using NUnit.Framework;
+	using TestClasses;
+	using Testing;
+	using Windsor;
+
 	public class SingleThread_SupressInAmbient
 	{
 		private WindsorContainer _Container;
@@ -15,7 +15,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		{
 			_Container = new WindsorContainer();
 			_Container.AddFacility("autotx", new AutoTxFacility());
-			_Container.Register(Component.For<IMyService>().ImplementedBy<MyService>());
+			_Container.Register(Component.For<MyService2>());
 		}
 
 		[TearDown]
@@ -27,13 +27,13 @@ namespace Castle.Facilities.AutoTx.Tests
 		[Test]
 		public void SupressedTransaction_NoCurrentTransaction()
 		{
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 				scope.Service.VerifySupressed();
 		}
 		[Test]
 		public void SupressedTransaction_InCurrentTransaction()
 		{
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 				scope.Service.VerifyInAmbient(() => scope.Service.VerifySupressed());
 		}
 	}

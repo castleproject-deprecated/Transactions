@@ -1,9 +1,8 @@
-using System;
-using Castle.Services.Transaction;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests.Framework
+namespace Castle.Facilities.Transactions.Tests.Framework
 {
+	using System;
+	using NUnit.Framework;
+
 	public static class MaybeEx
 	{
 		public static Maybe<T> ShouldBe<T>(this Maybe<T> m, Func<T, bool> test, string msg)

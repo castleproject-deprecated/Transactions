@@ -16,12 +16,11 @@
 
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
-using Castle.Services.Transaction;
-
-namespace Castle.Facilities.AutoTx.Lifestyles
+namespace Castle.Facilities.Transactions.Lifestyles
 {
+	using System;
+	using System.Diagnostics.Contracts;
+
 	/// <summary>
 	/// 	A lifestyle manager for every top transaction in the current call context. This lifestyle is great
 	/// 	for components that are thread-safe and need to monitor/handle items in both the current thread
@@ -37,8 +36,6 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Requires(manager != null);
 		}
 
-		#region Overrides of PerTransactionLifestyleManagerBase
-
 		protected internal override Maybe<ITransaction> GetSemanticTransactionForLifetime()
 		{
 			if (_Disposed)
@@ -47,7 +44,5 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			return _Manager.CurrentTopTransaction;
 		}
-
-		#endregion
 	}
 }

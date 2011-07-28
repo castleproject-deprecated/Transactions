@@ -16,12 +16,12 @@
 
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
-using Castle.Services.Transaction;
-
-namespace Castle.Facilities.AutoTx
+namespace Castle.Facilities.Transactions
 {
+	using System;
+	using System.Diagnostics.Contracts;
+	using Contracts;
+
 	[ContractClass(typeof (TransactionMetaInfoStoreContract))]
 	internal interface ITransactionMetaInfoStore
 	{

@@ -2,6 +2,7 @@
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
+require 'buildscripts/ilmerge'
 begin
   require 'version_bumper'  
 rescue LoadError
@@ -12,6 +13,7 @@ require 'buildscripts/project_data'
 require 'buildscripts/paths'
 require 'buildscripts/utils'
 require 'buildscripts/environment'
+
 
 # profile time: "PS \> $start = [DateTime]::UtcNow ; rake ; $end = [DateTime]::UtcNow ; $diff = $end-$start ; "Started: $start to $end, a diff of $diff"
 task :default => [:release]
@@ -25,36 +27,28 @@ task :release => ["env:release", "castle:build", "castle:nuget"]
 desc "build in debug mode"
 task :debug => ["env:debug", "castle:build"]
 
+# WARNING: do not run this locally if you have set the private nuget key file
 task :ci => ["clobber", "castle:build", "castle:test_all", "castle:nuget"]
 
 desc "Run all unit and integration tests in debug mode"
 task :test_all => ["env:debug", "castle:test_all"]
 
-desc "prepare alpha version for being published (not for ci server)"
+desc "prepare alpha version for being published"
 task :alpha => ["env:release"] do
-  puts %q{
-    Basically what the script should do;
-    1. Verify no pending changes
-    2. Verify on develop branch
-    3. Ask for alpha number
-    4. Verify alpha number is greater than the last alpha number
-    5. Verify we're not above alpha, e.g. in beta.
-    6. git add . -A ; git commit -m "Automatic alpha" ; rake release castle:test_all
-       This ensures we have passing tests and a build with a matching git commit hash.
-    7. git checkout alpha
-    8. git merge --no-ff -m "Alpha [version here] commit." develop
-    9. git tag -a "v[VERSION]"
-    10. git push
-    11. git push --tags
-        This means that the tag is now publically browsable.
-    
-    Now, TeamCity till take over and run the compile process on the server and then
-    upload the artifacts to be downloaded at https://github.com/haf/Castle.Services.Transaction/downloads
-
-}
-
+  puts "Preparing Alpha Release"
   release_branch("alpha")
-  
+end
+
+desc "prepare beta version for being published"
+task :beta => ["env:release"] do
+  puts "Preparing Beta Release"
+  release_branch("beta")
+end
+
+desc "prepare rc for being published"
+task :rc => ["env:release"] do
+  puts "Preparing RC release"
+  release_branch("rc")
 end
 
 CLOBBER.include(Folders[:out])
@@ -168,6 +162,34 @@ namespace :castle do
     CLEAN.include(target)
   end
   
+  #                     ILMERGE
+  # ===================================================
+  
+  task :ilmerge => [:tx_ilmerge]
+  
+  ilmerge :tx_ilmerge => :tx_output do |ilm|
+    ilm.output = "#{Projects[:tx][:id]}.dll"
+    ilm.internalize = File.join(File.realpath('buildscripts'), 'internalize.txt')
+    ilm.working_directory = File.join(Folders[:binaries],  Projects[:tx][:dir])
+    ilm.target = :library
+    ilm.use :"#{FRAMEWORK}"
+    ilm.log = File.join("..", 'tx-ilmerge.log')
+    ilm.allow_dupes = true
+    ilm.references = [ 'Castle.Facilities.Transactions.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+ end
+
+  # ilmerge :autotx_ilmerge => :autotx_output do |ilm|
+    # ilm.output = File.join(Folders[:autotx_out], "#{Projects[:autotx][:id]}.dll")
+    # ilm.internalize = File.join('buildscripts', 'internalize.txt')
+    # ilm.working_directory = Folders[:autotx_out]
+    # ilm.target = :library
+    # ilm.use FRAMEWORK
+    # ilm.log = File.join( Folders[:autotx_out], "..", 'ilmerge.log' )
+    # ilm.allow_dupes = true
+    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'Castle.Core.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+ # end
+
+  
   
   #                     TESTING
   # ===================================================
@@ -223,7 +245,7 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Facilities.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
@@ -250,12 +272,12 @@ namespace :castle do
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
-    nuspec.projectUrl = "https://github.com/haf/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Facilities.Transactions"
     nuspec.language = "en-US"
-    nuspec.licenseUrl = "https://github.com/haf/Castle.Services.Transaction/raw/master/License.txt"
+    nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.2"
+    nuspec.dependency "Castle.Windsor", "[2.5.1]" # 2.5.2-3 is bugged => NullReferenceException-s.
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "log4net", "1.2.10"
 	nuspec.dependency "Rx-Core", "1.0.2856.0"
@@ -301,6 +323,24 @@ namespace :castle do
 	nuget.command     = Commands[:nuget]
     nuget.nuspec      = Files[:autotx][:nuspec]
     nuget.output      = Folders[:nuget]
+  end
+  
+  task :nuget_push => [:tx_nuget_push, :autotx_nuget_push]
+  
+  def nuget_key()
+	File.open( Files[:nuget_private_key] , "r") do |f|
+		return f.gets
+	end
+  end
+  
+  task :tx_nuget_push do
+	package = "#{Projects[:tx][:id]}.#{VERSION}.nupkg"
+    sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
+  end
+  
+  task :autotx_nuget_push do
+    package = "#{Projects[:autotx][:id]}.#{VERSION}.nupkg"
+    sh "#{Commands[:nuget]} push -source #{Uris[:nuget_offical]} #{package} #{nuget_key()}"
   end
 end
 

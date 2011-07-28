@@ -1,6 +1,6 @@
 #region license
 
-// Copyright 2009-2011 Henrik Feldt - http://logibit.se/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 #endregion
 
-using System;
-using System.Transactions;
-using Castle.Facilities.AutoTx.Testing;
-using Castle.Facilities.AutoTx.Tests.TestClasses;
-using Castle.MicroKernel.Registration;
-using Castle.Services.Transaction;
-using Castle.Windsor;
-using log4net.Config;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests
+namespace Castle.Facilities.Transactions.Tests
 {
+	using System;
+	using System.Transactions;
+	using log4net.Config;
+	using MicroKernel.Registration;
+	using NUnit.Framework;
+	using TestClasses;
+	using Testing;
+	using Windsor;
+
 	public class SingleThread_Ambient_OnInterface
 	{
 		private WindsorContainer _Container;
@@ -38,7 +37,7 @@ namespace Castle.Facilities.AutoTx.Tests
 			XmlConfigurator.Configure();
 			_Container = new WindsorContainer();
 			_Container.AddFacility("autotx", new AutoTxFacility());
-			_Container.Register(Component.For<IMyService>().ImplementedBy<MyService>());
+			_Container.Register(Component.For<MyService2>());
 		}
 
 		[TearDown]
@@ -50,7 +49,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		[Test]
 		public void Automatically_Starts_CommitableTransaction()
 		{
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 				scope.Service.VerifyInAmbient();
 		}
 
@@ -64,7 +63,7 @@ namespace Castle.Facilities.AutoTx.Tests
 
 				try
 				{
-					using (var scope = new ResolveScope<IMyService>(_Container))
+					using (var scope = new ResolveScope<MyService2>(_Container))
 						scope.Service.VerifyInAmbient(() =>
 						{
 							ambient = System.Transactions.Transaction.Current;
@@ -83,7 +82,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		public void RecursiveTransactions_Inner_Should_Be_DependentTransaction()
 		{
 			using (var txM = new ResolveScope<ITransactionManager>(_Container))
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 				scope.Service.VerifyInAmbient(() =>
 				{
 					Assert.That(txM.Service.CurrentTransaction.Value.Inner.TransactionInformation.Status ==
@@ -100,7 +99,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		{
 			TransactionState state = TransactionState.Default;
 			using (var txM = new ResolveScope<ITransactionManager>(_Container))
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 			{
 				scope.Service.VerifyInAmbient(() =>
 				{
@@ -117,7 +116,7 @@ namespace Castle.Facilities.AutoTx.Tests
 			var resource = new ThrowingResource(false);
 
 			using (var txM = new ResolveScope<ITransactionManager>(_Container))
-			using (var scope = new ResolveScope<IMyService>(_Container))
+			using (var scope = new ResolveScope<MyService2>(_Container))
 			{
 				scope.Service.VerifyInAmbient(() =>
 				{

@@ -16,15 +16,14 @@
 
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reflection;
-using Castle.Services.Transaction;
-using Castle.Services.Transaction.Utils;
-
-namespace Castle.Facilities.AutoTx
+namespace Castle.Facilities.Transactions
 {
+	using System;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using System.Reflection;
+	using Utils;
+
 	internal sealed class TransactionClassMetaInfoStore : ITransactionMetaInfoStore
 	{
 		private readonly Func<Type, Maybe<TransactionalClassMetaInfo>> _GetMetaFromType;
@@ -40,8 +39,7 @@ namespace Castle.Facilities.AutoTx
 			Contract.Ensures(Contract.Result<Maybe<TransactionalClassMetaInfo>>() != null);
 
 			var allMethods =
-				(from m in implementation.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic |
-				                                     BindingFlags.DeclaredOnly)
+				(from m in implementation.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 				 let attribs = (TransactionAttribute[]) m.GetCustomAttributes(typeof (TransactionAttribute), true)
 				 where attribs.Length > 0
 				 select Tuple.Create(m, attribs.Length > 0 ? attribs[0] : null)).ToList();

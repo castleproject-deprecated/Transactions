@@ -16,17 +16,16 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using Castle.Core;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Facilities;
-using Castle.MicroKernel.ModelBuilder.Inspectors;
-using Castle.Services.Transaction;
-
-namespace Castle.Facilities.AutoTx
+namespace Castle.Facilities.Transactions
 {
+	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using Core;
+	using MicroKernel;
+	using MicroKernel.Facilities;
+	using MicroKernel.ModelBuilder.Inspectors;
+
 	/// <summary>
 	/// 	Transaction component inspector that selects the methods
 	/// 	available to get intercepted with transactions.
@@ -76,7 +75,7 @@ namespace Castle.Facilities.AutoTx
 				return;
 
 			model.Dependencies.Add(new DependencyModel(DependencyType.Service, null, typeof (TransactionInterceptor), false));
-			model.Interceptors.AddFirst(new InterceptorReference(typeof (TransactionInterceptor)));
+			model.Interceptors.Add(new InterceptorReference(typeof (TransactionInterceptor)));
 		}
 
 		[Pure]

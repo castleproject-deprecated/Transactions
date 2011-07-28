@@ -1,18 +1,24 @@
-
 namespace :env do
 
+  # Semantic Versioning! Thanks Seb!
+  # major.minor.build.revision
   task :common do
+
 	File.open( Files[:version] , "r") do |f|
 		ENV['VERSION_BASE'] = VERSION_BASE = f.gets
 	end
 	
 	# version management
-	official = ENV['OFFICIAL_RELEASE'] || "0"
-	build = ENV['BUILD_NUMBER'] || Time.now.strftime('%j%H') # (day of year 0-265)(hour 00-24)
-    ENV['VERSION'] = VERSION = "#{VERSION_BASE}.#{official}"
-	ENV['VERSION_INFORMAL'] = VERSION_INFORMAL = "#{VERSION_BASE}.#{build}"
+	fv = version(VERSION_BASE)
+	build = ENV['BUILD_NUMBER'] || fv[2]
+	revision = ENV['OFFICIAL_RELEASE'] || (fv[3] == 0 ? Time.now.strftime('%j%H') : fv[3]) #  (day of year 0-265)(hour 00-24)
+	
+	real_version = [fv[0], fv[1], build, revision]
+	
+    ENV['VERSION'] = VERSION = real_version.join(".")
+	ENV['VERSION_INFORMAL'] = VERSION_INFORMAL = real_version.join(".")
 	puts "Assembly Version: #{VERSION}."
-	puts "##teamcity[buildNumber '#{VERSION}-#{build}']" # print the version (official) and build number to ci
+	puts "##teamcity[buildNumber '#{VERSION}']" # print the version (revision) and build number to ci
 	
 	# configuration management
 	ENV['FRAMEWORK'] = FRAMEWORK = ENV['FRAMEWORK'] || (Rake::Win32::windows? ? "net40" : "mono28")

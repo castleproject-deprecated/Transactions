@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2009-2011 Henrik Feldt - http://logibit.se/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 #endregion
 
-using System.Transactions;
-using Castle.Facilities.AutoTx.Testing;
-using Castle.Facilities.AutoTx.Tests.TestClasses;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests
+namespace Castle.Facilities.Transactions.Tests
 {
+	using System.Transactions;
+	using MicroKernel.Registration;
+	using NUnit.Framework;
+	using TestClasses;
+	using Testing;
+	using Windsor;
+
 	public class SingleThread_Ambient_OnConcreteType
 	{
 		private WindsorContainer _Container;
@@ -56,7 +56,7 @@ namespace Castle.Facilities.AutoTx.Tests
 			using (var scope = new ResolveScope<ConcreteService>(_Container))
 			{
 				scope.Service.VerifyInAmbient(() =>
-					scope.Service.VerifyInAmbient(() => Assert.That(System.Transactions.Transaction.Current != null 
+					scope.Service.VerifyInAmbient(() => Assert.That(System.Transactions.Transaction.Current != null
 																	&& System.Transactions.Transaction.Current is DependentTransaction)
 				));
 			}

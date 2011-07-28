@@ -16,33 +16,36 @@
 
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
-using Castle.Windsor;
-using log4net;
-
-namespace Castle.Facilities.AutoTx.Testing
+namespace Castle.Facilities.Transactions.Testing
 {
+	using System;
+	using System.Diagnostics.Contracts;
+	using Core.Logging;
+	using Windsor;
+
 	public class ResolveScope<T> : IDisposable
 		where T : class
 	{
-		private static readonly ILog _Logger = LogManager.GetLogger(
-			string.Format("Castle.Facilities.AutoTx.Testing.ResolveScope<{0}>", typeof (T).Name));
+		private ILogger _Logger = NullLogger.Instance;
 
 		private readonly T _Service;
 		private bool _Disposed;
-		protected readonly IWindsorContainer _Container;
+		protected readonly IWindsorContainer Container;
 
 		public ResolveScope(IWindsorContainer container)
 		{
 			Contract.Requires(container != null);
 			Contract.Ensures(_Service != null, "or resolve throws");
 
-			_Logger.Debug("creating");
-
-			_Container = container;
-			_Service = _Container.Resolve<T>();
+			Container = container;
+			_Service = Container.Resolve<T>();
 			Contract.Assume(_Service != null, "by resolve<T>");
+		}
+
+		public ILogger Logger
+		{
+			get { return _Logger; }
+			set { _Logger = value; }
 		}
 
 		[ContractInvariantMethod]
@@ -74,7 +77,7 @@ namespace Castle.Facilities.AutoTx.Testing
 
 			try
 			{
-				_Container.Release(_Service);
+				Container.Release(_Service);
 			}
 			finally
 			{

@@ -16,19 +16,19 @@
 
 #endregion
 
-using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using Castle.Core;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Context;
-using Castle.MicroKernel.Lifestyle;
-using Castle.MicroKernel.Registration;
-using log4net;
-
-namespace Castle.Facilities.AutoTx.Lifestyles
+namespace Castle.Facilities.Transactions.Lifestyles
 {
+	using System;
+	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
+	using Core;
+	using Core.Logging;
+	using MicroKernel;
+	using MicroKernel.Context;
+	using MicroKernel.Lifestyle;
+	using MicroKernel.Registration;
+
 	/// <summary>
 	/// 	Abstract hybrid lifestyle manager, with two underlying lifestyles
 	/// </summary>
@@ -37,14 +37,19 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	public class WrapperResolveLifestyleManager<T> : AbstractLifestyleManager
 		where T : class, ILifestyleManager
 	{
-		private static readonly ILog _Logger = LogManager.GetLogger(
-			string.Format("Castle.Facilities.AutoTx.Lifestyles.WrapperResolveLifestyleManager<{0}>", typeof (T).Name));
+		private ILogger _Logger = NullLogger.Instance;
 
 		private readonly IKernel _LifestyleKernel = new DefaultKernel();
 		protected T _Lifestyle1;
 		private bool _Disposed;
 
 		[ContractPublicPropertyName("Initialized")] private bool _Initialized;
+
+		public ILogger Logger
+		{
+			get { return _Logger; }
+			set { _Logger = value; }
+		}
 
 		public bool Initialized
 		{

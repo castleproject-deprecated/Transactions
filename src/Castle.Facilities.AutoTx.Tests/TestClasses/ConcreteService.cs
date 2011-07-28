@@ -1,10 +1,9 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using Castle.Services.Transaction;
-using NUnit.Framework;
-
-namespace Castle.Facilities.AutoTx.Tests.TestClasses
+﻿namespace Castle.Facilities.Transactions.Tests.TestClasses
 {
+	using System;
+	using System.Diagnostics.Contracts;
+	using NUnit.Framework;
+
 	public class ConcreteService
 	{
 		private readonly ITransactionManager _Manager;
