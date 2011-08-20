@@ -27,10 +27,10 @@ Files = {
   
   :tx => {
     :nuspec => File.join(Folders[:tx_nuspec], "#{Projects[:tx][:id]}.nuspec"),
-	:test_log => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.log"),
-	:test_xml => File.join(Folders[:tests], "Castle.Services.Transaction.Tests.xml"),
+	:test_log => File.join(Folders[:tests], "Castle.Transactions.Tests.log"),
+	:test_xml => File.join(Folders[:tests], "Castle.Transactions.Tests.xml"),
 	
-	:test => 'ex: Castle.Services.Transaction.Tests.dll'
+	:test => 'ex: Castle.Transactions.Tests.dll'
   },
   
   :autotx => {

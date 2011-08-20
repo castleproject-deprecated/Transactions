@@ -78,7 +78,7 @@ namespace :castle do
   desc "generate the assembly infos you need to compile with VS"
   task :assembly_infos => [:tx_version, :autotx_version]
   
-  desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
+  desc "prepare Transactions and AutoTx nuspec + nuget package"
   task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
   
   task :test_all => [:tx_test, :autotx_test]
@@ -174,7 +174,7 @@ namespace :castle do
     ilm.use :"#{FRAMEWORK}"
     ilm.log = File.join("..", 'tx-ilmerge.log')
     ilm.allow_dupes = true
-    ilm.references = [ 'Castle.Services.Transaction.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+    ilm.references = [ 'Castle.Transactions.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
  end
 
   # ilmerge :autotx_ilmerge => :autotx_output do |ilm|
@@ -244,7 +244,7 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
@@ -268,7 +268,7 @@ namespace :castle do
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
@@ -302,7 +302,7 @@ namespace :castle do
   
   nuget_directory(:tx)
   
-  desc "generate nuget package for tx services"
+  desc "generate nuget package for Transactions"
   nugetpack :tx_nuget => [:output, :tx_nuspec] do |nuget|
     nuget.command     = Commands[:nuget]
     nuget.nuspec      = Files[:tx][:nuspec]
@@ -340,8 +340,8 @@ end
 desc "display rake task help"  
 task :help do
   puts ""
-  puts " Castle Transaction Services & AutoTx Facility (c)Henrik Feldt 2011"
-  puts " =================================================================="
+  puts " Castle Transactions & AutoTx Facility (c)Henrik Feldt/Castle Project 2011"
+  puts " ========================================================================="
   puts ""
   puts " Quick Start: Type 'rake' and look in '#{Folders[:out]}/'."
   puts ""	
