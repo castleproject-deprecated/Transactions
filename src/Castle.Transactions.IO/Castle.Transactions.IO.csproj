@@ -41,18 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Castle.IO\Castle.IO.csproj">
+    <ProjectReference Include="..\Castle.IO\Castle.IO.csproj">
       <Project>{59637705-C235-488A-876B-E4B1A39E9BF8}</Project>
       <Name>Castle.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Castle.Transactions\Castle.Transactions.csproj">
+    <ProjectReference Include="..\Castle.Transactions\Castle.Transactions.csproj">
       <Project>{76DF5D09-FC04-411F-B123-01A6B9432796}</Project>
       <Name>Castle.Transactions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
