@@ -25,9 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Tests", "src\Cast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Windsor", "src\Castle.IO.Windsor\Castle.IO.Windsor.csproj", "{7B30541F-DE66-4F77-BF44-74FA32C4E1CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO", "Castle.Transactions.IO\Castle.Transactions.IO.csproj", "{CD2EEE95-769C-44A6-98AF-27A03A0F4528}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO", "src\Castle.Transactions.IO\Castle.Transactions.IO.csproj", "{CD2EEE95-769C-44A6-98AF-27A03A0F4528}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO.Tests", "Castle.Transactions.IO.Tests\Castle.Transactions.IO.Tests.csproj", "{DDD7BBF2-9CA5-4F5A-B63A-0D32FD7E3F8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO.Tests", "src\Castle.Transactions.IO.Tests\Castle.Transactions.IO.Tests.csproj", "{DDD7BBF2-9CA5-4F5A-B63A-0D32FD7E3F8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

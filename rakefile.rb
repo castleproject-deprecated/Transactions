@@ -185,7 +185,7 @@ namespace :castle do
     # ilm.use FRAMEWORK
     # ilm.log = File.join( Folders[:autotx_out], "..", 'ilmerge.log' )
     # ilm.allow_dupes = true
-    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'Castle.Core.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
  # end
 
   
@@ -248,8 +248,7 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "2.5.2"
-	nuspec.dependency "log4net", "1.2.10"
+	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
@@ -275,7 +274,7 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "2.5.2"
     nuspec.dependency "Castle.Windsor", "[2.5.1]" # 2.5.2-3 is bugged => NullReferenceException-s.
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
-	nuspec.dependency "log4net", "1.2.10"
+	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
