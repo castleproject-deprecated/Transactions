@@ -13,8 +13,6 @@ The debug build has code contracts interwoven which will catch you out if you br
 contracts. The release build is completely free from contracts. As such, I strongly
 recommend that you develop towards the debug build.
 
-Also, note that there's extensive log4net logging enabled. Just add a default logger.
-
 # Overview Transactions
 
 Castle Transactions 3.0 enables the .Net coder with:
