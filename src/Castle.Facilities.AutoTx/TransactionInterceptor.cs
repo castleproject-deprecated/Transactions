@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Castle.Core;
 using Castle.Core.Interceptor;
+using Castle.Core.Logging;
 using Castle.DynamicProxy;
 using Castle.MicroKernel;
 using Castle.Services.Transaction;
 using Castle.Services.Transaction.Internal;
-using log4net;
 using TransactionException = Castle.Services.Transaction.TransactionException;
 using TransactionManager = Castle.Services.Transaction.TransactionManager;
 
@@ -35,8 +35,6 @@ namespace Castle.Facilities.AutoTx
 {
 	internal class TransactionInterceptor : IInterceptor, IOnBehalfAware
 	{
-		private static readonly ILog _Logger = LogManager.GetLogger(typeof (TransactionInterceptor));
-
 		private enum InterceptorState
 		{
 			Constructed,
@@ -48,14 +46,19 @@ namespace Castle.Facilities.AutoTx
 		private readonly IKernel _Kernel;
 		private readonly ITransactionMetaInfoStore _Store;
 		private Maybe<TransactionalClassMetaInfo> _MetaInfo;
+		private ILogger _Logger = NullLogger.Instance;
+
+		public ILogger Logger
+		{
+			get { return _Logger; }
+			set { _Logger = value; }
+		}
 
 		public TransactionInterceptor(IKernel kernel, ITransactionMetaInfoStore store)
 		{
 			Contract.Requires(kernel != null, "kernel must be non null");
 			Contract.Requires(store != null, "store must be non null");
 			Contract.Ensures(_State == InterceptorState.Constructed);
-
-			_Logger.DebugFormat("created transaction interceptor");
 
 			_Kernel = kernel;
 			_Store = store;
@@ -90,9 +93,10 @@ namespace Castle.Facilities.AutoTx
 				{
 					if (mTxMethod.HasValue && mTxMethod.Value.Mode == TransactionScopeOption.Suppress)
 					{
-						_Logger.Info("supressing ambient transaction");
+						if(_Logger.IsInfoEnabled)
+							_Logger.Info("supressing ambient transaction");
 
-						using (new TxScope(null))
+						using (new TxScope(null, _Logger.CreateChildLogger("TxScope")))
 							invocation.Proceed();
 					}
 					else invocation.Proceed();
@@ -118,12 +122,14 @@ namespace Castle.Facilities.AutoTx
 		}
 
 		// TODO: implement WaitAll-semantics with returned task
-		private static void SynchronizedCase(IInvocation invocation, ITransaction transaction)
+		private void SynchronizedCase(IInvocation invocation, ITransaction transaction)
 		{
 			Contract.Requires(transaction.State == TransactionState.Active);
-			_Logger.DebugFormat("synchronized case");
 
-			using (new TxScope(transaction.Inner))
+			if(_Logger.IsDebugEnabled)
+				_Logger.DebugFormat("synchronized case");
+
+			using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
 			{
 				var localIdentifier = transaction.LocalIdentifier;
 
@@ -133,8 +139,7 @@ namespace Castle.Facilities.AutoTx
 
 					if (transaction.State == TransactionState.Active)
 						transaction.Complete();
-
-					else
+					else if(_Logger.IsWarnEnabled)
 						_Logger.WarnFormat(
 							"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
 							transaction.State);
@@ -142,7 +147,8 @@ namespace Castle.Facilities.AutoTx
 				catch (TransactionAbortedException)
 				{
 					// if we have aborted the transaction, we both warn and re-throw the exception
-					_Logger.WarnFormat("transaction aborted - synchronized case, tx#{0}", localIdentifier);
+					if(_Logger.IsWarnEnabled)
+					    _Logger.WarnFormat("transaction aborted - synchronized case, tx#{0}", localIdentifier);
 					throw;
 				}
 				catch (TransactionException ex)
@@ -183,13 +189,14 @@ namespace Castle.Facilities.AutoTx
 		/// </summary>
 		internal static ManualResetEvent Finally;
 
-		private static Task ForkCase(IInvocation invocation, ICreatedTransaction txData)
+		private Task ForkCase(IInvocation invocation, ICreatedTransaction txData)
 		{
 			Contract.Requires(txData.Transaction.State == TransactionState.Active);
 			Contract.Ensures(Contract.Result<Task>() != null);
 			Contract.Assume(txData.Transaction.Inner is DependentTransaction);
 
-			_Logger.DebugFormat("fork case");
+			if(_Logger.IsDebugEnabled)
+				_Logger.DebugFormat("fork case");
 
 			return Task.Factory.StartNew(t =>
 			{
@@ -218,7 +225,10 @@ namespace Castle.Facilities.AutoTx
 					{
 						// if we have aborted the transaction, we both warn and re-throw the exception
 						hasException = true;
-						_Logger.Warn("transaction aborted", ex);
+
+						if(_Logger.IsWarnEnabled)
+							_Logger.Warn("transaction aborted", ex);
+
 						throw new TransactionAbortedException(
 							"Parallel/forked transaction aborted! See inner exception for details.", ex);
 					}
