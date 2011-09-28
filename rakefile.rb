@@ -1,4 +1,4 @@
-# copyright Henrik Feldt 2011
+# copyright Henrik Feldt 2011, The Castle Project 2011
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
@@ -250,12 +250,11 @@ namespace :castle do
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
     nuspec.dependency "Castle.Core", "2.5.2"
-	nuspec.dependency "log4net", "1.2.10"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
 
-    nuspec_copy(:tx, "*Transaction.{dll,xml,pdb}")
+    nuspec_copy(:tx, "*Transaction.{dll,xml}")
     # right now, we'll go with the conventions.each{ |ff| nuspec.file ff }
 
     #CLEAN.include(Folders[:tx][:nuspec])
@@ -276,12 +275,11 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "2.5.2"
     nuspec.dependency "Castle.Windsor", "2.5.3"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
-	nuspec.dependency "log4net", "1.2.10"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
     
-    nuspec_copy(:autotx, "*AutoTx.{dll,xml,pdb}")
+    nuspec_copy(:autotx, "*AutoTx.{dll,xml}")
 	# right now, we'll go with the conventions
 	#.each{ |ff| nuspec.file ff }
 	
@@ -341,8 +339,8 @@ end
 desc "display rake task help"  
 task :help do
   puts ""
-  puts " Castle Transaction Services & AutoTx Facility (c)Henrik Feldt 2011"
-  puts " =================================================================="
+  puts " Castle Transaction Services & AutoTx Facility"
+  puts " ============================================="
   puts ""
   puts " Quick Start: Type 'rake' and look in '#{Folders[:out]}/'."
   puts ""	
