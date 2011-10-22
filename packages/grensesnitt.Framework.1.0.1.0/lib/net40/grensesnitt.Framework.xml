@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>grensesnitt.Framework</name>
+    </assembly>
+    <members>
+        <member name="T:grensesnitt.Framework.AppliesTo`1">
+            <summary>
+            Interface that specifies what type the test fixture is a fixture for. The type specified here
+            denotes what interface implementations of will be searched for, from the available assembly sources.
+            </summary>
+            <typeparam name="T">The type to search for.</typeparam>
+        </member>
+        <member name="M:grensesnitt.Framework.AppliesTo`1.SetSubjectUnderTest(`0)">
+            <summary>
+            Method called by the add-in to set the current test subject instance.
+            </summary>
+            <param name="subject">subject instance</param>
+        </member>
+    </members>
+</doc>
