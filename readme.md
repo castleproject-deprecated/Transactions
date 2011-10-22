@@ -27,3 +27,15 @@ The original project that manages transactions.
    - keep the light weight transaction manager (LTM) happy on the CLR
 
 ### Castle Transactions IO
+
+A project for adding a transactional file system to the mix!
+
+#### Main Features
+
+ * Provides an `Castle.IO.IFileSystem` implementation that adds transactionality to common operations.
+
+
+
+### Remarks
+
+See also the [Castle.IO](https://github.com/haf/Castle.IO) project.
