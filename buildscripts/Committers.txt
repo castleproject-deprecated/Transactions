@@ -36,11 +36,7 @@ Committers
 - Krzysztof Kozmic
 - Mauricio Scheffer
 - John Simons
-
-Contributors
-============
-
-Henrik Feldt
+- Henrik Feldt
 
 Managers 
 ========

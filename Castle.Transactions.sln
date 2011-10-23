@@ -28,11 +28,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO.Tests", "src\Castle.Transactions.IO.Tests\Castle.Transactions.IO.Tests.csproj", "{DDD7BBF2-9CA5-4F5A-B63A-0D32FD7E3F8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.Autofac", "Castle.Transactions.Autofac\Castle.Transactions.Autofac.csproj", "{7F966BFF-8994-41CD-BE87-218F9F029D42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.Autofac", "src\Castle.Transactions.Autofac\Castle.Transactions.Autofac.csproj", "{7F966BFF-8994-41CD-BE87-218F9F029D42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Autofac", "Castle.IO.Autofac\Castle.IO.Autofac.csproj", "{24F25A56-4FEF-4772-8149-3CBC15F8CEF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Autofac", "src\Castle.IO.Autofac\Castle.IO.Autofac.csproj", "{24F25A56-4FEF-4772-8149-3CBC15F8CEF6}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Castle.Transactions.FSharpAPI", "Castle.Transactions.FSharpAPI\Castle.Transactions.FSharpAPI.fsproj", "{9947DFFA-AB9D-48D8-A41F-99AC59753055}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Castle.Transactions.FSharpAPI", "src\Castle.Transactions.FSharpAPI\Castle.Transactions.FSharpAPI.fsproj", "{9947DFFA-AB9D-48D8-A41F-99AC59753055}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -42,6 +42,23 @@
     <Compile Include="Module1.fs" />
     <None Include="Script.fsx" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\Castle.IO\Castle.IO.csproj">
+      <Name>Castle.IO</Name>
+      <Project>{59637705-c235-488a-876b-e4b1a39e9bf8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\src\Castle.Transactions.IO\Castle.Transactions.IO.csproj">
+      <Name>Castle.Transactions.IO</Name>
+      <Project>{cd2eee95-769c-44a6-98af-27a03a0f4528}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\src\Castle.Transactions\Castle.Transactions.csproj">
+      <Name>Castle.Transactions</Name>
+      <Project>{76df5d09-fc04-411f-b123-01a6b9432796}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
