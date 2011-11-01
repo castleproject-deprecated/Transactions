@@ -22,6 +22,7 @@ namespace Castle.IO.Tests.chjail
 
 	using SharpTestsEx;
 
+	[Ignore("To be done")]
 	public class can_chjail_absolute_path_spec
 	{
 		private Path an_absolute_path;
