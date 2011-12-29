@@ -52,14 +52,21 @@ namespace Castle.Facilities.AutoTx
 			Contract.Ensures(model.Implementation != null);
 
 			Maybe<TransactionalClassMetaInfo> meta;
-			List<string> problematicMethods;
-			if (model.Service == null
-			    || model.Service.IsInterface
-			    || !(meta = _MetaStore.GetMetaFromType(model.Implementation)).HasValue
-			    || (problematicMethods = (from method in meta.Value.TransactionalMethods
-			                              where !method.IsVirtual
-			                              select method.Name).ToList()).Count == 0)
-				return;
+			List<string> problematicMethods = new List<string>();
+
+			//var service = model.Service;
+
+			foreach (var service in model.Services)
+			{
+				if (service == null
+				    || service.IsInterface
+				    || !(meta = _MetaStore.GetMetaFromType(model.Implementation)).HasValue
+				    || (problematicMethods = (from method in meta.Value.TransactionalMethods
+				                              where !method.IsVirtual
+				                              select method.Name).ToList()).Count == 0)
+					return;
+			}
+
 
 			throw new FacilityException(string.Format("The class {0} wants to use transaction interception, " +
 			                                          "however the methods must be marked as virtual in order to do so. Please correct " +
@@ -75,7 +82,7 @@ namespace Castle.Facilities.AutoTx
 			if (!meta.HasValue)
 				return;
 
-			model.Dependencies.Add(new DependencyModel(DependencyType.Service, null, typeof (TransactionInterceptor), false));
+			model.Dependencies.Add(new DependencyModel(null, typeof (TransactionInterceptor), false));
 			model.Interceptors.Add(new InterceptorReference(typeof (TransactionInterceptor)));
 		}
 

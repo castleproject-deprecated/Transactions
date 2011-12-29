@@ -20,7 +20,6 @@ using System;
 using System.Linq;
 using Castle.Facilities.AutoTx.Lifestyles;
 using Castle.Facilities.AutoTx.Registration;
-using Castle.Facilities.FactorySupport;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.Services.Transaction;
@@ -37,7 +36,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		public void GetFacilities()
 		{
 			var c = new WindsorContainer();
-			c.AddFacility<FactorySupportFacility>().AddFacility<TypedFactoryFacility>();
+			c.AddFacility<TypedFactoryFacility>();
 			c.Kernel.GetFacilities().Do(Console.WriteLine).Run();
 		}
 

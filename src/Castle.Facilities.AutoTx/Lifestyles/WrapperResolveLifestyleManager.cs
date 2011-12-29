@@ -71,7 +71,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				_Logger = NullLogger.Instance;
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("initializing (for component: {0})", model.Service);
+				_Logger.DebugFormat("initializing (for component: {0})", model.Name);
 
 			_LifestyleKernel.Register(Component.For<T>().LifeStyle.Transient.Named("T.lifestyle"));
 			kernel.AddChildKernel(_LifestyleKernel);
@@ -148,11 +148,11 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			}
 		}
 
-		public override object Resolve(CreationContext context)
+		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
 		{
 			Contract.Requires(Initialized);
 			Contract.Ensures(Contract.Result<object>() != null);
-			var resolve = _Lifestyle1.Resolve(context);
+			var resolve = _Lifestyle1.Resolve(context, releasePolicy);
 			Contract.Assume(resolve != null, "the resolved instance shouldn't be null");
 			return resolve;
 		}

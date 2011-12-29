@@ -3,7 +3,6 @@ using System.Threading;
 using System.Transactions;
 using Castle.Facilities.AutoTx.Lifestyles;
 using Castle.Facilities.AutoTx.Registration;
-using Castle.Facilities.FactorySupport;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
@@ -228,7 +227,6 @@ Test 'Castle.Facilities.AutoTx.Tests.PerTransactionLifestyle_Releasing.Concurren
 		{
 			var container = new WindsorContainer();
 			container.AddFacility<AutoTxFacility>();
-			container.AddFacility<FactorySupportFacility>();
 			container.AddFacility<TypedFactoryFacility>();
 			container.Register(
 				Component.For<IPerTxServiceFactory>()

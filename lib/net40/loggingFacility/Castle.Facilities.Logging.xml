@@ -6,7 +6,7 @@
     <members>
         <member name="T:Castle.Facilities.Logging.LoggerImplementation">
             <summary>
-            The supported <see cref="T:Castle.Core.Logging.ILogger"/> implementations
+              The supported <see cref="T:Castle.Core.Logging.ILogger"/> implementations
             </summary>
         </member>
         <member name="T:Castle.Facilities.Logging.LoggerResolver">
@@ -18,61 +18,61 @@
         </member>
         <member name="T:Castle.Facilities.Logging.LoggingFacility">
             <summary>
-            A facility for logging support.
+              A facility for logging support.
             </summary>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
+              Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
             </summary>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.#ctor(Castle.Facilities.Logging.LoggerImplementation)">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
+              Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
             </summary>
             <param name="loggingApi">
-            The LoggerImplementation that should be used
+              The LoggerImplementation that should be used
             </param>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.#ctor(Castle.Facilities.Logging.LoggerImplementation,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
+              Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
             </summary>
             <param name="loggingApi">
-            The LoggerImplementation that should be used
+              The LoggerImplementation that should be used
             </param>
             <param name="configFile">
-            The configuration file that should be used by the chosen LoggerImplementation
+              The configuration file that should be used by the chosen LoggerImplementation
             </param>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.#ctor(System.String,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class using a custom LoggerImplementation
+              Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class using a custom LoggerImplementation
             </summary>
             <param name="configFile">
-            The configuration file that should be used by the chosen LoggerImplementation
+              The configuration file that should be used by the chosen LoggerImplementation
             </param>
             <param name="customLoggerFactory">
-            The type name of the type of the custom logger factory.
+              The type name of the type of the custom logger factory.
             </param>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.#ctor(Castle.Facilities.Logging.LoggerImplementation,System.String,System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
+              Initializes a new instance of the <see cref="T:Castle.Facilities.Logging.LoggingFacility"/> class.
             </summary>
             <param name="loggingApi">
-            The LoggerImplementation that should be used
+              The LoggerImplementation that should be used
             </param>
             <param name="configFile">
-            The configuration file that should be used by the chosen LoggerImplementation
+              The configuration file that should be used by the chosen LoggerImplementation
             </param>
             <param name="customLoggerFactory">
-            The type name of the type of the custom logger factory. (only used when loggingApi is set to LoggerImplementation.Custom)
+              The type name of the type of the custom logger factory. (only used when loggingApi is set to LoggerImplementation.Custom)
             </param>
         </member>
         <member name="M:Castle.Facilities.Logging.LoggingFacility.WithAppConfig">
             <summary>
-            loads configuration from current AppDomain's config file (aka web.config/app.config)
+              loads configuration from current AppDomain's config file (aka web.config/app.config)
             </summary>
             <returns></returns>
         </member>

@@ -26,7 +26,7 @@ namespace Castle.Facilities.AutoTx.Registration
 	public static class LifestyleRegistrationExtensions
 	{
 		public static ComponentRegistration<TService> PerTransaction<TService>(
-			this LifestyleGroup<TService> @group)
+			this LifestyleGroup<TService> @group) where TService : class
 		{
 			Contract.Requires(group != null);
 			Contract.Ensures(Contract.Result<ComponentRegistration<TService>>() != null);
@@ -34,7 +34,7 @@ namespace Castle.Facilities.AutoTx.Registration
 		}
 
 		public static ComponentRegistration<TService> PerTopTransaction<TService>(
-			this LifestyleGroup<TService> @group)
+			this LifestyleGroup<TService> @group) where TService : class
 		{
 			Contract.Requires(group != null);
 			Contract.Ensures(Contract.Result<ComponentRegistration<TService>>() != null);
