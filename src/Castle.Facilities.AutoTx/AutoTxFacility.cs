@@ -55,7 +55,7 @@ namespace Castle.Facilities.AutoTx
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
 				Component.For<TransactionInterceptor>()
-					.Named("transaction.interceptor")
+					//.Named("transaction.interceptor")
 					.LifeStyle.Transient,
 				Component.For<ITransactionMetaInfoStore>()
 					.ImplementedBy<TransactionClassMetaInfoStore>()
