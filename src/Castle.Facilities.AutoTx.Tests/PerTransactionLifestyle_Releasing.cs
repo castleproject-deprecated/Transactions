@@ -15,6 +15,7 @@ using Castle.Facilities.AutoTx.Testing;
 
 namespace Castle.Facilities.AutoTx.Tests
 {
+	[TestFixture, Explicit("")]
 	public class PerTransactionLifestyle_Releasing
 	{
 		private static readonly ILog _Logger = LogManager.GetLogger(typeof (PerTransactionLifestyle_Releasing));
