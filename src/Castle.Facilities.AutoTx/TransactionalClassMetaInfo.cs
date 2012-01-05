@@ -29,6 +29,7 @@ namespace Castle.Facilities.AutoTx
 	internal sealed class TransactionalClassMetaInfo
 	{
 		private readonly Dictionary<MethodInfo, TransactionAttribute> _TxMethods;
+		private readonly Dictionary<string, TransactionAttribute> _TxMethodsHackMap;
 		private readonly HashSet<MethodInfo> _NormalMethods;
 
 		public TransactionalClassMetaInfo(IEnumerable<Tuple<MethodInfo, TransactionAttribute>> methods)
@@ -38,8 +39,10 @@ namespace Castle.Facilities.AutoTx
 			Contract.Ensures(_NormalMethods != null);
 
 			_TxMethods = new Dictionary<MethodInfo, TransactionAttribute>(methods.Count());
+			_TxMethodsHackMap = new Dictionary<string, TransactionAttribute>(methods.Count());
 			_NormalMethods = new HashSet<MethodInfo>();
 
+			methods.Where(x => x.Item2 != null).Run(pair => _TxMethodsHackMap.Add(pair.Item1.ToString(), pair.Item2));
 			methods.Where(x => x.Item2 != null).Run(pair => _TxMethods.Add(pair.Item1, pair.Item2));
 			methods.Where(x => x.Item2 == null).Run(pair => _NormalMethods.Add(pair.Item1));
 		}
@@ -65,8 +68,8 @@ namespace Castle.Facilities.AutoTx
 		{
 			Contract.Requires(target != null);
 			Contract.Ensures(Contract.Result<Maybe<TransactionAttribute>>() != null);
-			return _TxMethods.ContainsKey(target)
-			       	? Maybe.Some<ITransactionOptions>(_TxMethods[target])
+			return _TxMethodsHackMap.ContainsKey(target.ToString())
+			       	? Maybe.Some<ITransactionOptions>(_TxMethodsHackMap[target.ToString()])
 			       	: Maybe.None<ITransactionOptions>();
 		}
 	}

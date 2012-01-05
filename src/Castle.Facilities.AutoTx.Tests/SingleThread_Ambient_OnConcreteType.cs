@@ -33,8 +33,9 @@ namespace Castle.Facilities.AutoTx.Tests
 		public void SetUp()
 		{
 			_Container = new WindsorContainer();
-			_Container.AddFacility("autotx", new AutoTxFacility());
+			_Container.AddFacility(new AutoTxFacility());
 			_Container.Register(Component.For<ConcreteService>());
+			_Container.Register(Component.For<ExtendedConcreteService>());
 		}
 
 		[TearDown]
@@ -59,6 +60,17 @@ namespace Castle.Facilities.AutoTx.Tests
 					scope.Service.VerifyInAmbient(() => Assert.That(Transaction.Current != null 
 																	&& Transaction.Current is DependentTransaction)
 				));
+			}
+		}
+
+		[Test]
+		public void InheritedFromBaseClass()
+		{
+			using (var scope = new ResolveScope<ExtendedConcreteService>(_Container))
+			{
+				scope.Service.Foo();
+
+				scope.Service.VerifyInAmbient();
 			}
 		}
 	}
