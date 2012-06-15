@@ -27,6 +27,7 @@ namespace Castle.Facilities.AutoTx
 	{
 		public static ComponentRegistration<TService> PerTransaction<TService>(
 			this LifestyleGroup<TService> @group)
+			where TService : class
 		{
 			Contract.Requires(group != null);
 			return @group.Custom<WrapperResolveLifestyleManager<PerTransactionLifestyleManager>>();
@@ -34,6 +35,7 @@ namespace Castle.Facilities.AutoTx
 
 		public static ComponentRegistration<TService> PerTopTransaction<TService>(
 			this LifestyleGroup<TService> @group)
+			where TService : class
 		{
 			Contract.Requires(group != null);
 			return @group.Custom<WrapperResolveLifestyleManager<PerTopTransactionLifestyleManager>>();
