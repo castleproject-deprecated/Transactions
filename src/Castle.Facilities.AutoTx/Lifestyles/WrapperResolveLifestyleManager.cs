@@ -136,11 +136,11 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			}
 		}
 
-		public override object Resolve(CreationContext context)
+		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
 		{
 			Contract.Requires(Initialized);
 			Contract.Ensures(Contract.Result<object>() != null);
-			var resolve = _Lifestyle1.Resolve(context);
+			var resolve = _Lifestyle1.Resolve(context, releasePolicy);
 			Contract.Assume(resolve != null, "the resolved instance shouldn't be null");
 			return resolve;
 		}

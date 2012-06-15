@@ -131,7 +131,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				Kernel.ReleaseComponent(instance);
 		}
 
-		public override object Resolve(CreationContext context)
+		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
 		{
 			Contract.Ensures(Contract.Result<object>() != null);
 
@@ -168,7 +168,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 					if (!_Storage.TryGetValue(key, out instance))
 					{
-						instance = _Storage[key] = Tuple.Create(1u, base.Resolve(context));
+						instance = _Storage[key] = Tuple.Create(1u, base.Resolve(context, releasePolicy));
 
 						transaction.Inner.TransactionCompleted += (sender, args) =>
 						{
