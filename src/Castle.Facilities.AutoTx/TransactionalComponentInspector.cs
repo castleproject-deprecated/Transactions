@@ -75,7 +75,7 @@ namespace Castle.Facilities.AutoTx
 			if (!meta.HasValue)
 				return;
 
-			model.Dependencies.Add(new DependencyModel(DependencyType.Service, null, typeof (TransactionInterceptor), false));
+			model.Dependencies.Add(new DependencyModel(null, typeof (TransactionInterceptor), false));
 			model.Interceptors.Add(new InterceptorReference(typeof (TransactionInterceptor)));
 		}
 
