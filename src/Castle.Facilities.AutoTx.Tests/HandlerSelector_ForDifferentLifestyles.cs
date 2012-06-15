@@ -27,10 +27,10 @@ namespace Castle.Facilities.AutoTx.Tests
 			_Container.Kernel.AddHandlerSelector(new DefaultToTransientLifeStyle<IHaveLifestyle>(_Container.Resolve<ITransactionManager>()));
 
 			_Container.Register(Component.For<IHaveLifestyle>().ImplementedBy<PerTxClass>().LifeStyle.PerTransaction()
-									.Parameters(Parameter.ForKey("type").Eq("ordinary")),
+									.DependsOn(Parameter.ForKey("type").Eq("ordinary")),
 								Component.For<IHaveLifestyle>().ImplementedBy<PerTxClass>().LifeStyle.PerTransaction()
 									.Named("special")
-									.Parameters(Parameter.ForKey("type").Eq("special")),
+									.DependsOn(Parameter.ForKey("type").Eq("special")),
 			                    Component.For<IHaveLifestyle>().ImplementedBy<TransientClass>().LifeStyle.Transient);
 		}
 
