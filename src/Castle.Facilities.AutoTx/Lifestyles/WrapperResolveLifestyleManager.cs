@@ -63,7 +63,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Ensures(Initialized);
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.Debug(() => string.Format("initializing (for component: {0})", model.Service));
+				_Logger.Debug(() => string.Format("initializing (for component: {0})", String.Join(",", model.Services)));
 
 			_LifestyleKernel.Register(Component.For<T>().LifeStyle.Transient.Named("T.lifestyle"));
 			kernel.AddChildKernel(_LifestyleKernel);

@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text;
 using Castle.Core;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
@@ -137,7 +138,8 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			_Logger.Debug(() => 
 				string.Format("resolving service '{0}', which wants model '{1}' in a PerTransaction lifestyle", 
-					context.Handler.Service, Model.Service));
+					String.Join(",", context.Handler.ComponentModel.Services),
+					String.Join(",", Model.Services)));
 
 			if (_Disposed)
 				throw new ObjectDisposedException("PerTransactionLifestyleManagerBase",
@@ -147,8 +149,9 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				throw new MissingTransactionException(
 					string.Format("No transaction in context when trying to instantiate model '{0}' for resolve type '{1}'. "
 						+ "If you have verified that your call stack contains a method with the [Transaction] attribute, "
-						+ "then also make sure that you have registered the AutoTx Facility.", 
-						Model.Service, context.Handler.Service));
+						+ "then also make sure that you have registered the AutoTx Facility.",
+						String.Join(",", Model.Services),
+						String.Join(",", context.Handler.ComponentModel.Services)));
 
 			var transaction = GetSemanticTransactionForLifetime().Value;
 
@@ -158,7 +161,9 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Tuple<uint, object> instance;
 			// unique key per the model service and per top transaction identifier
 			var localIdentifier = transaction.LocalIdentifier;
-			var key = localIdentifier + "|" + Model.Service.GetHashCode();
+			var key = Model.Services.Aggregate(new StringBuilder(localIdentifier),
+                                                              (builder, type) => builder.Append('|').Append(type.GetHashCode())).
+                                        ToString();
 
 			if (!_Storage.TryGetValue(key, out instance))
 			{
