@@ -51,15 +51,12 @@ namespace Castle.Facilities.AutoTx
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
 				Component.For<TransactionInterceptor>()
-					.Named("transaction.interceptor")
 					.LifeStyle.Transient,
 				Component.For<ITransactionMetaInfoStore>()
 					.ImplementedBy<TransactionClassMetaInfoStore>()
-					.Named("transaction.metaInfoStore")
 					.LifeStyle.Singleton,
 				Component.For<ITransactionManager>()
 					.ImplementedBy<TransactionManager>()
-					.Named("transaction.manager")
 					.LifeStyle.Singleton
 					.Forward(typeof (TransactionManager)),
 				// the activity manager shouldn't have the same lifestyle as TransactionInterceptor, as it
