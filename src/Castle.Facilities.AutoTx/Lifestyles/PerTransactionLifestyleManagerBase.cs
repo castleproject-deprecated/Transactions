@@ -42,7 +42,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	{
 		private static readonly Logger _Logger = LogManager.GetCurrentClassLogger();
 
-		private readonly Dictionary<string, Tuple<uint, object>> _Storage = new Dictionary<string, Tuple<uint, object>>();
+		private readonly Dictionary<string, Tuple<uint, Burden>> _Storage = new Dictionary<string, Tuple<uint, Burden>>();
 
 		protected readonly ITransactionManager _Manager;
 		protected bool _Disposed;
@@ -126,10 +126,10 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			return base.Release(instance);
 		}
 
-		private void Evict(object instance)
+		private void Evict(Burden instance)
 		{
 			using (new EvictionScope(this))
-				Kernel.ReleaseComponent(instance);
+				instance.Release();
 		}
 
 		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
@@ -158,7 +158,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Assume(transaction.State != TransactionState.Disposed,
 			                "because then it would not be active but would have been popped");
 
-			Tuple<uint, object> instance;
+			Tuple<uint, Burden> instance;
 			// unique key per the model service and per top transaction identifier
 			var localIdentifier = transaction.LocalIdentifier;
 			var key = Model.Services.Aggregate(new StringBuilder(localIdentifier),
@@ -173,7 +173,9 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 					if (!_Storage.TryGetValue(key, out instance))
 					{
-						instance = _Storage[key] = Tuple.Create(1u, base.Resolve(context, releasePolicy));
+						var burden = base.CreateInstance(context, true);
+						Track(burden, releasePolicy);
+						instance = _Storage[key] = Tuple.Create(1u, burden);
 
 						transaction.Inner.TransactionCompleted += (sender, args) =>
 						{
@@ -186,7 +188,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 								if (counter.Item1 == 1)
 								{
-									_Logger.Debug(() => string.Format("last item of '{0}' per-tx; releasing it", counter.Item2));
+									_Logger.Debug(() => string.Format("last item of '{0}' per-tx; releasing it", counter.Item2.Instance));
 
 									// this might happen if the transaction outlives the service; the transaction might also notify transaction fron a timer, i.e.
 									// not synchronously.
@@ -200,7 +202,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 								}
 								else
 								{
-									_Logger.Debug(() => string.Format("{0} item(s) of '{1}' left in per-tx storage", counter.Item1 - 1, counter.Item2));
+									_Logger.Debug(() => string.Format("{0} item(s) of '{1}' left in per-tx storage", counter.Item1 - 1, counter.Item2.Instance));
 									_Storage[key] = Tuple.Create(counter.Item1 - 1, counter.Item2);
 								}
 							}
@@ -211,7 +213,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			Contract.Assume(instance.Item2 != null, "resolve throws otherwise");
 
-			return instance.Item2;
+			return instance.Item2.Instance;
 		}
 
 		private class EvictionScope : IDisposable
