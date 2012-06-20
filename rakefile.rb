@@ -271,8 +271,8 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.3"
+    nuspec.dependency "Castle.Core", "3.0.0.4001"
+    nuspec.dependency "Castle.Windsor", "3.0.0.4001"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
