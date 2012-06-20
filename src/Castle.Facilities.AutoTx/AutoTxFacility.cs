@@ -83,7 +83,7 @@ namespace Castle.Facilities.AutoTx
 			_Logger.Debug("inspecting previously registered components; this might throw if you have configured your components in the wrong way");
 
 			((INamingSubSystem) Kernel.GetSubSystem(SubSystemConstants.NamingKey))
-				.GetHandlers()
+				.GetAllHandlers()
 				.Do(x => componentInspector.ProcessModel(Kernel, x.ComponentModel))
 				.Run();
 
