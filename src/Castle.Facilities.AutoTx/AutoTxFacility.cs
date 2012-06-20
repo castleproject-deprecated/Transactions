@@ -97,7 +97,7 @@ You can enable verbose logging for .Net by adding this to you .config file:
 		<sources>
 			<source name=""System.Transactions"" switchValue=""Information"">
 				<listeners>
-					<add name=""tx"" type=""Castle.Services.Transaction.Internal.TxTraceListener, Castle.Services.Transaction""/>
+					<add name=""tx"" type=""Castle.Transactions.Logging.TraceListener, Castle.Transactions""/>
 				</listeners>
 			</source>
 		</sources>
