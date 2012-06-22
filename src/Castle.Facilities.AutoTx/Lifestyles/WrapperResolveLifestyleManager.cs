@@ -1,4 +1,6 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿#region license
+
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +14,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#endregion
+
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
+using Castle.Core;
+using Castle.Core.Logging;
+using Castle.MicroKernel;
+using Castle.MicroKernel.Context;
+using Castle.MicroKernel.Lifestyle;
+using Castle.MicroKernel.Registration;
+
 namespace Castle.Facilities.AutoTx.Lifestyles
 {
-	using System;
-	using System.Diagnostics;
-	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
-
-	using Castle.Core;
-	using Castle.Core.Logging;
-	using Castle.MicroKernel;
-	using Castle.MicroKernel.Context;
-	using Castle.MicroKernel.Lifestyle;
-	using Castle.MicroKernel.Registration;
-
 	/// <summary>
 	/// 	Abstract hybrid lifestyle manager, with two underlying lifestyles
 	/// </summary>
@@ -40,8 +43,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 		protected T _Lifestyle1;
 		private bool _Disposed;
 
-		[ContractPublicPropertyName("Initialized")]
-		private bool _Initialized;
+		[ContractPublicPropertyName("Initialized")] private bool _Initialized;
 
 		public bool Initialized
 		{
@@ -71,7 +73,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				_Logger = NullLogger.Instance;
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("initializing (for component: {0})", model.Service);
+				_Logger.DebugFormat("initializing (for component: {0})", string.Join(",", model.Services));
 
 			_LifestyleKernel.Register(Component.For<T>().LifeStyle.Transient.Named("T.lifestyle"));
 			kernel.AddChildKernel(_LifestyleKernel);
@@ -92,8 +94,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Assume(_Lifestyle1 != null,
 			                "lifestyle1 can't be null because the Resolve<T> call will throw an exception if a matching service wasn't found");
 
-			if (_Logger.IsDebugEnabled)
-				_Logger.Debug("initialized");
+			_Logger.Debug("initialized");
 
 			_Initialized = true;
 		}
@@ -123,10 +124,13 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			if (_Disposed)
 			{
+				_Logger.Info("repeated call to Dispose. will show stack-trace in debug mode next. this method call is idempotent");
 				if (_Logger.IsInfoEnabled)
 				{
 					_Logger.Info("repeated call to Dispose. will show stack-trace in debug mode next. this method call is idempotent");
 
+				if (_Logger.IsDebugEnabled)
+					_Logger.Debug(new StackTrace().ToString());
 					if (_Logger.IsDebugEnabled)
 						_Logger.Debug(new StackTrace().ToString());
 				}
@@ -148,11 +152,11 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			}
 		}
 
-		public override object Resolve(CreationContext context)
+		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
 		{
 			Contract.Requires(Initialized);
 			Contract.Ensures(Contract.Result<object>() != null);
-			var resolve = _Lifestyle1.Resolve(context);
+			var resolve = _Lifestyle1.Resolve(context, releasePolicy);
 			Contract.Assume(resolve != null, "the resolved instance shouldn't be null");
 			return resolve;
 		}

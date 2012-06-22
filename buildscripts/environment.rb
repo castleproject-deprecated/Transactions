@@ -4,9 +4,8 @@ namespace :env do
   # major.minor.build.revision
   task :common do
 
-	File.open( Files[:version] , "r") do |f|
-		ENV['VERSION_BASE'] = VERSION_BASE = f.gets
-	end
+  s = SemVer.find
+  ENV['VERSION_BASE'] = VERSION_BASE = s.to_s
 	
 	# version management
 	fv = version(VERSION_BASE)

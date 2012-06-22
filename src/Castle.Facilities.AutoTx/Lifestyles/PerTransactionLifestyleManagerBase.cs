@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,12 +22,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text;
 using Castle.Core;
 using Castle.Core.Logging;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Lifestyle;
-using Castle.Services.Transaction;
+using Castle.Transactions;
 
 namespace Castle.Facilities.AutoTx.Lifestyles
 {
@@ -41,7 +42,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	{
 		private ILogger _Logger;
 
-		private readonly Dictionary<string, Tuple<uint, object>> _Storage = new Dictionary<string, Tuple<uint, object>>();
+		private readonly Dictionary<string, Tuple<uint, Burden>> _Storage = new Dictionary<string, Tuple<uint, Burden>>();
 
 		protected readonly ITransactionManager _Manager;
 		protected bool _Disposed;
@@ -88,11 +89,15 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			if (_Disposed)
 			{
+				_Logger.Info(
+					"repeated call to Dispose. will show stack-trace if log4net is in debug mode as the next log line. this method call is idempotent");
 				if (_Logger.IsInfoEnabled) 
 				{
 					_Logger.Info(
 						"repeated call to Dispose. will show stack-trace if logging is in debug mode as the next log line. this method call is idempotent");
 
+				if (_Logger.IsDebugEnabled)
+					_Logger.Debug(new StackTrace().ToString());
 					if (_Logger.IsDebugEnabled)
 						_Logger.Debug(new StackTrace().ToString());
 				}
@@ -104,7 +109,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			{
 				lock (ComponentActivator)
 				{
-					if (_Logger.IsWarnEnabled && _Storage.Count > 0)
+					if (_Storage.Count > 0)
 					{
 						var items = string.Join(
 							string.Format(", {0}", Environment.NewLine),
@@ -112,9 +117,10 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 								.Select(x => string.Format("(id: {0}, item: {1})", x.Key, x.Value.ToString()))
 								.ToArray());
 
-						_Logger.WarnFormat("Storage contains {0} items! Items: {{ {1} }}",
-						                   _Storage.Count,
-						                   items);
+						if (_Logger.IsWarnEnabled)
+							_Logger.WarnFormat("Storage contains {0} items! Items: {{ {1} }}",
+											   _Storage.Count,
+											   items);
 					}
 
 					// release all items
@@ -138,19 +144,20 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			return base.Release(instance);
 		}
 
-		private void Evict(object instance)
+		private void Evict(Burden instance)
 		{
 			using (new EvictionScope(this))
-				Kernel.ReleaseComponent(instance);
+				instance.Release();
 		}
 
-		public override object Resolve(CreationContext context)
+		public override object Resolve(CreationContext context, IReleasePolicy releasePolicy)
 		{
 			Contract.Ensures(Contract.Result<object>() != null);
 
-			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("resolving service '{0}', which wants model '{1}' in a PerTransaction lifestyle", 
-					context.Handler.Service, Model.Service);
+			_Logger.Debug(() => 
+				string.Format("resolving service '{0}', which wants model '{1}' in a PerTransaction lifestyle", 
+					String.Join(",", context.Handler.ComponentModel.Services),
+					String.Join(",", Model.Services)));
 
 			if (_Disposed)
 				throw new ObjectDisposedException("PerTransactionLifestyleManagerBase",
@@ -160,37 +167,38 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				throw new MissingTransactionException(
 					string.Format("No transaction in context when trying to instantiate model '{0}' for resolve type '{1}'. "
 						+ "If you have verified that your call stack contains a method with the [Transaction] attribute, "
-						+ "then also make sure that you have registered the AutoTx Facility.", 
-						Model.Service, context.Handler.Service));
+						+ "then also make sure that you have registered the AutoTx Facility.",
+						String.Join(",", Model.Services),
+						String.Join(",", context.Handler.ComponentModel.Services)));
 
 			var transaction = GetSemanticTransactionForLifetime().Value;
 
 			Contract.Assume(transaction.State != TransactionState.Disposed,
 			                "because then it would not be active but would have been popped");
 
-			Tuple<uint, object> instance;
+			Tuple<uint, Burden> instance;
 			// unique key per the model service and per top transaction identifier
 			var localIdentifier = transaction.LocalIdentifier;
-			var key = localIdentifier + "|" + Model.Service.GetHashCode();
+			var key = Model.Services.Aggregate(new StringBuilder(localIdentifier),
+                                                              (builder, type) => builder.Append('|').Append(type.GetHashCode())).
+                                        ToString();
 
 			if (!_Storage.TryGetValue(key, out instance))
 			{
 				lock (ComponentActivator)
 				{
-					if (_Logger.IsDebugEnabled)
-						_Logger.DebugFormat("component for key '{0}' not found in per-tx storage. creating new instance.", key);
+					_Logger.Debug(() => string.Format("component for key '{0}' not found in per-tx storage. creating new instance.", key));
 
 					if (!_Storage.TryGetValue(key, out instance))
 					{
-						instance = _Storage[key] = Tuple.Create(1u, base.Resolve(context));
+						var burden = base.CreateInstance(context, true);
+						Track(burden, releasePolicy);
+						instance = _Storage[key] = Tuple.Create(1u, burden);
 
 						transaction.Inner.TransactionCompleted += (sender, args) =>
 						{
 							var id = localIdentifier;
-							if (_Logger.IsDebugEnabled)
-								_Logger.DebugFormat(
-									"transaction#{0} completed, maybe releasing object '{1}'", id,
-									instance);
+							_Logger.Debug(() => string.Format("transaction#{0} completed, maybe releasing object '{1}'", id, instance));
 
 							lock (ComponentActivator)
 							{
@@ -198,9 +206,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 								if (counter.Item1 == 1)
 								{
-									if (_Logger.IsDebugEnabled)
-										_Logger.DebugFormat("last item of '{0}' per-tx; releasing it",
-															counter.Item2);
+									_Logger.Debug(() => string.Format("last item of '{0}' per-tx; releasing it", counter.Item2.Instance));
 
 									// this might happen if the transaction outlives the service; the transaction might also notify transaction fron a timer, i.e.
 									// not synchronously.
@@ -214,10 +220,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 								}
 								else
 								{
-									if (_Logger.IsDebugEnabled)
-										_Logger.DebugFormat("{0} item(s) of '{1}' left in per-tx storage",
-															counter.Item1 - 1, counter.Item2);
-
+									_Logger.Debug(() => string.Format("{0} item(s) of '{1}' left in per-tx storage", counter.Item1 - 1, counter.Item2.Instance));
 									_Storage[key] = Tuple.Create(counter.Item1 - 1, counter.Item2);
 								}
 							}
@@ -228,7 +231,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 
 			Contract.Assume(instance.Item2 != null, "resolve throws otherwise");
 
-			return instance.Item2;
+			return instance.Item2.Instance;
 		}
 
 		private class EvictionScope : IDisposable

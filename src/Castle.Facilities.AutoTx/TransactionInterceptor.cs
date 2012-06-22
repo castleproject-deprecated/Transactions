@@ -1,4 +1,6 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿#region license
+
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +14,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#endregion
+
+using System;
+using System.Diagnostics.Contracts;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using Castle.Core;
+using Castle.Core.Interceptor;
+using Castle.Core.Logging;
+using Castle.DynamicProxy;
+using Castle.MicroKernel;
+using Castle.Transactions;
+using Castle.Transactions.Internal;
+using TransactionException = Castle.Transactions.TransactionException;
+using TransactionManager = Castle.Transactions.TransactionManager;
+
 namespace Castle.Facilities.AutoTx
 {
-	using System;
-	using System.Diagnostics.Contracts;
-	using System.Threading;
-	using System.Threading.Tasks;
-	using System.Transactions;
-
-	using Castle.Core;
-	using Castle.Core.Interceptor;
-	using Castle.Core.Logging;
-	using Castle.DynamicProxy;
-	using Castle.MicroKernel;
-	using Castle.Services.Transaction;
-	using Castle.Services.Transaction.Internal;
-
-	using TransactionException = Castle.Services.Transaction.TransactionException;
-	using TransactionManager = Castle.Services.Transaction.TransactionManager;
-
 	internal class TransactionInterceptor : IInterceptor, IOnBehalfAware
 	{
 		private enum InterceptorState
@@ -57,6 +59,8 @@ namespace Castle.Facilities.AutoTx
 			Contract.Requires(kernel != null, "kernel must be non null");
 			Contract.Requires(store != null, "store must be non null");
 			Contract.Ensures(_State == InterceptorState.Constructed);
+
+			_Logger.Debug("created transaction interceptor");
 
 			_Kernel = kernel;
 			_Store = store;
@@ -91,6 +95,7 @@ namespace Castle.Facilities.AutoTx
 				{
 					if (mTxMethod.HasValue && mTxMethod.Value.Mode == TransactionScopeOption.Suppress)
 					{
+						_Logger.Info("supressing ambient transaction");
 						if (_Logger.IsInfoEnabled)
 							_Logger.Info("supressing ambient transaction");
 
@@ -119,13 +124,9 @@ namespace Castle.Facilities.AutoTx
 			}
 		}
 
-		// TODO: implement WaitAll-semantics with returned task
 		private void SynchronizedCase(IInvocation invocation, ITransaction transaction)
 		{
 			Contract.Requires(transaction.State == TransactionState.Active);
-
-			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("synchronized case");
 
 			using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
 			{
@@ -161,30 +162,27 @@ namespace Castle.Facilities.AutoTx
 				{
 					if (_Logger.IsWarnEnabled)
 						_Logger.Warn("one or more dependent transactions failed, re-throwing exceptions!", ex);
+
 					throw;
 				}
 				catch (Exception)
 				{
-					if (_Logger.IsErrorEnabled)
-						_Logger.ErrorFormat("caught exception, rolling back transaction - synchronized case - tx#{0}",
-						                    localIdentifier);
+					_Logger.ErrorFormat("caught exception, transaction will roll back - synchronized case - tx#{0}",
+								  localIdentifier);
 
-					// the transaction rolls back itself on exceptions
-					//transaction.Rollback();
+					// the transaction rolls back itself on exceptions, so just throw it
 					throw;
 				}
 				finally
 				{
-					if (_Logger.IsDebugEnabled)
-						_Logger.DebugFormat("dispoing transaction - synchronized case - tx#{0}", localIdentifier);
-
+					_Logger.DebugFormat("dispoing transaction - synchronized case - tx#{0}", localIdentifier);
 					transaction.Dispose();
 				}
 			}
 		}
 
 		/// <summary>
-		/// 	For ordering interleaving of threads during testing!
+		/// For ordering interleaving of threads during testing!
 		/// </summary>
 		internal static ManualResetEvent Finally;
 
@@ -204,18 +202,15 @@ namespace Castle.Facilities.AutoTx
 				var dependent = tuple.Item2.Transaction.Inner as DependentTransaction;
 
 				using (tuple.Item2.GetForkScope())
+				{
 					try
 					{
-						if (_Logger.IsDebugEnabled)
-							_Logger.DebugFormat("calling proceed on tx#{0}", tuple.Item3);
+						_Logger.Debug(() => string.Format("calling proceed on tx#{0}", tuple.Item3));
 
 						using (var ts = new TransactionScope(dependent))
 						{
 							tuple.Item1.Proceed();
-
-							if (_Logger.IsDebugEnabled)
-								_Logger.DebugFormat("calling complete on TransactionScope for tx#{0}", tuple.Item3);
-
+							_Logger.Debug(() => string.Format("calling complete on TransactionScope for tx#{0}", tuple.Item3));
 							ts.Complete();
 						}
 					}
@@ -243,11 +238,12 @@ namespace Castle.Facilities.AutoTx
 						if (!hasException)
 							dependent.Complete();
 
-						if (Finally != null)
+						if (Finally != null) 
 							Finally.Set();
 
 						// See footnote at end of file
 					}
+				}
 			}, Tuple.Create(invocation, txData, txData.Transaction.LocalIdentifier));
 		}
 

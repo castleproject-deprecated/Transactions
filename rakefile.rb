@@ -1,13 +1,8 @@
-# copyright Henrik Feldt 2011, The Castle Project 2011
 $: << './'
 require 'albacore'
 require 'buildscripts/albacore_mods'
 require 'buildscripts/ilmerge'
-begin
-  require 'version_bumper'  
-rescue LoadError
-  puts 'version bumper not available!'
-end
+require 'semver'
 require 'rake/clean'
 require 'buildscripts/project_data'
 require 'buildscripts/paths'
@@ -79,7 +74,7 @@ namespace :castle do
   desc "generate the assembly infos you need to compile with VS"
   task :assembly_infos => [:tx_version, :autotx_version]
   
-  desc "prepare Tx Services and AutoTx Facility nuspec + nuget package"
+  desc "prepare Transactions and AutoTx nuspec + nuget package"
   task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget]
   
   task :test_all => [:tx_test, :autotx_test]
@@ -175,7 +170,7 @@ namespace :castle do
     ilm.use :"#{FRAMEWORK}"
     ilm.log = File.join("..", 'tx-ilmerge.log')
     ilm.allow_dupes = true
-    ilm.references = [ 'Castle.Services.Transaction.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+    ilm.references = [ 'Castle.Transactions.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
  end
 
   # ilmerge :autotx_ilmerge => :autotx_output do |ilm|
@@ -186,7 +181,7 @@ namespace :castle do
     # ilm.use FRAMEWORK
     # ilm.log = File.join( Folders[:autotx_out], "..", 'ilmerge.log' )
     # ilm.allow_dupes = true
-    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'Castle.Core.dll', 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
+    # ilm.references = [ "#{Projects[:autotx][:id]}.dll", 'System.CoreEx.dll', 'System.Interactive.dll', 'System.Reactive.dll' ]
  # end
 
   
@@ -245,16 +240,16 @@ namespace :castle do
     nuspec.authors = Projects[:tx][:authors]
     nuspec.description = Projects[:tx][:description]
     nuspec.title = Projects[:tx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "2.5.2"
+	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
 
-    nuspec_copy(:tx, "*Transaction.{dll,xml}")
+    nuspec_copy(:tx, "*Transaction.{dll,xml,pdb}")
     # right now, we'll go with the conventions.each{ |ff| nuspec.file ff }
 
     #CLEAN.include(Folders[:tx][:nuspec])
@@ -268,18 +263,19 @@ namespace :castle do
     nuspec.authors = Projects[:autotx][:authors]
     nuspec.description = Projects[:autotx][:description]
     nuspec.title = Projects[:autotx][:title]
-    nuspec.projectUrl = "https://github.com/castleproject/Castle.Services.Transaction"
+    nuspec.projectUrl = "https://github.com/castleproject/Castle.Transactions"
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "2.5.2"
-    nuspec.dependency "Castle.Windsor", "2.5.3"
+    nuspec.dependency "Castle.Core", "3.0.0.4001"
+    nuspec.dependency "Castle.Windsor", "3.0.0.4001"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
+	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
     
-    nuspec_copy(:autotx, "*AutoTx.{dll,xml}")
+    nuspec_copy(:autotx, "*AutoTx.{dll,xml,pdb}")
 	# right now, we'll go with the conventions
 	#.each{ |ff| nuspec.file ff }
 	
@@ -301,7 +297,7 @@ namespace :castle do
   
   nuget_directory(:tx)
   
-  desc "generate nuget package for tx services"
+  desc "generate nuget package for Transactions"
   nugetpack :tx_nuget => [:output, :tx_nuspec] do |nuget|
     nuget.command     = Commands[:nuget]
     nuget.nuspec      = Files[:tx][:nuspec]
@@ -339,8 +335,8 @@ end
 desc "display rake task help"  
 task :help do
   puts ""
-  puts " Castle Transaction Services & AutoTx Facility"
-  puts " ============================================="
+  puts " Castle Transactions & AutoTx Facility (c)Henrik Feldt/Castle Project 2011"
+  puts " ========================================================================="
   puts ""
   puts " Quick Start: Type 'rake' and look in '#{Folders[:out]}/'."
   puts ""	

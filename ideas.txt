@@ -1,0 +1,133 @@
+
+	c'tor(ITransactionManager manager)
+
+	[Transaction]
+	public void A()
+	{
+		// access transaction through:
+		//_manager.CurrentTransaction.Value
+	}
+	
+	
+	[Transaction]
+	public void B()
+	{
+		// upgrade current transaction to file transaction, causes LTM to be resource manager.
+		_Manager.CurrentTransaction.Value
+			.UpgradeToFileTransaction() : IFileSystem
+		
+		// so:
+		_Manager.CurrentTransaction.Value	// : ITransaction
+			.UpgradeToFileTransaction() 	// Castle.Transactions.IO.Extensions.UpgradeToFileTransaction(this ITransaction t)
+			.GetDirectory("/usr/xyz/abc") 	// interface method in IFileSystem
+			.SelectMany(d => d.Ls()) 		// Ls extension method on IDirectory
+			.Run(Console.WriteLine); 		// Interactive Extensions' extension method on IEnumerable<T>
+	}
+	
+	
+	class Cc {
+		c'tor(Func<IFileSystem> fsFactory)
+		
+		// causes KTM to be resource manager
+		[FileTransaction] // in Castle.Transactions.IO, class FileTransactionAttribute : TransactionAttribute
+		public void C()
+		{
+			// in FileTxFacility:
+			// Component.For<IFileSystem>
+			//	.ImplementedBy<TxFileSystem>()
+			//	.Lifestyle.PerTopTranscation()
+			
+			_fsFactory() // : IFileSystem (conretely: TxFileSystem)
+				.GetDirectory("\\?\F:\\a\\b\\c")
+				.GetFile("d.txt") 
+				. etc
+		}
+	}
+
+// for reference
+namespace System.Reactive {
+	public interface IObservable<out T> {
+		
+	}
+}
+
+
+	// registering observables for transactions:
+	class NHibernateFacility : AbstractFacility {
+		void Init(IKernel k) { 
+			k.Register(Component.For<ISession>()
+				.UsingFactoryMethod((k,c) => ...)
+				.Lifestyle.PerTopTransaction(
+					// observable for top transaction, 
+					// don't care; FlushMode.Auto takes care of it through System.Transaction.Current's CompletedTransaction evt.
+					null, 
+					// observable for dependent transaction 
+					(obs : IObservable<ISession>) => obs
+						
+						.Subscribe(
+							s => s.Flush(), 
+							ex => _logger.Warn("couldn't complete tx", ex),
+							() => _logger.Debug(() => "Completed transaction))
+				)
+			);
+		}
+	}
+	
+	// registering read-only ISession:
+	Component.For<ISession>()
+		// ...
+		.PerTopTransaction(
+
+namespace Castle.Facilities.AutoTx {
+	public static class Extensions {
+		public ComponentRegistration<TS> PerTransaction(this ComponentRegistration<TS> reg) {
+			// ...
+		}
+		public ComponentRegistration<TS> PerTopTransaction(this ComponentRegistration<TS> reg) {
+			// ...
+		}
+	}
+}
+
+namespace Castle.Transactions.IO {
+	public static class Extensions {
+	
+		public ComponentRegistration<TS> PerTransaction(this ComponentRegistration<TS> reg, 
+			Action<IObservable<TS>> transactionEvents) {
+			// ...
+		}
+		
+		public ComponentRegistration<TS> PerTopTransaction(this ComponentRegistration<TS> reg, 
+			Action<IObservable<TS>> topTransactionEvents,
+			Action<IObservable<TS>> dependentTransactionEvents) {
+			
+		}
+	}
+}
+
+namespace Castle.IO { // merged from openfilesystem
+	public interface IFileSystem {
+		IDirectory GetDirectory(string directoryPath);
+		IDirectory GetDirectory(Path directoryPath);
+		Path GetPath(string path);
+		ITemporaryDirectory CreateTempDirectory();
+		IDirectory CreateDirectory(string path);
+		IDirectory CreateDirectory(Path path);
+		IFile GetFile(string itemSpec);
+		ITemporaryFile CreateTempFile();
+		IDirectory GetTempDirectory();
+		IDirectory GetCurrentDirectory();
+	}
+}
+
+// assembly: Castle.IO.Fluent
+namespace Castle.IO {
+	public static class Extensions {
+		// everything from FluentPath here
+		public static IEnumerable<IDirectory> ForEach(Action<IDirectory> a) { 
+			// ... etc
+		}
+		// move
+		// delete etc
+	}
+}

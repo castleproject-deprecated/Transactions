@@ -1,53 +1,74 @@
 Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
 
-# Getting Started
+*Work in progress!*
+**Version 3.0 beta 4**
 
-1. Download code
-2. Run `rake -T` to browse tasks.
+# Castle Transactions
 
-Either run a `rake`, and you quickly get a release-build, or set up a database `TxTests` and
-a table Things as can be seen in the unit tests and then run `rake build_all` to get
-both a release and a debug build.
+A project for transaction management on .Net and mono.
 
-The debug build has code contracts interwoven which will catch you out if you break the API
-contracts. The release build is completely free from contracts. As such, I strongly
-recommend that you develop towards the debug build.
+## Quick Start
 
-# Overview Transactions
+You have a few major options. The first option is to install the Windsor integration:
 
-Castle Transactions 3.0 enables the .Net coder with:
+`install-package Castle.Facilities.AutoTx`,
 
- * Transactional NTFS (TxF - File Transactions) with the KTM/Kernel Transaction Manager.
- * Integration with System.Transactions
- * 'Nice'/easy creation of CommittableTransaction/DependentTransaction that exposes more features than TransactionScope.
+ - -> Castle.Facilities.AutoTx
+ - -> Castle.Transactions.IO
+ - -> Castle.Transactions
+ - -> Castle.Core
+
+another option is if you're using Autofac:
+
+`install-package Castle.Transactions.Autofac`
+
+ - -> Autofac ~> 2.5
+ - -> Castle.Transactions.Autofac
+ - -> Castle.Transactions.IO
+ - -> Castle.Transactions
+ - -> Castle.Core
+
+another option is that you only care about the transactions API as a stand-alone:
+
+`install-package Castle.Transactions` -> Castle.Core
+
+another option is that you care about the transactions API + transactional NTFS:
+
+`install-package Castle.Transactions.IO`
+
+ - -> Castle.Transactions
+ - -> Castle.IO
+ - -> Castle.Core
+
+### Castle Transactions
+
+The original project that manages transactions.
+
+#### Main Features
+
+ * Regular Transactions (+`System.Transactions` interop) - allows you to create transactions with a nice API
+ * Dependent Transactions - allows you to fork dependent transactions automatically by declarative programming: `[Transaction(Fork=true)]`
+ * Transaction Logging - A trace listener in namespace `Castle.Transactions.Logging`, named `TraceListener`.
  * Retry policies for transactions
 
-The .IO namespace of Castle Transactions enables:
+#### Main Interfaces
 
- * A better tested Path util than what's in the .Net Framework.
- * A MapPath-implementation (as seen in ASP.Net).
- * Full directory/file name length support. No more "PathTooLongException" or borked install or build scripts.
+ - `ITransactionManager`:
+   - *default implementation is `TransactionManager`*
+   - keeps tabs on what transaction is currently active
+   - coordinates parallel dependent transactions
+   - keep the light weight transaction manager (LTM) happy on the CLR
 
-***
- 
-## Castle AutoTx 3.0 enables the .Net coder with:
+### Castle Transactions IO
 
- * Easily applying transactions through inversion of control.
- * Easily applying Retry-Policies to transactional methods
- * Compensations when transactions abort.
+A project for adding a transactional file system to the mix!
 
-## Contributing
+#### Main Features
 
- * `rake prepare`
- * Open `.sln` file in Visual Studio 2010.
- * Unit/integration test -> code -> fix test -> ...
- * `rake` or `rake test_all`
- * `git add . -A`, then `git commit -m "I improved something"`
+ * Provides an `Castle.IO.IFileSystem` implementation that adds transactionality to common operations.
 
-## Getting in Touch
 
-If you have any questions, please send me an e-mail: [henrik@haf.se](mailto:henrik@haf.se) or ask at [Castle Project Users - Google Groups](http://groups.google.com/group/castle-project-users). As long as the projects are at RC-status I prefer if you e-mail me; it'll be a faster turn-around time and I get the e-mails straight to my inbox.
 
-Cheers!
+### Remarks
 
-Henrik Feldt / The Castle Project
+See also the [Castle.IO](https://github.com/haf/Castle.IO) project.

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Castle.Core;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Facilities;
 using Castle.MicroKernel.ModelBuilder.Inspectors;
-using Castle.Services.Transaction;
+using Castle.Transactions;
 
 namespace Castle.Facilities.AutoTx
 {
@@ -53,8 +53,8 @@ namespace Castle.Facilities.AutoTx
 
 			Maybe<TransactionalClassMetaInfo> meta;
 			List<string> problematicMethods;
-			if (model.Service == null
-			    || model.Service.IsInterface
+			if (model.Services == null
+			    || model.Services.All(s => s.IsInterface)
 			    || !(meta = _MetaStore.GetMetaFromType(model.Implementation)).HasValue
 			    || (problematicMethods = (from method in meta.Value.TransactionalMethods
 			                              where !method.IsVirtual
@@ -75,7 +75,7 @@ namespace Castle.Facilities.AutoTx
 			if (!meta.HasValue)
 				return;
 
-			model.Dependencies.Add(new DependencyModel(DependencyType.Service, null, typeof (TransactionInterceptor), false));
+			model.Dependencies.Add(new DependencyModel(null, typeof (TransactionInterceptor), false));
 			model.Interceptors.Add(new InterceptorReference(typeof (TransactionInterceptor)));
 		}
 
