@@ -1,3 +1,5 @@
+using Castle.Core.Logging;
+
 namespace Castle.Transactions.IO
 {
 	using System;
@@ -56,7 +58,7 @@ namespace Castle.Transactions.IO
 			Contract.Requires(inner != null);
 			Contract.Requires(creationOptions != null);
 
-			_Inner = new Transaction(inner, stackDepth, creationOptions, onDispose);
+			_Inner = new Transaction(inner, stackDepth, creationOptions, onDispose, NullLogger.Instance);
 
 			_Name = name;
 			InnerBegin();
@@ -68,7 +70,7 @@ namespace Castle.Transactions.IO
 			Contract.Requires(inner != null);
 			Contract.Requires(creationOptions != null);
 
-			_Inner = new Transaction(inner, stackDepth, creationOptions, onDispose);
+			_Inner = new Transaction(inner, stackDepth, creationOptions, onDispose, NullLogger.Instance);
 
 			_Name = name;
 			InnerBegin();

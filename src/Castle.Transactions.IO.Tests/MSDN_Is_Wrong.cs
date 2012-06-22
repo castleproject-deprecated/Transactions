@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.IO;
+using System.Threading;
+using Castle.Core.Logging;
+using Castle.Transactions.Activities;
+using NUnit.Framework;
+
 namespace Castle.Transactions.IO.Tests
 {
-	using System;
-	using System.IO;
-	using System.Threading;
-
-	using Castle.Transactions.Activities;
-
-	using NUnit.Framework;
-
 	public class MSDN_Is_Wrong
 	{
-		private ITransactionManager subject;
+		ITransactionManager subject;
 
 		[SetUp]
 		public void given_manager()
 		{
-			subject = new TransactionManager(new CallContextActivityManager());
+			subject = new TransactionManager(new CallContextActivityManager(), NullLogger.Instance);
 		}
 
 		[TearDown]
@@ -54,37 +53,37 @@ namespace Castle.Transactions.IO.Tests
 
 			// non transacted thread
 			var t1 = new Thread(() =>
-			{
-				try
 				{
-					// modifies the file
-					using (var fs = File.OpenWrite("abb"))
+					try
 					{
-						Console.WriteLine("t2 start");
-						Console.Out.Flush();
-						t2_started.Set(); // before the transacted thread does
-						Console.WriteLine("t2 wait for t1 to start");
-						Console.Out.Flush();
-						t1_started.WaitOne();
-						fs.Write(new byte[] { 0x1 }, 0, 1);
-						fs.Close();
+						// modifies the file
+						using (var fs = File.OpenWrite("abb"))
+						{
+							Console.WriteLine("t2 start");
+							Console.Out.Flush();
+							t2_started.Set(); // before the transacted thread does
+							Console.WriteLine("t2 wait for t1 to start");
+							Console.Out.Flush();
+							t1_started.WaitOne();
+							fs.Write(new byte[] {0x1}, 0, 1);
+							fs.Close();
+						}
 					}
-				}
-				catch (Exception ee)
-				{
-					e = ee;
-				}
-				finally
-				{
-					Console.WriteLine("t2 finally");
-					Console.Out.Flush();
-					t2_started.Set();
-				}
-			});
+					catch (Exception ee)
+					{
+						e = ee;
+					}
+					finally
+					{
+						Console.WriteLine("t2 finally");
+						Console.Out.Flush();
+						t2_started.Set();
+					}
+				});
 
 			t1.Start();
 
-			using (IFileTransaction t = subject.CreateFileTransaction().Value)
+			using (var t = subject.CreateFileTransaction().Value)
 			{
 				Console.WriteLine("t1 wait for t2 to start");
 				Console.Out.Flush();

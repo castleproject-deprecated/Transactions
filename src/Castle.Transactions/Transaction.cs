@@ -21,8 +21,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using System.Transactions;
+using Castle.Core.Logging;
 using Castle.Transactions.Internal;
-using NLog;
 
 namespace Castle.Transactions
 {
@@ -31,7 +31,7 @@ namespace Castle.Transactions
 	[Serializable]
 	public class Transaction : ITransaction, IDependentAware
 	{
-		private static readonly Logger _Logger = LogManager.GetCurrentClassLogger();
+		readonly ILogger _Logger = NullLogger.Instance;
 
 		private TransactionState _State = TransactionState.Default;
 
@@ -44,8 +44,9 @@ namespace Castle.Transactions
 		[NonSerialized] private readonly Action _OnDispose;
 
 		public Transaction(CommittableTransaction committable, uint stackDepth, ITransactionOptions creationOptions,
-		                   Action onDispose)
+		                   Action onDispose, ILogger logger)
 		{
+			Contract.Requires(logger != null);
 			Contract.Requires(creationOptions != null);
 			Contract.Requires(committable != null);
 			Contract.Ensures(_State == TransactionState.Active);
@@ -56,10 +57,12 @@ namespace Castle.Transactions
 			_OnDispose = onDispose;
 			_State = TransactionState.Active;
 			_LocalIdentifier = committable.TransactionInformation.LocalIdentifier + ":" + stackDepth;
+			_Logger = logger;
 		}
 
-		public Transaction(DependentTransaction dependent, uint stackDepth, ITransactionOptions creationOptions, Action onDispose)
+		public Transaction(DependentTransaction dependent, uint stackDepth, ITransactionOptions creationOptions, Action onDispose, ILogger logger)
 		{
+			Contract.Requires(logger != null);
 			Contract.Requires(creationOptions != null);
 			Contract.Requires(dependent != null);
 			Contract.Ensures(_State == TransactionState.Active);
@@ -70,6 +73,7 @@ namespace Castle.Transactions
 			_OnDispose = onDispose;
 			_State = TransactionState.Active;
 			_LocalIdentifier = dependent.TransactionInformation.LocalIdentifier + ":" + stackDepth;
+			_Logger = logger;
 		}
 
 		[ContractInvariantMethod]
@@ -209,18 +213,18 @@ namespace Castle.Transactions
 			catch (TimeoutException e)
 			{
 				_State = TransactionState.Aborted;
-				_Logger.WarnException("transaction timed out", e);
+				_Logger.Warn("transaction timed out", e);
 			}
 			catch (TransactionAbortedException e)
 			{
 				_State = TransactionState.Aborted;
-				_Logger.WarnException("transaction aborted", e);
+				_Logger.Warn("transaction aborted", e);
 				throw;
 			}
 			catch (AggregateException e)
 			{
 				_State = TransactionState.Aborted;
-				_Logger.WarnException("dependent transactions failed, so we are not performing the rollback (as they will have notified their parent!)", e);
+				_Logger.Warn("dependent transactions failed, so we are not performing the rollback (as they will have notified their parent!)", e);
 				throw;
 			}
 			catch (Exception e)

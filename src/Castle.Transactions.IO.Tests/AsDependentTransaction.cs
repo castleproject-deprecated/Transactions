@@ -1,23 +1,35 @@
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Castle.Core.Logging;
+using Castle.IO.Extensions;
+using Castle.Transactions.Activities;
+using NUnit.Framework;
+
 namespace Castle.Transactions.IO.Tests
 {
-	using System.IO;
-
-	using Castle.IO.Extensions;
-	using Castle.Transactions.Activities;
-
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class AsDependentTransaction : TxFTestFixtureBase
 	{
-		private string test_file;
-		private ITransactionManager subject;
+		string test_file;
+		ITransactionManager subject;
 
 		[SetUp]
 		public void given_manager()
 		{
 			test_file = ".".Combine("test.txt");
-			subject = new TransactionManager(new CallContextActivityManager());
+			subject = new TransactionManager(new CallContextActivityManager(), NullLogger.Instance);
 		}
 
 		[Test]
@@ -36,7 +48,7 @@ namespace Castle.Transactions.IO.Tests
 				using (var innerTransaction = subject.CreateFileTransaction().Value)
 				{
 					Assert.That(subject.CurrentTransaction.Value, Is.EqualTo(innerTransaction),
-								"Now that we have created a dependent transaction, it's the current tx in the resource manager.");
+					            "Now that we have created a dependent transaction, it's the current tx in the resource manager.");
 
 					// this is supposed to be registered in an IoC container
 					//var fa = (IFileAdapter)innerTransaction;
@@ -53,7 +65,7 @@ namespace Castle.Transactions.IO.Tests
 		[Test]
 		public void CompletedState()
 		{
-			using (IFileTransaction tx = subject.CreateFileTransaction().Value)
+			using (var tx = subject.CreateFileTransaction().Value)
 			{
 				Assert.That(tx.State, Is.EqualTo(TransactionState.Active));
 				tx.Complete();

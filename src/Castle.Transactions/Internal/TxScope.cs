@@ -19,7 +19,6 @@
 using System;
 using System.Transactions;
 using Castle.Core.Logging;
-using NLog;
 
 namespace Castle.Transactions.Internal
 {

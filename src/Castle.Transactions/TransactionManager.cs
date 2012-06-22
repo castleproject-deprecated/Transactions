@@ -12,68 +12,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using System.Transactions;
+using Castle.Core.Logging;
+using Castle.Transactions.Internal;
+
 namespace Castle.Transactions
 {
-	using System;
-	using System.Diagnostics.Contracts;
-	using System.Threading.Tasks;
-	using System.Transactions;
-
-	using Castle.Transactions.Internal;
-
-	using NLog;
-
 	/// <summary>
-	/// 	The default transaction manager that is capable of handling most combinations
-	/// 	of <see cref = "ITransactionOptions" />.
+	///   The default transaction manager that is capable of handling most combinations of <see cref="ITransactionOptions" /> .
 	/// </summary>
 	public class TransactionManager : ITransactionManager
 	{
-		private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+		readonly ILogger _Logger = NullLogger.Instance;
 
-		private readonly IActivityManager activityManager;
+		readonly IActivityManager _ActivityManager;
 
-		public TransactionManager(IActivityManager activityManager)
+		public TransactionManager(IActivityManager activityManager, ILogger logger)
 		{
 			Contract.Requires(activityManager != null);
 
-			this.activityManager = activityManager;
+			_ActivityManager = activityManager;
+			_Logger = logger;
 		}
 
 		[ContractInvariantMethod]
-		private void Invariant()
+		void Invariant()
 		{
-			Contract.Invariant(activityManager != null);
+			Contract.Invariant(_ActivityManager != null);
 		}
 
 		IActivityManager ITransactionManager.Activities
 		{
-			get { return activityManager; }
+			get { return _ActivityManager; }
 		}
 
 		Maybe<ITransaction> ITransactionManager.CurrentTopTransaction
 		{
-			get { return activityManager.GetCurrentActivity().TopTransaction; }
+			get { return _ActivityManager.GetCurrentActivity().TopTransaction; }
 		}
 
 		Maybe<ITransaction> ITransactionManager.CurrentTransaction
 		{
-			get { return activityManager.GetCurrentActivity().CurrentTransaction; }
+			get { return _ActivityManager.GetCurrentActivity().CurrentTransaction; }
 		}
 
 		uint ITransactionManager.Count
 		{
-			get { return activityManager.GetCurrentActivity().Count; }
+			get { return _ActivityManager.GetCurrentActivity().Count; }
 		}
 
 		Maybe<ICreatedTransaction> ITransactionManager.CreateTransaction()
 		{
-			return ((ITransactionManager)this).CreateTransaction(new DefaultTransactionOptions());
+			return ((ITransactionManager) this).CreateTransaction(new DefaultTransactionOptions());
 		}
 
 		Maybe<ICreatedTransaction> ITransactionManager.CreateTransaction(ITransactionOptions transactionOptions)
 		{
-			var activity = activityManager.GetCurrentActivity();
+			var activity = _ActivityManager.GetCurrentActivity();
 
 			if (transactionOptions.Mode == TransactionScopeOption.Suppress)
 				return Maybe.None<ICreatedTransaction>();
@@ -84,10 +82,11 @@ namespace Castle.Transactions
 			ITransaction tx;
 			if (activity.Count == 0)
 				tx = new Transaction(new CommittableTransaction(new TransactionOptions
-				{
-					IsolationLevel = transactionOptions.IsolationLevel,
-					Timeout = transactionOptions.Timeout
-				}), nextStackDepth, transactionOptions, () => activity.Pop());
+					{
+						IsolationLevel = transactionOptions.IsolationLevel,
+						Timeout = transactionOptions.Timeout
+					}), nextStackDepth, transactionOptions, () => activity.Pop(),
+				                     _Logger.CreateChildLogger("Transaction"));
 			else
 			{
 				var clone = activity
@@ -97,7 +96,8 @@ namespace Castle.Transactions
 				Contract.Assume(clone != null);
 
 				Action onDispose = () => activity.Pop();
-				tx = new Transaction(clone, nextStackDepth, transactionOptions, shouldFork ? null : onDispose);
+				tx = new Transaction(clone, nextStackDepth, transactionOptions, shouldFork ? null : onDispose,
+				                     _Logger.CreateChildLogger("Transaction"));
 			}
 
 			if (!shouldFork) // forked transactions should not be on the current context's activity stack
@@ -110,9 +110,9 @@ namespace Castle.Transactions
 
 			// warn if fork and the top transaction was just created
 			if (transactionOptions.Fork && nextStackDepth == 1)
-				logger.Warn("transaction {0} created with Fork=true option, but was top-most "
-				            + "transaction in invocation chain. running transaction sequentially",
-				            tx.LocalIdentifier);
+				_Logger.WarnFormat("transaction {0} created with Fork=true option, but was top-most "
+				                   + "transaction in invocation chain. running transaction sequentially",
+				                   tx.LocalIdentifier);
 
 			Contract.Assume(m.HasValue && m.Value.Transaction.State == TransactionState.Active);
 
@@ -120,21 +120,18 @@ namespace Castle.Transactions
 		}
 
 		/// <summary>
-		/// 	Enlists a dependent task in the current top transaction.
+		///   Enlists a dependent task in the current top transaction.
 		/// </summary>
-		/// <param name = "task">
-		/// 	The task to enlist; this task is the action of running
-		/// 	a dependent transaction on the thread pool.
-		/// </param>
+		/// <param name="task"> The task to enlist; this task is the action of running a dependent transaction on the thread pool. </param>
 		public void EnlistDependentTask(Task task)
 		{
 			Contract.Requires(task != null);
-			activityManager.GetCurrentActivity().EnlistDependentTask(task);
+			_ActivityManager.GetCurrentActivity().EnlistDependentTask(task);
 		}
 
 		public class DisposableScope : IDisposable
 		{
-			private readonly Func<ITransaction> onDispose;
+			readonly Func<ITransaction> onDispose;
 
 			public DisposableScope(Func<ITransaction> onDispose)
 			{
@@ -154,7 +151,7 @@ namespace Castle.Transactions
 			GC.SuppressFinalize(this);
 		}
 
-		private void Dispose(bool isManaged)
+		void Dispose(bool isManaged)
 		{
 			if (!isManaged)
 				return;

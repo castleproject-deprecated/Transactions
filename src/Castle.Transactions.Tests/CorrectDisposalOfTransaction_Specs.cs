@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Castle.Core.Logging;
+
 namespace Castle.Transactions.Tests
 {
 	using System.Transactions;
@@ -30,7 +32,7 @@ namespace Castle.Transactions.Tests
 			var opt = new DefaultTransactionOptions();
 			var cmt = new CommittableTransaction();
 
-			using (ITransaction tx = new Transaction(cmt, 1, opt, () => actionWasCalled = true))
+			using (ITransaction tx = new Transaction(cmt, 1, opt, () => actionWasCalled = true, NullLogger.Instance))
 				tx.Complete();
 
 			Assert.That(actionWasCalled);

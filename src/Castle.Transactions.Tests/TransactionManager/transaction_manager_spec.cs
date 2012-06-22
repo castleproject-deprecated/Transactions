@@ -12,26 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Transactions;
+using Castle.Core.Logging;
+using Castle.Transactions.Activities;
+using Castle.Transactions.Tests.TestClasses;
+using NUnit.Framework;
+
 namespace Castle.Transactions.Tests.TransactionManager
 {
-	using System.IO;
-	using System.Transactions;
-
-	using Castle.Transactions.Activities;
-	using Castle.Transactions.Tests.TestClasses;
-
-	using NUnit.Framework;
-
-	using TransactionManager = Castle.Transactions.TransactionManager;
-
 	public class transaction_manager_spec
 	{
-		private ITransactionManager subject;
+		ITransactionManager subject;
 
 		[SetUp]
 		public void given_manager()
 		{
-			subject = new TransactionManager(new CallContextActivityManager());
+			subject = new Transactions.TransactionManager(new CallContextActivityManager(), NullLogger.Instance);
 		}
 
 		[TearDown]
@@ -86,7 +82,8 @@ namespace Castle.Transactions.Tests.TransactionManager
 			}
 		}
 
-		[Test, Description("This test doesn't explicitly check disposal, but a pass means the bug in previous versions was fixed.")]
+		[Test,
+		 Description("This test doesn't explicitly check disposal, but a pass means the bug in previous versions was fixed.")]
 		public void Dispose_ITransaction_using_IDisposable_should_run_dispose()
 		{
 			using (var tx = subject.CreateTransaction().Value.Transaction)
