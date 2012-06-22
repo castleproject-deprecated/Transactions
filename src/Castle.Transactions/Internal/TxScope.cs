@@ -18,6 +18,7 @@
 
 using System;
 using System.Transactions;
+using Castle.Core.Logging;
 using NLog;
 
 namespace Castle.Transactions.Internal
@@ -32,7 +33,7 @@ namespace Castle.Transactions.Internal
 	/// </summary>
 	public sealed class TxScope : IDisposable
 	{
-		private static readonly Logger _Logger = LogManager.GetCurrentClassLogger();
+		readonly ILogger _Logger;
 
 		private readonly System.Transactions.Transaction prev;
 
@@ -44,8 +45,9 @@ namespace Castle.Transactions.Internal
 		/// 	the <see cref = "ITransactionManager" /> will take care of setting the 
 		/// 	correct static properties for you.
 		/// </summary>
-		public TxScope(System.Transactions.Transaction curr)
+		public TxScope(System.Transactions.Transaction curr, ILogger logger)
 		{
+			_Logger = logger;
 			prev = System.Transactions.Transaction.Current;
 			System.Transactions.Transaction.Current = curr;
 		}

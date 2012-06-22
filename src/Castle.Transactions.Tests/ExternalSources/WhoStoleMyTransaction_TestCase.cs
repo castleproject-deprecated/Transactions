@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Transactions;
+using Castle.Core.Logging;
 using Castle.Transactions.Internal;
 using NUnit.Framework;
 
@@ -107,7 +108,7 @@ namespace Castle.Transactions.Tests.ExternalSources
 			for (int i = 0; i < 5; i++)
 			{
 				using (var tx = new CommittableTransaction(new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
-				using (new TxScope(tx)) // set ambient also!
+				using (new TxScope(tx, NullLogger.Instance)) // set ambient also!
 				{
 					System.Transactions.Transaction.Current.EnlistDurable(newGuid, new EnlistmentTracking(), EnlistmentOptions.None);
 					System.Transactions.Transaction.Current.EnlistDurable(newGuid, new EnlistmentTracking(), EnlistmentOptions.None);
@@ -126,7 +127,7 @@ namespace Castle.Transactions.Tests.ExternalSources
 			for (int i = 0; i < 5; i++)
 			{
 				using (var tx = new CommittableTransaction(new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
-				using (new TxScope(tx)) // set ambient also!
+				using (new TxScope(tx, NullLogger.Instance)) // set ambient also!
 				{
 					var first = new AnotherEnlistment(false);
 					System.Transactions.Transaction.Current.EnlistDurable(newGuid, first, EnlistmentOptions.None);

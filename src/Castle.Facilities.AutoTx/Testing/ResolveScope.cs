@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Diagnostics.Contracts;
+using Castle.Core.Logging;
+using Castle.Windsor;
+
 namespace Castle.Facilities.AutoTx.Testing
 {
-	using System;
-	using System.Diagnostics.Contracts;
-
-	using Castle.Core.Logging;
-	using Castle.Windsor;
-
 	/// <summary>
-	/// 	A scope usable for deterministically releasing (from Windsor) resources resolved. Important when testing logic
-	/// 	that is dependent on the resource being released.
+	///   A scope usable for deterministically releasing (from Windsor) resources resolved. Important when testing logic that is dependent on the resource being released.
 	/// </summary>
-	/// <typeparam name = "T"></typeparam>
+	/// <typeparam name="T"> </typeparam>
 	public class ResolveScope<T> : IDisposable
 		where T : class
 	{
-		private readonly ILogger _Logger;
+		readonly ILogger _Logger;
 
-		private readonly T _Service;
-		private bool _Disposed;
+		readonly T _Service;
+		bool _Disposed;
 		protected readonly IWindsorContainer Container;
 
 		public ResolveScope(IWindsorContainer container)
@@ -40,7 +38,9 @@ namespace Castle.Facilities.AutoTx.Testing
 			Contract.Ensures(_Service != null, "or resolve throws");
 
 			// check container has a logger factory component
-			var loggerFactory = container.GetService<ILoggerFactory>();
+			var loggerFactory = container.Kernel.HasComponent(typeof (ILoggerFactory))
+			                    	? container.Resolve<ILoggerFactory>()
+			                    	: null;
 			_Logger = loggerFactory != null ? loggerFactory.Create(GetType()) : NullLogger.Instance;
 
 			if (_Logger.IsDebugEnabled)
@@ -52,7 +52,7 @@ namespace Castle.Facilities.AutoTx.Testing
 		}
 
 		[ContractInvariantMethod]
-		private void Invariant()
+		void Invariant()
 		{
 			Contract.Invariant(_Service != null);
 		}

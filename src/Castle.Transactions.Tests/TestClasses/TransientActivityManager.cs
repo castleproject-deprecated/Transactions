@@ -12,23 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Castle.Core.Logging;
+using Castle.Transactions.Activities;
+
 namespace Castle.Transactions.Tests.TestClasses
 {
-	using Castle.Transactions.Activities;
-
 	public class TransientActivityManager : IActivityManager
 	{
-		private readonly Activity activity;
+		readonly Activity activity;
 
-		public TransientActivityManager()
+		public TransientActivityManager(ILogger logger)
 		{
-			activity = new Activity();
+			activity = new Activity(logger);
 		}
 
 		/// <summary>
-		/// 	Gets the current activity.
+		///   Gets the current activity.
 		/// </summary>
-		/// <value>The current activity.</value>
+		/// <value> The current activity. </value>
 		Activity IActivityManager.GetCurrentActivity()
 		{
 			return activity;

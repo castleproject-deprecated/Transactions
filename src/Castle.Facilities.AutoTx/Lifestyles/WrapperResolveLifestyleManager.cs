@@ -21,11 +21,11 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using Castle.Core;
+using Castle.Core.Logging;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Lifestyle;
 using Castle.MicroKernel.Registration;
-using NLog;
 
 namespace Castle.Facilities.AutoTx.Lifestyles
 {
@@ -73,7 +73,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 				_Logger = NullLogger.Instance;
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("initializing (for component: {0})", model.Service);
+				_Logger.DebugFormat("initializing (for component: {0})", string.Join(",", model.Services));
 
 			_LifestyleKernel.Register(Component.For<T>().LifeStyle.Transient.Named("T.lifestyle"));
 			kernel.AddChildKernel(_LifestyleKernel);

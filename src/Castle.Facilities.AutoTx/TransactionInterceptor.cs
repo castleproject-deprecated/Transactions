@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Castle.Core;
 using Castle.Core.Interceptor;
+using Castle.Core.Logging;
 using Castle.DynamicProxy;
 using Castle.MicroKernel;
 using Castle.Transactions;
 using Castle.Transactions.Internal;
-using NLog;
 using TransactionException = Castle.Transactions.TransactionException;
 using TransactionManager = Castle.Transactions.TransactionManager;
 
@@ -99,7 +99,6 @@ namespace Castle.Facilities.AutoTx
 						if (_Logger.IsInfoEnabled)
 							_Logger.Info("supressing ambient transaction");
 
-						using (new TxScope(null))
 						using (new TxScope(null, _Logger.CreateChildLogger("TxScope")))
 							invocation.Proceed();
 					}
@@ -125,14 +124,9 @@ namespace Castle.Facilities.AutoTx
 			}
 		}
 
-		private static void SynchronizedCase(IInvocation invocation, ITransaction transaction)
+		private void SynchronizedCase(IInvocation invocation, ITransaction transaction)
 		{
 			Contract.Requires(transaction.State == TransactionState.Active);
-
-
-			using (new TxScope(transaction.Inner))
-			if (_Logger.IsDebugEnabled)
-				_Logger.Debug("synchronized case");
 
 			using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
 			{
@@ -145,7 +139,7 @@ namespace Castle.Facilities.AutoTx
 					if (transaction.State == TransactionState.Active)
 						transaction.Complete();
 					else if (_Logger.IsWarnEnabled)
-						_Logger.Warn(
+						_Logger.WarnFormat(
 							"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
 							transaction.State);
 				}
@@ -160,20 +154,20 @@ namespace Castle.Facilities.AutoTx
 				catch (TransactionException ex)
 				{
 					if (_Logger.IsFatalEnabled)
-						_Logger.FatalException("internal error in transaction system - synchronized case", ex);
+						_Logger.Fatal("internal error in transaction system - synchronized case", ex);
 
 					throw;
 				}
 				catch (AggregateException ex)
 				{
 					if (_Logger.IsWarnEnabled)
-						_Logger.WarnException("one or more dependent transactions failed, re-throwing exceptions!", ex);
+						_Logger.Warn("one or more dependent transactions failed, re-throwing exceptions!", ex);
 
 					throw;
 				}
 				catch (Exception)
 				{
-					_Logger.Error("caught exception, transaction will roll back - synchronized case - tx#{0}",
+					_Logger.ErrorFormat("caught exception, transaction will roll back - synchronized case - tx#{0}",
 								  localIdentifier);
 
 					// the transaction rolls back itself on exceptions, so just throw it
@@ -181,7 +175,7 @@ namespace Castle.Facilities.AutoTx
 				}
 				finally
 				{
-					_Logger.Debug(() => string.Format("dispoing transaction - synchronized case - tx#{0}", localIdentifier));
+					_Logger.DebugFormat("dispoing transaction - synchronized case - tx#{0}", localIdentifier);
 					transaction.Dispose();
 				}
 			}
@@ -192,7 +186,7 @@ namespace Castle.Facilities.AutoTx
 		/// </summary>
 		internal static ManualResetEvent Finally;
 
-		private static Task ForkCase(IInvocation invocation, ICreatedTransaction txData)
+		private Task ForkCase(IInvocation invocation, ICreatedTransaction txData)
 		{
 			Contract.Requires(txData.Transaction.State == TransactionState.Active);
 			Contract.Ensures(Contract.Result<Task>() != null);

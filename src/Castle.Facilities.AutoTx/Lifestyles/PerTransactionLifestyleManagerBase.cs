@@ -24,11 +24,11 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using Castle.Core;
+using Castle.Core.Logging;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Lifestyle;
 using Castle.Transactions;
-using NLog;
 
 namespace Castle.Facilities.AutoTx.Lifestyles
 {
@@ -52,7 +52,6 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 		{
 			Contract.Requires(manager != null);
 			Contract.Ensures(_Manager != null);
-			_Logger.Debug("created");
 			_Manager = manager;
 		}
 
@@ -118,9 +117,10 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 								.Select(x => string.Format("(id: {0}, item: {1})", x.Key, x.Value.ToString()))
 								.ToArray());
 
-						_Logger.Warn("Storage contains {0} items! Items: {{ {1} }}",
-						                   _Storage.Count,
-						                   items);
+						if (_Logger.IsWarnEnabled)
+							_Logger.WarnFormat("Storage contains {0} items! Items: {{ {1} }}",
+											   _Storage.Count,
+											   items);
 					}
 
 					// release all items
