@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Castle.Core.Logging;
 using Castle.IO;
 using Castle.IO.Internal;
@@ -50,6 +51,12 @@ namespace Castle.Facilities.AutoTx
 
 			if (_Logger.IsDebugEnabled)
 				_Logger.Debug("initializing AutoTxFacility");
+
+			if (!Kernel.HasComponent(typeof(ILogger)))
+			{
+				Trace.TraceWarning("Missing ILogger in Kernel; add it or you'll have no logging of errors!");
+				Kernel.Register(Component.For<ILogger>().Instance(NullLogger.Instance));
+			}
 
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
