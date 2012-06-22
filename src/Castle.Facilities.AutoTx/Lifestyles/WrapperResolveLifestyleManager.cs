@@ -37,8 +37,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	public class WrapperResolveLifestyleManager<T> : AbstractLifestyleManager
 		where T : class, ILifestyleManager
 	{
-		private static readonly Logger _Logger = LogManager.GetLogger(
-			string.Format("Castle.Facilities.AutoTx.Lifestyles.WrapperResolveLifestyleManager<{0}>", typeof (T).Name));
+		private ILogger _Logger;
 
 		private readonly IKernel _LifestyleKernel = new DefaultKernel();
 		protected T _Lifestyle1;
@@ -62,8 +61,19 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			Contract.Ensures(_Lifestyle1 != null);
 			Contract.Ensures(Initialized);
 
+			// check ILoggerFactory is registered
+			if (kernel.HasComponent(typeof(ILoggerFactory)))
+			{
+				// get logger factory instance
+				var loggerFactory = kernel.Resolve<ILoggerFactory>();
+				// create logger
+				_Logger = loggerFactory.Create(typeof(WrapperResolveLifestyleManager<T>));
+			}
+			else
+				_Logger = NullLogger.Instance;
+
 			if (_Logger.IsDebugEnabled)
-				_Logger.Debug(() => string.Format("initializing (for component: {0})", String.Join(",", model.Services)));
+				_Logger.DebugFormat("initializing (for component: {0})", model.Service);
 
 			_LifestyleKernel.Register(Component.For<T>().LifeStyle.Transient.Named("T.lifestyle"));
 			kernel.AddChildKernel(_LifestyleKernel);
@@ -115,9 +125,15 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			if (_Disposed)
 			{
 				_Logger.Info("repeated call to Dispose. will show stack-trace in debug mode next. this method call is idempotent");
+				if (_Logger.IsInfoEnabled)
+				{
+					_Logger.Info("repeated call to Dispose. will show stack-trace in debug mode next. this method call is idempotent");
 
 				if (_Logger.IsDebugEnabled)
 					_Logger.Debug(new StackTrace().ToString());
+					if (_Logger.IsDebugEnabled)
+						_Logger.Debug(new StackTrace().ToString());
+				}
 
 				_Initialized = false;
 				return;

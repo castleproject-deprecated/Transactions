@@ -42,11 +42,22 @@ namespace Castle.Facilities.AutoTx
 	///</summary>
 	public class AutoTxFacility : AbstractFacility
 	{
-		private static readonly Logger _Logger = LogManager.GetCurrentClassLogger();
-
 		protected override void Init()
 		{
 			_Logger.Debug("initializing AutoTxFacility");
+			ILogger logger = NullLogger.Instance;
+
+			// check we have a logger factory
+			if (Kernel.HasComponent(typeof(ILoggerFactory)))
+			{
+				// get logger factory
+				var loggerFactory = Kernel.Resolve<ILoggerFactory>();
+				// get logger
+				logger = loggerFactory.Create(typeof(AutoTxFacility));
+			}
+
+			if(logger.IsDebugEnabled)
+				logger.Debug("initializing AutoTxFacility");
 
 			Kernel.Register(
 				// the interceptor needs to be created for every method call

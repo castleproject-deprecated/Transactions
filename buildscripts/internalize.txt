@@ -1,3 +1,0 @@
-System.CoreEx.dll
-System.Interactive.dll
-System.Reactive.dll

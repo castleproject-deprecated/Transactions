@@ -1,5 +1,3 @@
-#region license
-
 // Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#endregion
-
-using System;
-using System.Diagnostics.Contracts;
-using Castle.Windsor;
-using NLog;
-
 namespace Castle.Facilities.AutoTx.Testing
 {
+	using System;
+	using System.Diagnostics.Contracts;
+
+	using Castle.Core.Logging;
+	using Castle.Windsor;
+
+	/// <summary>
+	/// 	A scope usable for deterministically releasing (from Windsor) resources resolved. Important when testing logic
+	/// 	that is dependent on the resource being released.
+	/// </summary>
+	/// <typeparam name = "T"></typeparam>
 	public class ResolveScope<T> : IDisposable
 		where T : class
 	{
-// ReSharper disable StaticFieldInGenericType
-		private static readonly Logger _Logger = LogManager.GetLogger(
-			string.Format("Castle.Facilities.AutoTx.Testing.ResolveScope<{0}>", typeof (T).Name));
-// ReSharper restore StaticFieldInGenericType
+		private readonly ILogger _Logger;
 
 		private readonly T _Service;
 		private bool _Disposed;
@@ -40,7 +39,12 @@ namespace Castle.Facilities.AutoTx.Testing
 			Contract.Requires(container != null);
 			Contract.Ensures(_Service != null, "or resolve throws");
 
-			_Logger.Debug("creating");
+			// check container has a logger factory component
+			var loggerFactory = container.GetService<ILoggerFactory>();
+			_Logger = loggerFactory != null ? loggerFactory.Create(GetType()) : NullLogger.Instance;
+
+			if (_Logger.IsDebugEnabled)
+				_Logger.Debug("creating");
 
 			Container = container;
 			_Service = Container.Resolve<T>();
@@ -72,7 +76,11 @@ namespace Castle.Facilities.AutoTx.Testing
 		{
 			if (_Disposed) return;
 
-			_Logger.Debug("disposing resolve scope");
+			if (!managed)
+				return;
+
+			if (_Logger.IsDebugEnabled)
+				_Logger.Debug("disposing resolve scope");
 
 			try
 			{

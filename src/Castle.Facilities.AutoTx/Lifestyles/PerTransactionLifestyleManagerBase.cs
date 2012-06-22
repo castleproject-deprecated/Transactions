@@ -40,7 +40,7 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 	[Serializable]
 	public abstract class PerTransactionLifestyleManagerBase : AbstractLifestyleManager
 	{
-		private static readonly Logger _Logger = LogManager.GetCurrentClassLogger();
+		private ILogger _Logger;
 
 		private readonly Dictionary<string, Tuple<uint, Burden>> _Storage = new Dictionary<string, Tuple<uint, Burden>>();
 
@@ -59,6 +59,17 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 		public override void Init(IComponentActivator componentActivator, IKernel kernel, ComponentModel model)
 		{
 			base.Init(componentActivator, kernel, model);
+
+			// check ILoggerFactory is registered (logging is enabled)
+			if (kernel.HasComponent(typeof(ILoggerFactory))) 
+			{
+				// get logger factory instance
+				ILoggerFactory loggerFactory = kernel.Resolve<ILoggerFactory>();
+				// create logger
+				_Logger = loggerFactory.Create(GetType());
+			}
+			else
+				_Logger = NullLogger.Instance;
 		}
 
 		// this method is not thread-safe
@@ -81,9 +92,16 @@ namespace Castle.Facilities.AutoTx.Lifestyles
 			{
 				_Logger.Info(
 					"repeated call to Dispose. will show stack-trace if log4net is in debug mode as the next log line. this method call is idempotent");
+				if (_Logger.IsInfoEnabled) 
+				{
+					_Logger.Info(
+						"repeated call to Dispose. will show stack-trace if logging is in debug mode as the next log line. this method call is idempotent");
 
 				if (_Logger.IsDebugEnabled)
 					_Logger.Debug(new StackTrace().ToString());
+					if (_Logger.IsDebugEnabled)
+						_Logger.Debug(new StackTrace().ToString());
+				}
 
 				return;
 			}
