@@ -10,6 +10,11 @@ using System.Linq;
 
 namespace Castle.Facilities.AutoTx.Tests
 {
+	using System.Transactions;
+
+	using Transaction = Castle.Transactions.Transaction;
+	using TransactionManager = Castle.Transactions.TransactionManager;
+
 	public class MultipleThreads_TransactionBookKeeping
 	{
 		private WindsorContainer _Container;
@@ -18,7 +23,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		public void SetUp()
 		{
 			_Container = new WindsorContainer();
-			_Container.AddFacility("autotx", new AutoTxFacility());
+			_Container.AddFacility<AutoTxFacility>();
 			_Container.Register(Component.For<MyService>());
 			ThreadPool.SetMinThreads(5, 5);
 		}
@@ -72,7 +77,6 @@ namespace Castle.Facilities.AutoTx.Tests
 			using (var manager = _Container.ResolveScope<TransactionManager>())
 			using (var scope = _Container.ResolveScope<MyService>())
 			{
-				var parentCompleted = new ManualResetEvent(false);
 				var childHasCompleted = new ManualResetEvent(false);
 				TransactionInterceptor.Finally = childHasCompleted;
 				const string exMsg = "something went wrong, but parent has completed";
@@ -95,6 +99,14 @@ namespace Castle.Facilities.AutoTx.Tests
 				catch (AggregateException ex)
 				{
 					Assert.That(ex.InnerExceptions.Any(x => x is ApplicationException && x.Message == exMsg));
+				}
+				catch (TransactionAbortedException)
+				{
+					// TODO: we actually have a race condition between the child
+					// transaction signalling the parent transaction of failure and the
+					// parent which means that if the signal child->parent in the System.Transaction
+					// namespace reaches the LTM first, we get this exception,
+					// otherwise, we get the aggregate exception.
 				}
 			}
 			GC.WaitForPendingFinalizers(); // because tasks throw on finalize

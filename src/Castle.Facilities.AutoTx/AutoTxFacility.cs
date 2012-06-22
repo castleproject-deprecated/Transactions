@@ -51,15 +51,12 @@ namespace Castle.Facilities.AutoTx
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
 				Component.For<TransactionInterceptor>()
-					.Named("transaction.interceptor")
 					.LifeStyle.Transient,
 				Component.For<ITransactionMetaInfoStore>()
 					.ImplementedBy<TransactionClassMetaInfoStore>()
-					.Named("transaction.metaInfoStore")
 					.LifeStyle.Singleton,
 				Component.For<ITransactionManager>()
 					.ImplementedBy<TransactionManager>()
-					.Named("transaction.manager")
 					.LifeStyle.Singleton
 					.Forward(typeof (TransactionManager)),
 				// the activity manager shouldn't have the same lifestyle as TransactionInterceptor, as it
@@ -86,7 +83,7 @@ namespace Castle.Facilities.AutoTx
 			_Logger.Debug("inspecting previously registered components; this might throw if you have configured your components in the wrong way");
 
 			((INamingSubSystem) Kernel.GetSubSystem(SubSystemConstants.NamingKey))
-				.GetHandlers()
+				.GetAllHandlers()
 				.Do(x => componentInspector.ProcessModel(Kernel, x.ComponentModel))
 				.Run();
 
@@ -100,7 +97,7 @@ You can enable verbose logging for .Net by adding this to you .config file:
 		<sources>
 			<source name=""System.Transactions"" switchValue=""Information"">
 				<listeners>
-					<add name=""tx"" type=""Castle.Services.Transaction.Internal.TxTraceListener, Castle.Services.Transaction""/>
+					<add name=""tx"" type=""Castle.Transactions.Logging.TraceListener, Castle.Transactions""/>
 				</listeners>
 			</source>
 		</sources>

@@ -14,7 +14,7 @@ namespace Castle.Facilities.AutoTx.Tests
 		public void SetUp()
 		{
 			_Container = new WindsorContainer();
-			_Container.AddFacility("autotx", new AutoTxFacility());
+			_Container.AddFacility<AutoTxFacility>();
 			_Container.Register(Component.For<MyService>());
 		}
 

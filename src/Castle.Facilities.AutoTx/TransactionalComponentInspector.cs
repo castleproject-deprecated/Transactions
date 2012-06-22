@@ -53,8 +53,8 @@ namespace Castle.Facilities.AutoTx
 
 			Maybe<TransactionalClassMetaInfo> meta;
 			List<string> problematicMethods;
-			if (model.Service == null
-			    || model.Service.IsInterface
+			if (model.Services == null
+			    || model.Services.All(s => s.IsInterface)
 			    || !(meta = _MetaStore.GetMetaFromType(model.Implementation)).HasValue
 			    || (problematicMethods = (from method in meta.Value.TransactionalMethods
 			                              where !method.IsVirtual
@@ -75,7 +75,7 @@ namespace Castle.Facilities.AutoTx
 			if (!meta.HasValue)
 				return;
 
-			model.Dependencies.Add(new DependencyModel(DependencyType.Service, null, typeof (TransactionInterceptor), false));
+			model.Dependencies.Add(new DependencyModel(null, typeof (TransactionInterceptor), false));
 			model.Interceptors.Add(new InterceptorReference(typeof (TransactionInterceptor)));
 		}
 
