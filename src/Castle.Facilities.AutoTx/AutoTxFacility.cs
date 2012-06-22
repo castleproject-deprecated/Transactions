@@ -1,6 +1,4 @@
-#region license
-
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project, Henrik Feldt &contributors - https://github.com/castleproject
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#endregion
-
+using Castle.Core.Logging;
 using Castle.IO;
 using Castle.IO.Internal;
 using Castle.MicroKernel;
@@ -24,40 +21,35 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Naming;
 using Castle.Transactions;
 using Castle.Transactions.Activities;
-using Castle.Transactions.Internal;
+using Castle.Transactions.Helpers;
 using Castle.Transactions.IO;
-using NLog;
 
 namespace Castle.Facilities.AutoTx
 {
-	using Castle.Transactions.Helpers;
-
 	///<summary>
-	///	<para>A facility for automatically handling transactions using the lightweight
-	///		transaction manager. This facility does not depend on
-	///		any other facilities.</para>
-	///	<para>
-	///		Install the facility in your container with <code>c.AddFacility&lt;AutoTxFacility&gt;</code>
-	///	</para>
+	///  <para>A facility for automatically handling transactions using the lightweight
+	///    transaction manager. This facility does not depend on
+	///    any other facilities.</para> <para>Install the facility in your container with
+	///                                   <code>c.AddFacility&lt;AutoTxFacility&gt;</code>
+	///                                 </para>
 	///</summary>
 	public class AutoTxFacility : AbstractFacility
 	{
 		protected override void Init()
 		{
-			_Logger.Debug("initializing AutoTxFacility");
-			ILogger logger = NullLogger.Instance;
+			ILogger _Logger = NullLogger.Instance;
 
 			// check we have a logger factory
-			if (Kernel.HasComponent(typeof(ILoggerFactory)))
+			if (Kernel.HasComponent(typeof (ILoggerFactory)))
 			{
 				// get logger factory
 				var loggerFactory = Kernel.Resolve<ILoggerFactory>();
 				// get logger
-				logger = loggerFactory.Create(typeof(AutoTxFacility));
+				_Logger = loggerFactory.Create(typeof (AutoTxFacility));
 			}
 
-			if(logger.IsDebugEnabled)
-				logger.Debug("initializing AutoTxFacility");
+			if (_Logger.IsDebugEnabled)
+				_Logger.Debug("initializing AutoTxFacility");
 
 			Kernel.Register(
 				// the interceptor needs to be created for every method call
@@ -88,10 +80,11 @@ namespace Castle.Facilities.AutoTx
 				);
 
 			var componentInspector = new TransactionalComponentInspector();
-			
+
 			Kernel.ComponentModelBuilder.AddContributor(componentInspector);
 
-			_Logger.Debug("inspecting previously registered components; this might throw if you have configured your components in the wrong way");
+			_Logger.Debug(
+				"inspecting previously registered components; this might throw if you have configured your components in the wrong way");
 
 			((INamingSubSystem) Kernel.GetSubSystem(SubSystemConstants.NamingKey))
 				.GetAllHandlers()
