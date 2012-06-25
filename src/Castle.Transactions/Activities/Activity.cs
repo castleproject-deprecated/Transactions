@@ -133,7 +133,7 @@ namespace Castle.Transactions.Activities
 
 			var ret = _Txs.Pop();
 
-			_Logger.Debug(() => string.Format("popping tx#{0}", ret.Item2));
+			_Logger.DebugFormat("popping tx#{0}", ret.Item2);
 
 			if (Count == 0)
 				_TopMost = null;

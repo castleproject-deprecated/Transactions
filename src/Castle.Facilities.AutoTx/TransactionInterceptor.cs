@@ -60,7 +60,9 @@ namespace Castle.Facilities.AutoTx
 			Contract.Requires(store != null, "store must be non null");
 			Contract.Ensures(_State == InterceptorState.Constructed);
 
-			_Logger.Debug("created transaction interceptor");
+			if (_Logger.IsDebugEnabled) {
+				_Logger.Debug("created transaction interceptor");
+			}
 
 			_Kernel = kernel;
 			_Store = store;
@@ -95,7 +97,6 @@ namespace Castle.Facilities.AutoTx
 				{
 					if (mTxMethod.HasValue && mTxMethod.Value.Mode == TransactionScopeOption.Suppress)
 					{
-						_Logger.Info("supressing ambient transaction");
 						if (_Logger.IsInfoEnabled)
 							_Logger.Info("supressing ambient transaction");
 
@@ -140,7 +141,8 @@ namespace Castle.Facilities.AutoTx
 						transaction.Complete();
 					else if (_Logger.IsWarnEnabled)
 						_Logger.WarnFormat(
-							"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
+							"tx#{0} was in state {1}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
+							localIdentifier,
 							transaction.State);
 				}
 				catch (TransactionAbortedException)
@@ -154,20 +156,21 @@ namespace Castle.Facilities.AutoTx
 				catch (TransactionException ex)
 				{
 					if (_Logger.IsFatalEnabled)
-						_Logger.Fatal("internal error in transaction system - synchronized case", ex);
+						_Logger.FatalFormat(ex, "internal error in transaction system - synchronized case, tx#{0}", localIdentifier);
 
 					throw;
 				}
 				catch (AggregateException ex)
 				{
 					if (_Logger.IsWarnEnabled)
-						_Logger.Warn("one or more dependent transactions failed, re-throwing exceptions!", ex);
+						_Logger.WarnFormat(ex, "one or more dependent transactions failed, re-throwing exceptions! tx#{0}", localIdentifier);
 
 					throw;
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					_Logger.ErrorFormat("caught exception, transaction will roll back - synchronized case - tx#{0}",
+					if (_Logger.IsErrorEnabled)
+						_Logger.ErrorFormat(e, "caught exception, transaction will roll back - synchronized case - tx#{0}",
 								  localIdentifier);
 
 					// the transaction rolls back itself on exceptions, so just throw it
@@ -175,7 +178,9 @@ namespace Castle.Facilities.AutoTx
 				}
 				finally
 				{
-					_Logger.DebugFormat("dispoing transaction - synchronized case - tx#{0}", localIdentifier);
+					if (_Logger.IsDebugEnabled)
+						_Logger.DebugFormat("dispoing transaction - synchronized case - tx#{0}", localIdentifier);
+
 					transaction.Dispose();
 				}
 			}
@@ -193,7 +198,7 @@ namespace Castle.Facilities.AutoTx
 			Contract.Assume(txData.Transaction.Inner is DependentTransaction);
 
 			if (_Logger.IsDebugEnabled)
-				_Logger.DebugFormat("fork case");
+				_Logger.DebugFormat("fork case invocation {0} tx#{1}", invocation, txData.Transaction.LocalIdentifier);
 
 			return Task.Factory.StartNew(t =>
 			{
@@ -205,12 +210,14 @@ namespace Castle.Facilities.AutoTx
 				{
 					try
 					{
-						_Logger.Debug(() => string.Format("calling proceed on tx#{0}", tuple.Item3));
-
+						if (_Logger.IsDebugEnabled)
+							_Logger.DebugFormat("calling proceed on tx#{0}", tuple.Item3);
+						
 						using (var ts = new TransactionScope(dependent))
 						{
 							tuple.Item1.Proceed();
-							_Logger.Debug(() => string.Format("calling complete on TransactionScope for tx#{0}", tuple.Item3));
+							if (_Logger.IsDebugEnabled)
+								_Logger.DebugFormat("calling complete on TransactionScope for tx#{0}", tuple.Item3);
 							ts.Complete();
 						}
 					}
@@ -220,10 +227,10 @@ namespace Castle.Facilities.AutoTx
 						hasException = true;
 
 						if (_Logger.IsWarnEnabled)
-							_Logger.Warn("transaction aborted", ex);
+							_Logger.WarnFormat(ex, "transaction aborted, tx#{0}", tuple.Item3);
 
 						throw new TransactionAbortedException(
-							"Parallel/forked transaction aborted! See inner exception for details.", ex);
+							String.Format("Parallel/forked transaction aborted! See inner exception for details. tx#{0}", tuple.Item3), ex);
 					}
 					catch (Exception)
 					{
@@ -232,11 +239,17 @@ namespace Castle.Facilities.AutoTx
 					}
 					finally
 					{
-						if (_Logger.IsDebugEnabled)
-							_Logger.Debug("in finally-clause, completing dependent if it didn't throw exception");
-
 						if (!hasException)
+						{
+							if (_Logger.IsDebugEnabled)
+								_Logger.DebugFormat("tx#{0} in finally-clause", tuple.Item2.Transaction.LocalIdentifier);
 							dependent.Complete();
+						}
+						else
+						{
+							if (_Logger.IsDebugEnabled)
+								_Logger.DebugFormat("tx#{0} in finally-clause, skipping completing dependent because it did throw exception", tuple.Item2.Transaction.LocalIdentifier);
+						}
 
 						if (Finally != null) 
 							Finally.Set();
