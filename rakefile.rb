@@ -248,7 +248,7 @@ namespace :castle do
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
 
-    nuspec_copy(:tx, "*Transaction.{dll,xml,pdb}")
+    nuspec_copy(:tx, "Castle.Transactions.{dll,xml,pdb}")
     # right now, we'll go with the conventions.each{ |ff| nuspec.file ff }
 
     #CLEAN.include(Folders[:tx][:nuspec])
@@ -273,7 +273,7 @@ namespace :castle do
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
     
-    nuspec_copy(:autotx, "*AutoTx.{dll,xml,pdb}")
+    nuspec_copy(:autotx, "Castle.Facilities.AutoTx.{dll,xml,pdb}")
 	# right now, we'll go with the conventions
 	#.each{ |ff| nuspec.file ff }
 	
