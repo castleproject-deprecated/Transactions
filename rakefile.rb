@@ -244,7 +244,6 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
-	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
@@ -270,7 +269,6 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "3.0.0.4001"
     nuspec.dependency "Castle.Windsor", "3.0.0.4001"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
-	nuspec.dependency "NLog", "2.0.0"
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
