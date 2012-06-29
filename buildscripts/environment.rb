@@ -37,7 +37,25 @@ namespace :env do
 	
     Folders[:autotx_out] = File.join(Folders[:src], Projects[:autotx][:dir], 'bin', CONFIGURATION)
 	CLEAN.include(Folders[:autotx_out])
-	
+
+    Folders[:io_out] = File.join(Folders[:src], Projects[:io][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:io_out])
+
+    Folders[:io_autofac_out] = File.join(Folders[:src], Projects[:io_autofac][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:io_autofac_out])
+
+    Folders[:io_windsor_out] = File.join(Folders[:src], Projects[:io_windsor][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:io_windsor_out])
+
+    Folders[:tx_autofac_out] = File.join(Folders[:src], Projects[:tx_autofac][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:tx_autofac_out])
+
+    Folders[:tx_fsharpapi_out] = File.join(Folders[:src], Projects[:tx_fsharpapi][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:tx_fsharpapi_out])
+
+    Folders[:tx_io_out] = File.join(Folders[:src], Projects[:tx_io][:dir], 'bin', CONFIGURATION)
+	CLEAN.include(Folders[:tx_io_out])
+
 	# for tests
 	Folders[:tx_test_out] = File.join(Folders[:src], Projects[:tx][:test_dir], 'bin', CONFIGURATION)
 	Files[:tx][:test] = File.join(Folders[:tx_test_out], "#{Projects[:tx][:test_dir]}.dll")
@@ -46,6 +64,14 @@ namespace :env do
     Folders[:autotx_test_out] = File.join(Folders[:src], Projects[:autotx][:test_dir], 'bin', CONFIGURATION)
 	Files[:autotx][:test] = File.join(Folders[:autotx_test_out], "#{Projects[:autotx][:test_dir]}.dll")
 	CLEAN.include(Folders[:autotx_test_out])
+
+    Folders[:io_test_out] = File.join(Folders[:src], Projects[:io][:test_dir], 'bin', CONFIGURATION)
+	Files[:io][:test] = File.join(Folders[:io_test_out], "#{Projects[:io][:test_dir]}.dll")
+	CLEAN.include(Folders[:io_test_out])
+
+    Folders[:tx_io_test_out] = File.join(Folders[:src], Projects[:tx_io][:test_dir], 'bin', CONFIGURATION)
+	Files[:tx_io][:test] = File.join(Folders[:tx_io_test_out], "#{Projects[:tx_io][:test_dir]}.dll")
+	CLEAN.include(Folders[:tx_io_test_out])
   end
   
   desc "set debug environment variables"
