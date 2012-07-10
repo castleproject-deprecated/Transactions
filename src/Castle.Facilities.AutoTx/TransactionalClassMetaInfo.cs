@@ -67,9 +67,11 @@ namespace Castle.Facilities.AutoTx
 		{
 			Contract.Requires(target != null);
 			Contract.Ensures(Contract.Result<Maybe<TransactionAttribute>>() != null);
-			return _TxMethods.ContainsKey(target)
-			       	? Maybe.Some<ITransactionOptions>(_TxMethods[target])
-			       	: Maybe.None<ITransactionOptions>();
+			var rawMethodInfo = target.IsGenericMethod ? target.GetGenericMethodDefinition() : target;
+
+			return _TxMethods.ContainsKey(rawMethodInfo)
+				? Maybe.Some<ITransactionOptions>(_TxMethods[rawMethodInfo])
+				: Maybe.None<ITransactionOptions>();
 		}
 	}
 }
