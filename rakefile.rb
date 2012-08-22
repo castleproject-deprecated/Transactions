@@ -77,7 +77,7 @@ namespace :castle do
   desc "prepare nuspec + nuget packages"
   task :nuget => ["#{Folders[:nuget]}", :tx_nuget, :autotx_nuget, :io_nuget, :io_autofac_nuget, :io_windsor_nuget, :tx_autofac_nuget, :tx_fsharpapi_nuget, :tx_io_nuget]
   
-  task :test_all => [:tx_test, :autotx_test, :io_test, :tx_io_test]
+  task :test_all => [:tx_test, :autotx_test] #,  :io_test, :tx_io_test]
   
   #                    BUILDING
   # ===================================================
@@ -350,12 +350,12 @@ namespace :castle do
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', "/out #{Files[:io][:test_log]}", "/xml #{Files[:io][:test_xml]}"
     nunit.assemblies Files[:io][:test]
-	CLEAN.include(Folders[:tests])
+	  CLEAN.include(Folders[:tests])
   end
   
   task :io_test_publish_artifacts => :io_nunit do
-	puts "##teamcity[publishArtifacts path='#{Files[:io][:test_xml]}']"
-	puts "##teamcity[publishArtifacts '#{Files[:io][:test_log]}']"
+    puts "##teamcity[publishArtifacts path='#{Files[:io][:test_xml]}']"
+    puts "##teamcity[publishArtifacts '#{Files[:io][:test_log]}']"
   end
   
   nunit :tx_io_nunit do |nunit|
