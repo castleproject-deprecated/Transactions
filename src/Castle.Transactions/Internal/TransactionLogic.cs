@@ -24,7 +24,7 @@ namespace Castle.Transactions.Internal
 		/// <summary>
 		/// Gets whether the transaction options dictate that the transaction should
 		/// be a fork of its parent given the stack depth it would be at, as denoted by
-		/// the <see cref="nextStackDepth"/> parameter.
+		/// the 'nextStackDepth' parameter.
 		/// </summary>
 		/// <param name="transactionOptions">The options to check forking for.</param>
 		/// <param name="nextStackDepth">The stack depth this fork would result in.</param>
