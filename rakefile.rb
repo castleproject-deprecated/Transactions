@@ -397,7 +397,7 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"	
     nuspec.requireLicenseAcceptance = "true"
-	nuspec.framework_assembly "System.Transactions", FRAMEWORK
+    nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx][:nuspec]
     #nuspec.working_directory = Folders[:tx_nuspec]
 
@@ -422,8 +422,6 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "3.0.0.4001"
     nuspec.dependency "Castle.Windsor", "3.0.0.4001"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
-    nuspec.dependency Projects[:io][:id], "[#{VERSION}]" # exactly equals
-    nuspec.dependency Projects[:tx_io][:id], "[#{VERSION}]" # exactly equals
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
     #nuspec.working_directory = Folders[:autotx_nuspec]
@@ -451,9 +449,6 @@ namespace :castle do
     #nuspec.working_directory = Folders[:io_nuspec]
     
     nuspec_copy(:io, "Castle.IO.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
     CLEAN.include(Folders[:io_nuspec])
   end
   
@@ -474,9 +469,6 @@ namespace :castle do
     #nuspec.working_directory = Folders[:io_autofac_nuspec]
     
     nuspec_copy(:io_autofac, "Castle.IO.Autofac.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
     CLEAN.include(Folders[:io_autofac_nuspec])
   end
   
@@ -499,9 +491,6 @@ namespace :castle do
     #nuspec.working_directory = Folders[:io_windsor_nuspec]
     
     nuspec_copy(:io_windsor, "Castle.IO.Windsor.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
     CLEAN.include(Folders[:io_windsor_nuspec])
   end
   
@@ -522,9 +511,6 @@ namespace :castle do
     #nuspec.working_directory = Folders[:tx_autofac_nuspec]
     
     nuspec_copy(:tx_autofac, "Castle.Transactions.Autofac.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
     CLEAN.include(Folders[:tx_autofac_nuspec])
   end
   
@@ -548,9 +534,9 @@ namespace :castle do
     #nuspec.working_directory = Folders[:tx_fsharpapi_nuspec]
     
     nuspec_copy(:tx_fsharpapi, "Castle.Transactions.FSharpAPI.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
+    # right now, we'll go with the conventions
+    #.each{ |ff| nuspec.file ff }
+    
     CLEAN.include(Folders[:tx_fsharpapi_nuspec])
   end
   
@@ -569,14 +555,14 @@ namespace :castle do
     nuspec.dependency "Castle.Core", "3.0.0.4001"
     nuspec.dependency Projects[:io][:id], "[#{VERSION}]" # exactly equals
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
-	nuspec.framework_assembly "System.Transactions", FRAMEWORK
+    nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:tx_io][:nuspec]
     #nuspec.working_directory = Folders[:tx_io_nuspec]
     
     nuspec_copy(:tx_io, "Castle.Transactions.IO.{dll,xml,pdb}")
-	# right now, we'll go with the conventions
-	#.each{ |ff| nuspec.file ff }
-	
+    # right now, we'll go with the conventions
+    #.each{ |ff| nuspec.file ff }
+    
     CLEAN.include(Folders[:tx_io_nuspec])
   end
   

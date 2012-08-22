@@ -124,12 +124,6 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Castle.IO\Castle.IO.csproj">
-      <Project>{59637705-C235-488A-876B-E4B1A39E9BF8}</Project>
-      <Name>Castle.IO</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

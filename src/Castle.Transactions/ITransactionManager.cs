@@ -18,7 +18,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using Castle.IO;
 using Castle.Transactions.Contracts;
 
 namespace Castle.Transactions

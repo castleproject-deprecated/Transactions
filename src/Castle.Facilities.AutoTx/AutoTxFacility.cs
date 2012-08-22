@@ -14,8 +14,6 @@
 
 using System.Diagnostics;
 using Castle.Core.Logging;
-using Castle.IO;
-using Castle.IO.Internal;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Facilities;
 using Castle.MicroKernel.Registration;
@@ -23,7 +21,6 @@ using Castle.MicroKernel.SubSystems.Naming;
 using Castle.Transactions;
 using Castle.Transactions.Activities;
 using Castle.Transactions.Helpers;
-using Castle.Transactions.IO;
 
 namespace Castle.Facilities.AutoTx
 {
@@ -74,16 +71,16 @@ namespace Castle.Facilities.AutoTx
 				// that framework method to keep track of the call context.
 				Component.For<IActivityManager>()
 					.ImplementedBy<CallContextActivityManager>()
-					.LifeStyle.Singleton,
-				Component.For<IDirectoryAdapter>()
-					.ImplementedBy<DirectoryAdapter>()
-					.LifeStyle.PerTransaction(),
-				Component.For<IFileAdapter>()
-					.ImplementedBy<FileAdapter>()
-					.LifeStyle.PerTransaction(),
-				Component.For<IMapPath>()
-					.ImplementedBy<MapPathImpl>()
-					.LifeStyle.Transient
+					.LifeStyle.Singleton
+				//Component.For<IDirectoryAdapter>()
+				//    .ImplementedBy<DirectoryAdapter>()
+				//    .LifeStyle.PerTransaction(),
+				//Component.For<IFileAdapter>()
+				//    .ImplementedBy<FileAdapter>()
+				//    .LifeStyle.PerTransaction(),
+				//Component.For<IMapPath>()
+				//    .ImplementedBy<MapPathImpl>()
+				//    .LifeStyle.Transient
 				);
 
 			var componentInspector = new TransactionalComponentInspector();

@@ -98,7 +98,6 @@
     <Compile Include="Lifestyles\PerTransactionLifestyleManager.cs" />
     <Compile Include="Lifestyles\PerTransactionLifestyleManagerBase.cs" />
     <Compile Include="Properties\CustomAssemblyInfo.cs" />
-    <Compile Include="Testing\IOResolveScope.cs" />
     <Compile Include="Testing\ResolveEx.cs" />
     <Compile Include="Testing\ResolveScope.cs" />
     <Compile Include="TransactionalClassMetaInfo.cs" />
@@ -109,14 +108,6 @@
     <Compile Include="Contracts\TransactionMetaInfoStoreContract.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Castle.IO\Castle.IO.csproj">
-      <Project>{59637705-C235-488A-876B-E4B1A39E9BF8}</Project>
-      <Name>Castle.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Castle.Transactions.IO\Castle.Transactions.IO.csproj">
-      <Project>{CD2EEE95-769C-44A6-98AF-27A03A0F4528}</Project>
-      <Name>Castle.Transactions.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Castle.Transactions\Castle.Transactions.csproj">
       <Project>{76DF5D09-FC04-411F-B123-01A6B9432796}</Project>
       <Name>Castle.Transactions</Name>
