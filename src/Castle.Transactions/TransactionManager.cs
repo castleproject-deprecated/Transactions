@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -26,42 +27,42 @@ namespace Castle.Transactions
 	/// </summary>
 	public class TransactionManager : ITransactionManager
 	{
-		readonly ILogger _Logger = NullLogger.Instance;
+		readonly ILogger _logger = NullLogger.Instance;
 
-		readonly IActivityManager _ActivityManager;
+		readonly IActivityManager _activityManager;
 
 		public TransactionManager(IActivityManager activityManager, ILogger logger)
 		{
 			Contract.Requires(activityManager != null);
 
-			_ActivityManager = activityManager;
-			_Logger = logger;
+			_activityManager = activityManager;
+			_logger = logger;
 		}
 
 		[ContractInvariantMethod]
 		void Invariant()
 		{
-			Contract.Invariant(_ActivityManager != null);
+			Contract.Invariant(_activityManager != null);
 		}
 
 		IActivityManager ITransactionManager.Activities
 		{
-			get { return _ActivityManager; }
+			get { return _activityManager; }
 		}
 
 		Maybe<ITransaction> ITransactionManager.CurrentTopTransaction
 		{
-			get { return _ActivityManager.GetCurrentActivity().TopTransaction; }
+			get { return _activityManager.GetCurrentActivity().TopTransaction; }
 		}
 
 		Maybe<ITransaction> ITransactionManager.CurrentTransaction
 		{
-			get { return _ActivityManager.GetCurrentActivity().CurrentTransaction; }
+			get { return _activityManager.GetCurrentActivity().CurrentTransaction; }
 		}
 
 		uint ITransactionManager.Count
 		{
-			get { return _ActivityManager.GetCurrentActivity().Count; }
+			get { return _activityManager.GetCurrentActivity().Count; }
 		}
 
 		Maybe<ICreatedTransaction> ITransactionManager.CreateTransaction()
@@ -71,7 +72,7 @@ namespace Castle.Transactions
 
 		Maybe<ICreatedTransaction> ITransactionManager.CreateTransaction(ITransactionOptions transactionOptions)
 		{
-			var activity = _ActivityManager.GetCurrentActivity();
+			var activity = _activityManager.GetCurrentActivity();
 
 			if (transactionOptions.Mode == TransactionScopeOption.Suppress)
 				return Maybe.None<ICreatedTransaction>();
@@ -86,7 +87,7 @@ namespace Castle.Transactions
 						IsolationLevel = transactionOptions.IsolationLevel,
 						Timeout = transactionOptions.Timeout
 					}), nextStackDepth, transactionOptions, () => activity.Pop(),
-				                     _Logger.CreateChildLogger("Transaction"));
+				                     _logger.CreateChildLogger("Transaction"));
 			else
 			{
 				var clone = activity
@@ -97,7 +98,7 @@ namespace Castle.Transactions
 
 				Action onDispose = () => activity.Pop();
 				tx = new Transaction(clone, nextStackDepth, transactionOptions, shouldFork ? null : onDispose,
-				                     _Logger.CreateChildLogger("Transaction"));
+				                     _logger.CreateChildLogger("Transaction"));
 			}
 
 			if (!shouldFork) // forked transactions should not be on the current context's activity stack
@@ -110,7 +111,7 @@ namespace Castle.Transactions
 
 			// warn if fork and the top transaction was just created
 			if (transactionOptions.Fork && nextStackDepth == 1)
-				_Logger.WarnFormat("transaction {0} created with Fork=true option, but was top-most "
+				_logger.WarnFormat("transaction {0} created with Fork=true option, but was top-most "
 				                   + "transaction in invocation chain. running transaction sequentially",
 				                   tx.LocalIdentifier);
 
@@ -126,22 +127,25 @@ namespace Castle.Transactions
 		public void EnlistDependentTask(Task task)
 		{
 			Contract.Requires(task != null);
-			_ActivityManager.GetCurrentActivity().EnlistDependentTask(task);
+			_activityManager.GetCurrentActivity().EnlistDependentTask(task);
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		public class DisposableScope : IDisposable
 		{
-			readonly Func<ITransaction> onDispose;
+			readonly Func<ITransaction> _onDispose;
 
 			public DisposableScope(Func<ITransaction> onDispose)
 			{
 				Contract.Requires(onDispose != null);
-				this.onDispose = onDispose;
+				_onDispose = onDispose;
 			}
 
+			[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly"), 
+			 SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
 			public void Dispose()
 			{
-				onDispose();
+				_onDispose();
 			}
 		}
 
@@ -151,7 +155,7 @@ namespace Castle.Transactions
 			GC.SuppressFinalize(this);
 		}
 
-		void Dispose(bool isManaged)
+		protected virtual void Dispose(bool isManaged)
 		{
 			if (!isManaged)
 				return;

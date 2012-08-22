@@ -1,8 +1,10 @@
-﻿namespace Castle.Transactions.IO
+﻿
+namespace Castle.Transactions.IO
 {
 	using System;
 
 	using Castle.Transactions.Internal;
+	using System.Diagnostics.CodeAnalysis;
 
 	public static class TransactionExtensions
 	{
@@ -15,6 +17,7 @@
 			return CreateFileTransaction(transactionManager, new DefaultTransactionOptions());
 		}
 
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Encapsulated in the Maybe.")]
 		public static Maybe<IFileTransaction> CreateFileTransaction(this ITransactionManager transactionManager, ITransactionOptions transactionOptions)
 		{
 			if (transactionOptions.Fork)
