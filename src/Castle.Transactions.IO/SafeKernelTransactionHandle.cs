@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.InteropServices;
+
 namespace Castle.Transactions.IO
 {
 	using System;
@@ -23,7 +25,7 @@ namespace Castle.Transactions.IO
 	///<summary>
 	///	A safe file handle on the transaction resource.
 	///</summary>
-	[SecurityCritical]
+	[SecurityCritical, ComVisible(false)]
 	public sealed class SafeKernelTransactionHandle : SafeHandleZeroOrMinusOneIsInvalid
 	{
 		///<summary>

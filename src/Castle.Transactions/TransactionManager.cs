@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -129,6 +130,7 @@ namespace Castle.Transactions
 			_activityManager.GetCurrentActivity().EnlistDependentTask(task);
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		public class DisposableScope : IDisposable
 		{
 			readonly Func<ITransaction> _onDispose;
@@ -139,6 +141,8 @@ namespace Castle.Transactions
 				_onDispose = onDispose;
 			}
 
+			[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly"), 
+			 SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
 			public void Dispose()
 			{
 				_onDispose();
