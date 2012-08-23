@@ -69,7 +69,7 @@ end
 namespace :castle do
 
   desc "build + tx unit tests + output"
-  task :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs', 'src/IOAssemblyInfo.cs', 'src/IOAutofacAssemblyInfo.cs', 'src/IOWindsorAssemblyInfo.cs', 'src/TxAutofacAssemblyInfo.cs', 'src/TxFSharpAPIAssemblyInfo.cs', 'src/TxIOAssemblyInfo.cs', :msbuild, :tx_test, :output]
+  task :build => ['src/TxAssemblyInfo.cs', 'src/AutoTxAssemblyInfo.cs', 'src/IOAssemblyInfo.cs', 'src/IOAutofacAssemblyInfo.cs', 'src/IOWindsorAssemblyInfo.cs', 'src/TxAutofacAssemblyInfo.cs', 'src/TxFSharpAPIAssemblyInfo.cs', 'src/TxIOAssemblyInfo.cs', :msbuild, :tx_test, :autotx_test, :output]
  
   desc "generate the assembly infos you need to compile with VS"
   task :assembly_infos => [:tx_version, :autotx_version, :io_version, :io_autofac_version, :io_windsor_version, :tx_autofac_version, :tx_fsharpapi_version, :tx_io_version]
@@ -89,6 +89,7 @@ namespace :castle do
     msb.properties :Configuration => config
     msb.targets :Clean, :Build
     msb.solution = Files[:sln]
+    msb.verbosity = "m"
   end
   
   #                    VERSIONING
@@ -230,7 +231,7 @@ namespace :castle do
   # ===================================================
   task :output => [:tx_output, :autotx_output, :io_output, :io_autofac_output, :io_windsor_output, :tx_autofac_output, :tx_fsharpapi_output, :tx_io_output] do
     Dir.glob(File.join(Folders[:binaries], "*.txt")){ | fn | File.delete(fn) } # remove old commit marker files
-	data = commit_data() # get semantic data
+    data = commit_data() # get semantic data
     File.open File.join(Folders[:binaries], "#{data[0]} - #{data[1]}.txt"), "w" do |f|
       f.puts %Q{aa
     This file's name gives you the specifics of the commit.
@@ -330,27 +331,27 @@ namespace :castle do
   end
   
   task :tx_test_publish_artifacts => :tx_nunit do
-	puts "##teamcity[importData type='nunit' path='#{Files[:tx][:test_xml]}']"
-	puts "##teamcity[publishArtifacts '#{Files[:tx][:test_log]}']"
+    puts "##teamcity[importData type='nunit' path='#{Files[:tx][:test_xml]}']"
+    puts "##teamcity[publishArtifacts '#{Files[:tx][:test_log]}']"
   end
     
   nunit :autotx_nunit do |nunit|
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', "/out #{Files[:autotx][:test_log]}", "/xml #{Files[:autotx][:test_xml]}"
     nunit.assemblies Files[:autotx][:test]
-	CLEAN.include(Folders[:tests])
+    CLEAN.include(Folders[:tests])
   end
   
   task :autotx_test_publish_artifacts => :autotx_nunit do
-	puts "##teamcity[publishArtifacts path='#{Files[:autotx][:test_xml]}']"
-	puts "##teamcity[publishArtifacts '#{Files[:autotx][:test_log]}']"
+    puts "##teamcity[publishArtifacts path='#{Files[:autotx][:test_xml]}']"
+    puts "##teamcity[publishArtifacts '#{Files[:autotx][:test_log]}']"
   end
   
   nunit :io_nunit do |nunit|
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', "/out #{Files[:io][:test_log]}", "/xml #{Files[:io][:test_xml]}"
     nunit.assemblies Files[:io][:test]
-	  CLEAN.include(Folders[:tests])
+    CLEAN.include(Folders[:tests])
   end
   
   task :io_test_publish_artifacts => :io_nunit do
@@ -362,7 +363,7 @@ namespace :castle do
     nunit.command = Commands[:nunit]
     nunit.options '/framework v4.0', "/out #{Files[:tx_io][:test_log]}", "/xml #{Files[:tx_io][:test_xml]}"
     nunit.assemblies Files[:tx_io][:test]
-	CLEAN.include(Folders[:tests])
+    CLEAN.include(Folders[:tests])
   end
   
   task :tx_io_test_publish_artifacts => :tx_io_nunit do
