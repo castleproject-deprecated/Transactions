@@ -167,7 +167,7 @@ namespace Castle.Transactions
 
 			try
 			{
-				_Logger.Info(() => string.Format("rolling back tx#{0}", _LocalIdentifier));
+				_Logger.InfoFormat("rolling back tx#{0}", _LocalIdentifier);
 				Inner.Rollback();
 			}
 			finally
@@ -183,7 +183,7 @@ namespace Castle.Transactions
 			{
 				if (_Committable != null)
 				{
-					_Logger.Debug(() => string.Format("committing committable tx#{0}", _LocalIdentifier));
+					_Logger.DebugFormat("committing committable tx#{0}", _LocalIdentifier);
 
 					if (beforeTopComplete != null) 
 						beforeTopComplete();
@@ -197,7 +197,7 @@ namespace Castle.Transactions
 				}
 				else
 				{
-					_Logger.Debug(string.Format("completing dependent tx#{0}", _LocalIdentifier));
+					_Logger.DebugFormat("completing dependent tx#{0}", _LocalIdentifier);
 
 					_Dependent.Complete();
 				}

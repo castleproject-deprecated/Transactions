@@ -19,6 +19,8 @@
 using System;
 using System.Linq;
 using Castle.Facilities.AutoTx.Lifestyles;
+using Castle.Facilities.AutoTx.Testing;
+using Castle.Facilities.AutoTx.Tests.TestClasses;
 using Castle.Facilities.FactorySupport;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
@@ -63,6 +65,29 @@ namespace Castle.Facilities.AutoTx.Tests
 
 			// then
 			var component = c.Resolve<ExampleTransactionalComponent>();
+		}
+
+		/**
+		 * Simplyfied version of Multiple_Threads_DependentTransactionWithParent.Forking_NewTransaction_Means_AnotherISessionReference
+		 * from Castle.Facilities.NHibernate.Tests
+		 */
+		[Test(Description = "DYNPROXY-173: Interceptor calling AbstractInvocation.Proceed() in new thread can cause never-ending loop")]
+		[Explicit]
+		public void Dont_Fork_New_Transaction_In_Already_Forked_One()
+		{
+			// given
+			var c = new WindsorContainer();
+			c.AddFacility<AutoTxFacility>();
+			c.AddFacility<FactorySupportFacility>();
+			c.AddFacility<TypedFactoryFacility>();
+			c.Register(
+				Component.For<ThreadedService>());
+
+			using (var threaded = new ResolveScope<ThreadedService>(c))
+			{
+				threaded.Service.MainThreadedEntry();
+				Assert.That(threaded.Service.CalculationsIds.Count, Is.EqualTo(Environment.ProcessorCount));
+			}
 		}
 	}
 
