@@ -419,8 +419,8 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "3.0.0.4001"
-    nuspec.dependency "Castle.Windsor", "3.0.0.4001"
+    nuspec.dependency "Castle.Core", "3.3.3"
+    nuspec.dependency "Castle.Windsor", "3.3.0"
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
 	nuspec.framework_assembly "System.Transactions", FRAMEWORK
     nuspec.output_file = Files[:autotx][:nuspec]
@@ -445,6 +445,8 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
+    nuspec.dependency "Mono.Posix", "4.0.0"
+    nuspec.dependency "NLog", "3.2.0.0"
     nuspec.output_file = Files[:io][:nuspec]
     #nuspec.working_directory = Folders[:io_nuspec]
     
@@ -484,8 +486,8 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "3.0.0.4001"
-    nuspec.dependency "Castle.Windsor", "3.0.0.4001"
+    nuspec.dependency "Castle.Core", "3.3.3"
+    nuspec.dependency "Castle.Windsor", "3.3.0"
     nuspec.dependency Projects[:io][:id], "[#{VERSION}]" # exactly equals
     nuspec.output_file = Files[:io_windsor][:nuspec]
     #nuspec.working_directory = Folders[:io_windsor_nuspec]
@@ -552,7 +554,7 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
-    nuspec.dependency "Castle.Core", "3.0.0.4001"
+    nuspec.dependency "Castle.Core", "3.3.3"
     nuspec.dependency Projects[:io][:id], "[#{VERSION}]" # exactly equals
     nuspec.dependency Projects[:tx][:id], "[#{VERSION}]" # exactly equals
     nuspec.framework_assembly "System.Transactions", FRAMEWORK
