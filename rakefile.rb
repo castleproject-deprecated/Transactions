@@ -445,6 +445,8 @@ namespace :castle do
     nuspec.language = "en-US"
     nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
     nuspec.requireLicenseAcceptance = "true"
+    nuspec.dependency "Mono.Posix", "4.0.0"
+    nuspec.dependency "NLog", "3.2.0.0"
     nuspec.output_file = Files[:io][:nuspec]
     #nuspec.working_directory = Folders[:io_nuspec]
     

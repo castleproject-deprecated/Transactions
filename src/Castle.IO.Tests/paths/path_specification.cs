@@ -31,9 +31,9 @@ namespace Castle.IO.Tests.paths
 
 		[TestCase(@"test\folder")]
 		[TestCase(@"test/folder")]
-		public void relative_path_is_not_rooted()
+		public void relative_path_is_not_rooted(string path)
 		{
-			new Path(@"test\folder").IsRooted.Should().Be.False();
+			new Path(path).IsRooted.Should().Be.False();
 		}
 
 		[TestCase(@"c:\test\folder", @"c:\test", "folder")]
