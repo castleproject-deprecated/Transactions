@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.Autofac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Autofac", "src\Castle.IO.Autofac\Castle.IO.Autofac.csproj", "{24F25A56-4FEF-4772-8149-3CBC15F8CEF6}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Castle.Transactions.FSharpAPI", "src\Castle.Transactions.FSharpAPI\Castle.Transactions.FSharpAPI.fsproj", "{9947DFFA-AB9D-48D8-A41F-99AC59753055}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

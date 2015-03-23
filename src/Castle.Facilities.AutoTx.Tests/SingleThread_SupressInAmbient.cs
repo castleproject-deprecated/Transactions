@@ -37,4 +37,33 @@ namespace Castle.Facilities.AutoTx.Tests
 				scope.Service.VerifyInAmbient(() => scope.Service.VerifySupressed());
 		}
 	}
+
+    public class InheritanceTransaction
+    {
+        private WindsorContainer _Container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _Container = new WindsorContainer();
+            _Container.AddFacility<AutoTxFacility>();
+            _Container.Register(Component.For<InheritedMyService>());
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _Container.Dispose();
+        }
+
+
+        [Test]
+        public void InheritanceKeepTransaction()
+        {
+            using (var scope = new ResolveScope<InheritedMyService>(_Container))
+            {
+                scope.Service.VerifyInAmbient();
+            }
+        }
+    }
 }
