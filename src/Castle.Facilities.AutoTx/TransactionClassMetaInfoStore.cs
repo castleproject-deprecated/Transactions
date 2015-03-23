@@ -38,7 +38,7 @@ namespace Castle.Facilities.AutoTx
 		internal static Maybe<TransactionalClassMetaInfo> GetMetaFromTypeInner(Type implementation)
 		{
 			Contract.Ensures(Contract.Result<Maybe<TransactionalClassMetaInfo>>() != null);
-            var a = implementation.Name == "InheritedMyService";
+
 			var allMethods =
 				(from m in implementation.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 				 let attribs = (TransactionAttribute[]) m.GetCustomAttributes(typeof (TransactionAttribute), true)

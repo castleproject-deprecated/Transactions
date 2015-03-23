@@ -81,7 +81,7 @@ namespace Castle.Facilities.AutoTx
 			var txManagerC = _Kernel.Resolve<TransactionManager>();
 			ITransactionManager txManager = txManagerC;
 
-            var mTxMethod = _MetaInfo.Do(x => x.AsTransactional(invocation.MethodInvocationTarget ?? invocation.Method));
+			var mTxMethod = _MetaInfo.Do(x => x.AsTransactional(invocation.MethodInvocationTarget ?? invocation.Method));
 
 			var mTxData = mTxMethod.Do(x => txManager.CreateTransaction(x));
 
