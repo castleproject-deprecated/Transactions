@@ -171,7 +171,7 @@ namespace Castle.Facilities.AutoTx
 
 					// the transaction rolls back itself on exceptions
 					//transaction.Rollback();
-					throw;
+					 throw;
 				}
 				finally
 				{
