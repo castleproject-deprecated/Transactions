@@ -111,11 +111,66 @@ namespace Castle.Facilities.AutoTx
 					var task = ForkCase(invocation, mTxData.Value);
 					txManagerC.EnlistDependentTask(task);
 				}
-				else SynchronizedCase(invocation, transaction);
+				else if (typeof(Task).IsAssignableFrom(invocation.MethodInvocationTarget.ReturnType))
+				{
+					AsyncCase(invocation, transaction);
+				}
+				else
+				{
+					SynchronizedCase(invocation, transaction);
+				}
 			}
 			finally
 			{
 				_Kernel.ReleaseComponent(txManagerC);
+			}
+		}
+
+		private void AsyncCase(IInvocation invocation, ITransaction transaction)
+		{
+			Contract.Requires(transaction.State == TransactionState.Active);
+
+			var txScope = new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope"));
+
+			// using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
+			// var localIdentifier = transaction.LocalIdentifier;
+
+			invocation.Proceed();
+
+			var ret = (Task)invocation.ReturnValue;
+
+			if (!ret.IsCompleted)
+			{
+				ret.ContinueWith((t, aTransaction) =>
+				{
+					var tran = (ITransaction)aTransaction;
+
+					if (!t.IsFaulted && !t.IsCanceled)
+					{
+						if (tran.State == TransactionState.Active)
+						{
+							try
+							{
+								tran.Complete();
+							}
+							catch (Exception) { }
+						}
+					}
+
+					tran.Dispose();
+
+				}, transaction, TaskContinuationOptions.AttachedToParent);
+			}
+			else
+			{
+				if (transaction.State == TransactionState.Active)
+					transaction.Complete();
+				else if (_Logger.IsWarnEnabled)
+					_Logger.WarnFormat(
+						"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
+						transaction.State);
+
+				transaction.Dispose();
 			}
 		}
 
