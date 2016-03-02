@@ -79,11 +79,12 @@ namespace Castle.Services.Transaction
 			if (transactionOptions.Mode == TransactionScopeOption.Suppress)
 				return Maybe.None<ICreatedTransaction>();
 
-			var nextStackDepth = activity.Count + 1;
+			var activityCount = activity.Count;
+			var nextStackDepth = activityCount + 1;
 			var shouldFork = transactionOptions.Fork && nextStackDepth > 1;
 
 			ITransaction tx;
-			if (activity.Count == 0)
+			if (activityCount == 0)
 				tx = new Transaction(new CommittableTransaction(new TransactionOptions
 				{
 					IsolationLevel = transactionOptions.IsolationLevel,
@@ -106,6 +107,9 @@ namespace Castle.Services.Transaction
 				activity.Push(tx);
 
 			Contract.Assume(tx.State == TransactionState.Active, "by c'tor post condition for both cases of the if statement");
+
+			if (Logger.IsDebugEnabled)
+				Logger.Debug("Createdt ActivityCount = "+ activityCount + ". Tx = " + tx.LocalIdentifier);
 
 			TransactionCallContext.TryInstall();
 
