@@ -15,7 +15,7 @@
 namespace Castle.Services.Transaction.Activities
 {
 	using System.Runtime.Remoting.Messaging;
-
+	using System.Threading;
 	using Castle.Core.Logging;
 
 	/// <summary>
@@ -29,29 +29,39 @@ namespace Castle.Services.Transaction.Activities
 
 		public ILoggerFactory LoggerFactory { get; set; }
 
+		private readonly ThreadLocal<Activity> holder;
+
 		public CallContextActivityManager()
 		{
-			CallContext.LogicalSetData(Key, null);
+			//CallContext.LogicalSetData(Key, null);
+
+			holder = new ThreadLocal<Activity>(CreateActivity);
 		}
 
 		public Activity GetCurrentActivity()
 		{
-			var activity = (Activity)CallContext.LogicalGetData(Key);
+			//var activity = (Activity)CallContext.LogicalGetData(Key);
 
-			if (activity == null)
-			{
-				// activity logger
-				ILogger logger = NullLogger.Instance;
-				// check we have a ILoggerFactory service instance (logging is enabled)
-				if (LoggerFactory != null) // create logger
-					logger = LoggerFactory.Create(typeof(Activity));
-				// create activity
-				activity = new Activity(logger);
+			//if (activity == null)
+			//{
+			//	// activity logger
+			//	activity = ;
 
-				// set activity in call context
-				CallContext.LogicalSetData(Key, activity);
-			}
+			//	// set activity in call context
+			//	CallContext.LogicalSetData(Key, activity);
+			//}
 
+			return holder.Value;
+		}
+
+		private Activity CreateActivity()
+		{
+			ILogger logger = NullLogger.Instance;
+			// check we have a ILoggerFactory service instance (logging is enabled)
+			if (LoggerFactory != null) // create logger
+				logger = LoggerFactory.Create(typeof (Activity));
+			// create activity
+			var activity = new Activity(logger);
 			return activity;
 		}
 	}
