@@ -77,6 +77,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.XML" />
@@ -101,7 +102,6 @@
     <Compile Include="Internal\TxTraceListener.cs" />
     <Compile Include="Obsolete_Classes.cs" />
     <Compile Include="TransactionalConflictException.cs" />
-    <Compile Include="TransactionCallContext.cs" />
     <Compile Include="TransactionException.cs" />
     <Compile Include="FileTransaction.cs" />
     <Compile Include="IActivityManager.cs" />
