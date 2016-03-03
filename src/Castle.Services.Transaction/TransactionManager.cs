@@ -109,9 +109,7 @@ namespace Castle.Services.Transaction
 			Contract.Assume(tx.State == TransactionState.Active, "by c'tor post condition for both cases of the if statement");
 
 			if (Logger.IsDebugEnabled)
-				Logger.Debug("Createdt ActivityCount = "+ activityCount + ". Tx = " + tx.LocalIdentifier);
-
-			TransactionCallContext.TryInstall();
+				Logger.Debug("Createdt ActivityCount = "+ activityCount + ". NextStackDepth = "+nextStackDepth + ". Tx = " + tx.LocalIdentifier);
 
 			var m = Maybe.Some(new CreatedTransaction(tx,
 				shouldFork, // we should only fork if we have a different current top transaction than the current
