@@ -191,7 +191,7 @@ namespace Castle.Facilities.AutoTx
 			{
 				try
 				{
-					if (transaction.State == TransactionState.Active)
+					if (transaction.State == TransactionState.Active && !ret.IsFaulted && !ret.IsCanceled)
 						transaction.Complete();
 					else if (_Logger.IsWarnEnabled)
 						_Logger.WarnFormat(
