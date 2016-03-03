@@ -5,6 +5,7 @@ src/*/bin
 src/*AssemblyInfo.cs
 *.csproj.user
 *ReSharper.user
+*DotSettings.user
 _ReSharper*
 *.ReSharper
 *.suo
@@ -13,3 +14,5 @@ Castle.Transactions.user
 * Thumbs.db
 *.nupkg
 NUGET_KEY
+
+packages/*
