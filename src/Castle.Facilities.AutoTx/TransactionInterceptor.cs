@@ -130,17 +130,40 @@ namespace Castle.Facilities.AutoTx
 		{
 			Contract.Requires(transaction.State == TransactionState.Active);
 
-			var txScope = new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope"));
+			using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
+			{
+				// using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
+				// var localIdentifier = transaction.LocalIdentifier;
 
-			// using (new TxScope(transaction.Inner, _Logger.CreateChildLogger("TxScope")))
-			// var localIdentifier = transaction.LocalIdentifier;
+				try
+				{
+					invocation.Proceed();
 
-			invocation.Proceed();
+					var ret = (Task)invocation.ReturnValue;
 
-			var ret = (Task)invocation.ReturnValue;
+					if (ret == null)
+						throw new Exception("Async method returned null instead of Task");
 
+					SafeHandleAsyncCompletion(ret, transaction, invocation);
+				}
+				catch (Exception e)
+				{
+					transaction.Dispose();
+
+					_Logger.ErrorFormat("Transactional call failed", e);
+
+					// Early termination. nothing to do besides disposing the transaction
+					throw;
+				}
+			}
+		}
+
+		private void SafeHandleAsyncCompletion(Task ret, ITransaction transaction, IInvocation invocation)
+		{
 			if (!ret.IsCompleted)
 			{
+				_Logger.WarnFormat("Adding continuation as invocation did not complete synchronously. Method " + invocation.Method);
+
 				ret.ContinueWith((t, aTransaction) =>
 				{
 					var tran = (ITransaction)aTransaction;
@@ -153,7 +176,10 @@ namespace Castle.Facilities.AutoTx
 							{
 								tran.Complete();
 							}
-							catch (Exception) { }
+							catch (Exception e)
+							{
+								_Logger.Error("Transaction complete error ", e);
+							}
 						}
 					}
 
@@ -163,14 +189,19 @@ namespace Castle.Facilities.AutoTx
 			}
 			else
 			{
-				if (transaction.State == TransactionState.Active)
-					transaction.Complete();
-				else if (_Logger.IsWarnEnabled)
-					_Logger.WarnFormat(
-						"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
-						transaction.State);
-
-				transaction.Dispose();
+				try
+				{
+					if (transaction.State == TransactionState.Active)
+						transaction.Complete();
+					else if (_Logger.IsWarnEnabled)
+						_Logger.WarnFormat(
+							"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
+							transaction.State);
+				}
+				finally
+				{
+					transaction.Dispose();
+				}
 			}
 		}
 
