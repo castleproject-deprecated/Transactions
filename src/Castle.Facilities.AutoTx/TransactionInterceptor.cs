@@ -168,18 +168,15 @@ namespace Castle.Facilities.AutoTx
 				{
 					var tran = (ITransaction)aTransaction;
 
-					if (!t.IsFaulted && !t.IsCanceled)
+					if (!t.IsFaulted && !t.IsCanceled && tran.State == TransactionState.Active)
 					{
-						if (tran.State == TransactionState.Active)
+						try
 						{
-							try
-							{
-								tran.Complete();
-							}
-							catch (Exception e)
-							{
-								_Logger.Error("Transaction complete error ", e);
-							}
+							tran.Complete();
+						}
+						catch (Exception e)
+						{
+							_Logger.Error("Transaction complete error ", e);
 						}
 					}
 
@@ -189,6 +186,8 @@ namespace Castle.Facilities.AutoTx
 			}
 			else
 			{
+				// When completed synchronously 
+
 				try
 				{
 					if (transaction.State == TransactionState.Active && !ret.IsFaulted && !ret.IsCanceled)

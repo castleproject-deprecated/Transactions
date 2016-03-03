@@ -128,7 +128,7 @@ namespace Castle.Services.Transaction
 			get { return _CreationOptions; }
 		}
 
-		System.Transactions.Transaction ITransaction.Inner
+		public System.Transactions.Transaction Inner
 		{
 			get
 			{
@@ -142,10 +142,10 @@ namespace Castle.Services.Transaction
 			get { return Maybe.None<SafeKernelTransactionHandle>(); }
 		}
 
-		private System.Transactions.Transaction Inner
-		{
-			get { return _Committable ?? (System.Transactions.Transaction)_Dependent; }
-		}
+//		private System.Transactions.Transaction Inner
+	//	{
+		//	get { return _Committable ?? (System.Transactions.Transaction)_Dependent; }
+		//}
 
 		//Maybe<IRetryPolicy> ITransaction.FailedPolicy
 		//{

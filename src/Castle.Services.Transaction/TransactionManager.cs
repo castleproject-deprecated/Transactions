@@ -85,11 +85,13 @@ namespace Castle.Services.Transaction
 
 			ITransaction tx;
 			if (activityCount == 0)
+			{
 				tx = new Transaction(new CommittableTransaction(new TransactionOptions
 				{
 					IsolationLevel = transactionOptions.IsolationLevel,
 					Timeout = transactionOptions.Timeout
 				}), nextStackDepth, transactionOptions, () => activity.Pop(), logger.CreateChildLogger("Transaction"));
+			}
 			else
 			{
 				var clone = activity
