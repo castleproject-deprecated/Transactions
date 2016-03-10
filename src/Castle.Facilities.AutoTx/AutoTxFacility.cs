@@ -26,6 +26,8 @@ using Castle.Services.Transaction.IO;
 
 namespace Castle.Facilities.AutoTx
 {
+	using System;
+
 	///<summary>
 	///	<para>A facility for automatically handling transactions using the lightweight
 	///		transaction manager. This facility does not depend on
@@ -36,6 +38,14 @@ namespace Castle.Facilities.AutoTx
 	///</summary>
 	public class AutoTxFacility : AbstractFacility
 	{
+		private Type _activityManagerImpl = typeof(ThreadLocalActivityManager);
+
+		public AutoTxFacility WithActivityManager<T>() where T : IActivityManager
+		{
+			_activityManagerImpl = typeof (T);
+			return this;
+		}
+
 		protected override void Init()
 		{
 			ILogger logger = NullLogger.Instance;
@@ -70,7 +80,7 @@ namespace Castle.Facilities.AutoTx
 				// calls a static .Net/Mono framework method, and it's the responsibility of
 				// that framework method to keep track of the call context.
 				Component.For<IActivityManager>()
-					.ImplementedBy<CallContextActivityManager>()
+					.ImplementedBy(_activityManagerImpl)
 					.LifeStyle.Singleton,
 				Component.For<IDirectoryAdapter>()
 					.ImplementedBy<DirectoryAdapter>()
@@ -87,25 +97,9 @@ namespace Castle.Facilities.AutoTx
 			Kernel.ComponentModelBuilder.AddContributor(new TransactionalComponentInspector());
 
 			if (logger.IsDebugEnabled)
-				logger.Debug(
-					@"Initialized AutoTxFacility:
-
-If you are experiencing problems, go to https://github.com/haf/ and file a ticket for the Transactions project.
-You can enable verbose logging for .Net by adding this to you .config file:
-
-	<system.diagnostics>
-		<sources>
-			<source name=""System.Transactions"" switchValue=""Information"">
-				<listeners>
-					<add name=""tx"" type=""Castle.Services.Transaction.Internal.TxTraceListener, Castle.Services.Transaction""/>
-				</listeners>
-			</source>
-		</sources>
-	</system.diagnostics>
-
-If you wish to e.g. roll back a transaction from within a transactional method you can resolve/use the ITransactionManager's
-CurrentTransaction property and invoke Rollback on it. Be ready to catch TransactionAbortedException from the caller.
-");
+			{
+				logger.Debug("Initialized AutoTxFacility. Activity manager: " + _activityManagerImpl.FullName);
+			}
 		}
 	}
 }
