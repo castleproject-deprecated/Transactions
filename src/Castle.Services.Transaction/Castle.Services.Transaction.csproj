@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Castle.Services.Transaction</RootNamespace>
     <AssemblyName>Castle.Services.Transaction</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
     <TargetFrameworkProfile />
@@ -87,11 +87,12 @@
       <Link>Properties\TxAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Activities\Activity.cs" />
+    <Compile Include="Activities\AsyncLocalActivityManager.cs" />
     <Compile Include="Contracts\IDirectoryAdapterContract.cs" />
     <Compile Include="Contracts\IFileAdapterContract.cs" />
     <Compile Include="Contracts\IMapPathContract.cs" />
     <Compile Include="Internal\AnonymousRetryPolicy.cs" />
-    <Compile Include="Activities\CallContextActivityManager.cs" />
+    <Compile Include="Activities\ThreadLocalActivityManager.cs" />
     <Compile Include="Internal\ContractExtensions.cs" />
     <Compile Include="Internal\CreatedTransaction.cs" />
     <Compile Include="DefaultTransactionOptions.cs" />
