@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.Transaction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.Transaction2.Tests", "src\Castle.Services.Transaction2.Tests\Castle.Services.Transaction2.Tests.csproj", "{9E6954FD-E751-4AD4-8146-074250474C65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.NHibIntegration", "src\Castle.NHibIntegration\Castle.NHibIntegration.csproj", "{2DC468A4-3020-4023-9459-C3A3EF882354}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.NHibIntegration.Tests", "src\Castle.NHibIntegration.Tests\Castle.NHibIntegration.Tests.csproj", "{F056076E-F8E1-4A5A-9291-79CDAE56A39C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{9E6954FD-E751-4AD4-8146-074250474C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E6954FD-E751-4AD4-8146-074250474C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E6954FD-E751-4AD4-8146-074250474C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DC468A4-3020-4023-9459-C3A3EF882354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DC468A4-3020-4023-9459-C3A3EF882354}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DC468A4-3020-4023-9459-C3A3EF882354}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DC468A4-3020-4023-9459-C3A3EF882354}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F056076E-F8E1-4A5A-9291-79CDAE56A39C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F056076E-F8E1-4A5A-9291-79CDAE56A39C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F056076E-F8E1-4A5A-9291-79CDAE56A39C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F056076E-F8E1-4A5A-9291-79CDAE56A39C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
