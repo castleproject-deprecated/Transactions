@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.Transaction2", "src\Castle.Services.Transaction2\Castle.Services.Transaction2.csproj", "{F240F805-DBAA-4881-86C5-EAE54E8C8082}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Services.Transaction2.Tests", "src\Castle.Services.Transaction2.Tests\Castle.Services.Transaction2.Tests.csproj", "{9E6954FD-E751-4AD4-8146-074250474C65}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F240F805-DBAA-4881-86C5-EAE54E8C8082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F240F805-DBAA-4881-86C5-EAE54E8C8082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F240F805-DBAA-4881-86C5-EAE54E8C8082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F240F805-DBAA-4881-86C5-EAE54E8C8082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E6954FD-E751-4AD4-8146-074250474C65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E6954FD-E751-4AD4-8146-074250474C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E6954FD-E751-4AD4-8146-074250474C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E6954FD-E751-4AD4-8146-074250474C65}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
