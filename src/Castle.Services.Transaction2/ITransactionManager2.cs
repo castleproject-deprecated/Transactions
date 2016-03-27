@@ -12,11 +12,12 @@
 
 	public class TransactionOptions
 	{
-		public static readonly TransactionOptions RequiresNewReadCommitted = new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted, Mode = TransactionScopeOption.Required };
-
-		public TransactionOptions()
+		public static readonly TransactionOptions RequiresNewReadCommitted = new TransactionOptions
 		{
-		}
+			IsolationLevel = IsolationLevel.ReadCommitted, 
+			Mode = TransactionScopeOption.Required,
+			Timeout = TimeSpan.MaxValue
+		};
 
 		public IsolationLevel IsolationLevel { get; set; }
 

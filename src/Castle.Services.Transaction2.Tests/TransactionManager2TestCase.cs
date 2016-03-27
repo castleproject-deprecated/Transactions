@@ -22,18 +22,15 @@
 
 			await Branch1();
 
-			Thread.Sleep(1000);
-
-			var xt = _tm.CurrentTransaction;
-			Console.WriteLine(xt);
-
-			// tx.Dispose();
+			_tm.CurrentTransaction.Should().BeNull();
 		}
 
 		private async Task Branch1()
 		{
 			var tx = _tm.CreateTransaction(TransactionOptions.RequiresNewReadCommitted);
 			tx.Should().NotBeNull();
+
+			System.Transactions.Transaction.Current.Should().Be(tx.Inner);
 
 			await Branch1Child();
 
@@ -48,7 +45,11 @@
 			{
 				try
 				{
-					_tm.CurrentTransaction.Should().NotBeNull();
+					var curtm = _tm.CurrentTransaction;
+
+					curtm.Should().NotBeNull();
+
+					System.Transactions.Transaction.Current.Should().Be(curtm.Inner);
 
 					tcs.SetResult(true);
 				}

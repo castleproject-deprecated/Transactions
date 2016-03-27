@@ -42,12 +42,17 @@
 			TransactionImpl2 tx;
 			if (activityCount == 0) // root transaction
 			{
+				
+
 				var inner = new CommittableTransaction(new System.Transactions.TransactionOptions()
 				{
 					IsolationLevel = transactionOptions.IsolationLevel, 
 					Timeout = transactionOptions.Timeout, 
 				});
-				tx = new TransactionImpl2(inner, activity, _logger.CreateChildLogger("TransactionRoot"));
+
+				var txScope = new TransactionScope(inner, TransactionScopeAsyncFlowOption.Enabled);
+
+				tx = new TransactionImpl2(inner, txScope, activity, _logger.CreateChildLogger("TransactionRoot"));
 			}
 			else
 			{
