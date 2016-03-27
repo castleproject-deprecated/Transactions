@@ -129,8 +129,6 @@
 
 			_disposed = true;
 			Thread.MemoryBarrier();
-
-			_stack = null;
 		}
 	}
 }

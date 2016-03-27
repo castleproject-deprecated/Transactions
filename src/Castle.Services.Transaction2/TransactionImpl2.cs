@@ -53,7 +53,9 @@ namespace Castle.Services.Transaction
 
 			// InternalRollback();
 
-			_shouldCommit = false;
+			// _shouldCommit = false;
+
+			// _transaction.Rollback();
 		}
 
 		public void Complete()
@@ -61,7 +63,7 @@ namespace Castle.Services.Transaction
 			if (_disposed) throw new ObjectDisposedException("Can't Complete(). Transaction2 disposed");
 
 //			InternalComplete();
-
+			
 			_shouldCommit = true;
 		}
 
@@ -71,26 +73,19 @@ namespace Castle.Services.Transaction
 			_disposed = true;
 			Thread.MemoryBarrier();
 
-//			if (_currentState == TransactionState.Active)
-//			{
-//				try
-//				{
-//					InternalRollback();
-//				}
-//				catch (Exception ex)
-//				{
-//					_logger.Error("Rollback during dispose error", ex);
-//				}
-//			}
-
-			if (_shouldCommit)
-			{
-				_txScope.Complete();
-			}
-
 			try
 			{
+				if (_shouldCommit)
+				{
+					_txScope.Complete();
+				}
+
 				_txScope.Dispose(); // this does not follow the guidelines, and might throw
+
+				if (_shouldCommit)
+				{
+					_transaction.Commit();
+				}
 
 				Inner.Dispose();
 			}

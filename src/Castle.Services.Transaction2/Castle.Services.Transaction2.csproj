@@ -33,29 +33,35 @@
     <Reference Include="Castle.Core">
       <HintPath>..\..\lib\net40\Castle.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\lib\net40\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Facility\AutoTx2Facility.cs" />
+    <Compile Include="Facility\TransactionalComponentInspector.cs" />
+    <Compile Include="Facility\ITransactionMetaInfoStore.cs" />
+    <Compile Include="Facility\TransactionalClassMetaInfo.cs" />
+    <Compile Include="Facility\TransactionInterceptor.cs" />
     <Compile Include="Internal\Activity2.cs" />
     <Compile Include="Internal\AsyncLocalActivityManager.cs" />
     <Compile Include="Internal\IActivityManager2.cs" />
     <Compile Include="ITransaction2.cs" />
     <Compile Include="ITransactionManager2.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransactionAttribute.cs" />
     <Compile Include="TransactionImpl2.cs" />
     <Compile Include="TransactionManager2.cs" />
     <Compile Include="TransactionState.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Facility\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

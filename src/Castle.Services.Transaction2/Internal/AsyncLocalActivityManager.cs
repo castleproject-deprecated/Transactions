@@ -60,7 +60,6 @@ namespace Castle.Services.Transaction2.Internal
 			var cur = _holder.Value;
 			if (cur == null)
 				return false;
-
 			activity = _holder.Value;
 			return true;
 		}
