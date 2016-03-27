@@ -166,14 +166,12 @@
 			// Act
 			await comp.ASyncThatCompletesAsync(resource);
 
-			await Task.Delay(100); // continuation doesnt run immediately
+			// await Task.Delay(100); // continuation doesnt run immediately
 
 			// Assert
 			_manager.CurrentTransaction.Should().BeNull();
 			resource.Committed.Should().Be(1);
 			resource.RolledBack.Should().Be(0);
 		}
-
-		
 	}
 }

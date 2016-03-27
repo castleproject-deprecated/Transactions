@@ -42,7 +42,7 @@
 			TransactionImpl2 tx;
 			if (activityCount == 0) // root transaction
 			{
-				var inner = new CommittableTransaction(new System.Transactions.TransactionOptions()
+				var inner = new CommittableTransaction(new System.Transactions.TransactionOptions
 				{
 					IsolationLevel = transactionOptions.IsolationLevel, 
 					Timeout = transactionOptions.Timeout, 

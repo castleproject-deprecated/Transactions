@@ -25,7 +25,7 @@
 
 		public TransactionAttribute(TransactionScopeOption mode, IsolationLevel isolationLevel)
 		{
-			Timeout = TimeSpan.MaxValue;
+			Timeout = TimeSpan.Zero;
 			Mode = mode;
 			IsolationLevel = isolationLevel;
 //			_CustomContext = new Dictionary<string, object>();

@@ -16,7 +16,7 @@
 		{
 			IsolationLevel = IsolationLevel.ReadCommitted, 
 			Mode = TransactionScopeOption.Required,
-			Timeout = TimeSpan.MaxValue
+			Timeout = TimeSpan.Zero
 		};
 
 		public IsolationLevel IsolationLevel { get; set; }
