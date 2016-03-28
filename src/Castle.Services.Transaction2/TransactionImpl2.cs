@@ -18,7 +18,7 @@ namespace Castle.Services.Transaction
 		private readonly Lazy<IDictionary<string, object>> _lazyUserData;
 		private readonly ILogger _logger;
 		private volatile bool _disposed;
-		private bool _shouldCommit;
+		private bool? _shouldCommit;
 
 		public TransactionImpl2(System.Transactions.CommittableTransaction transaction, 
 			System.Transactions.TransactionScope txScope, 
@@ -58,7 +58,7 @@ namespace Castle.Services.Transaction
 
 			// InternalRollback();
 
-			// _shouldCommit = false;
+			_shouldCommit = false;
 
 			// _transaction.Rollback();
 		}
@@ -78,16 +78,19 @@ namespace Castle.Services.Transaction
 			_disposed = true;
 			Thread.MemoryBarrier();
 
+			// shouldCommit when wasn't explicit set or was set to true
+			var shouldCommit = !_shouldCommit.HasValue || _shouldCommit.Value == true;
+
 			try
 			{
-				if (_shouldCommit)
+				if (shouldCommit)
 				{
 					_txScope.Complete();
 				}
 
 				_txScope.Dispose(); // this does not follow the guidelines, and might throw
 
-				if (_shouldCommit)
+				if (shouldCommit)
 				{
 					_transaction.Commit();
 				}
