@@ -54,16 +54,18 @@
 			{
 				var session = InternalCreateSession(alias);
 
-				wrapped = WrapSession(alias, session, currentTransaction, canClose: currentTransaction == null);
-				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: true);
+				var newWrapped = WrapSession(alias, session, currentTransaction, canClose: currentTransaction == null);
+				EnlistIfNecessary(currentTransaction, newWrapped, weAreSessionOwner: true);
 
-				if (Logger.IsDebugEnabled) Logger.Debug("Created Session = [" + wrapped + "]");
+				if (Logger.IsDebugEnabled) Logger.Debug("Created Session = [" + newWrapped + "]");
 
 				// _sessionStore.Store(alias, wrapped);
 				// wrapped.Store();
-				Store(alias, wrapped, currentTransaction);
+				Store(alias, newWrapped, currentTransaction);
 
-				if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + wrapped + "]");
+				if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + newWrapped + "]");
+
+				wrapped = newWrapped;
 			}
 			else
 			{

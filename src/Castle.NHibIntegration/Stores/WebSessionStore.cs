@@ -7,12 +7,14 @@ namespace Castle.NHibIntegration.Stores
 	{
 		public SessionDelegate FindCompatibleSession(string alias)
 		{
-			return null;
+			throw new NotImplementedException();
 		}
 
 		public void Store(string alias, SessionDelegate session, out Action undoAction)
 		{
 			undoAction = null;
+
+			throw new NotImplementedException();
 		}
 
 //		public void Remove(string alias, SessionDelegate session)
@@ -21,7 +23,7 @@ namespace Castle.NHibIntegration.Stores
 
 		public bool IsCurrentActivityEmptyFor(string alias)
 		{
-			return false;
+			throw new NotImplementedException();
 		}
 
 		public void Dispose()

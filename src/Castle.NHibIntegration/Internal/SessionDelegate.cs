@@ -31,6 +31,7 @@
 		private Action removeFromStore;
 		private ITransaction _tx;
 		private Guid _sessionId;
+		public string Helper;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SessionDelegate"/> class.
@@ -1533,7 +1534,7 @@
 
 		public override string ToString()
 		{
-			return "SessionDelegate for session " + _sessionId + " IsOpen? " + inner.IsOpen;
+			return "SessionDelegate for session " + _sessionId;
 		}
 	}
 }
