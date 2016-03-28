@@ -3,13 +3,14 @@
 	using System;
 	using System.Threading.Tasks;
 	using Comps;
-	using Facility;
 	using FluentAssertions;
 	using MicroKernel.Facilities;
 	using MicroKernel.Registration;
 	using NUnit.Framework;
 	using Transaction;
+	using Transaction.Facility;
 	using Windsor;
+
 
 	[TestFixture]
 	public class AutoTxFacilityTestCase

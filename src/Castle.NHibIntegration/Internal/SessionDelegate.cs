@@ -21,8 +21,6 @@
 	[Serializable]
 	public class SessionDelegate : MarshalByRefObject, ISession
 	{
-		// private static ILog logger = log4net.LogManager.GetLogger(typeof(SessionDelegate));
-
 		private readonly string _alias;
 		private readonly ISession inner;
 		private readonly ISessionStore sessionStore;
@@ -31,6 +29,7 @@
 		private object cookie;
 		private bool _disposed;
 		private Action removeFromStore;
+		private ITransaction _tx;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SessionDelegate"/> class.
@@ -1440,7 +1439,7 @@
 		}
 
 		// called by the transaction that "owns" this session
-		public void UnsafeDispose()
+		public void UnsafeDispose(bool commit)
 		{
 			_disposed = true;
 			Thread.MemoryBarrier();
@@ -1452,7 +1451,24 @@
 				removeFromStore = null;
 			}
 
-			inner.Dispose();
+			try
+			{
+				if (_tx != null)
+				{
+					if (commit && !_tx.WasCommitted)
+						_tx.Commit();
+					else if (!commit && !_tx.WasRolledBack)
+						_tx.Rollback();
+				}
+			}
+			catch (Exception ex)
+			{
+				this._logger.Error("Error completing transaction", ex);
+			}
+			finally
+			{
+				inner.Dispose();
+			}
 		}
 
 		#endregion
@@ -1505,6 +1521,11 @@
 		public void Store()
 		{
 			sessionStore.Store(this._alias, this, out this.removeFromStore);
+		}
+
+		public void InternalBeginTransaction()
+		{
+			_tx = inner.BeginTransaction();
 		}
 	}
 }

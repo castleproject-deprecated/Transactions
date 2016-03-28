@@ -50,8 +50,9 @@ namespace Castle.NHibIntegration.Tests
 				.Database(dbConfig)
 //				.Cache(ConfigureCache)
 				.Mappings(ConfigureMappings)
-				// .ExposeConfiguration(c => c.SetProperty("generate_statistics", GenerateStatistics.ToString()))
+				.ExposeConfiguration(c => c.SetProperty("generate_statistics", "true"))
 				// .ExposeConfiguration(c => c.SetProperty("transaction.factory_class", TransactionFactoryType.AssemblyQualifiedName))
+				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.AdoNetWithDistributedTransactionFactory, Castle.NHibIntegration"))
 				;
 
 			var assembled = configuration.BuildConfiguration();
@@ -89,8 +90,9 @@ namespace Castle.NHibIntegration.Tests
 				.Database(dbConfig)
 				// .Cache(ConfigureCache)
 				.Mappings(ConfigureMappings)
-				// .ExposeConfiguration(c => c.SetProperty("generate_statistics", GenerateStatistics.ToString()))
+				.ExposeConfiguration(c => c.SetProperty("generate_statistics", "true"))
 				// .ExposeConfiguration(c => c.SetProperty("transaction.factory_class", TransactionFactoryType.AssemblyQualifiedName))
+				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.AdoNetWithDistributedTransactionFactory, Castle.NHibIntegration"))
 				;
 
 			var assembled = configuration.BuildConfiguration();

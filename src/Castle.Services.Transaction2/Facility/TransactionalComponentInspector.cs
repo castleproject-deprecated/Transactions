@@ -1,4 +1,4 @@
-﻿namespace Castle.Services.Transaction2.Facility
+﻿namespace Castle.Services.Transaction.Facility
 {
 	using System.Linq;
 	using Core;

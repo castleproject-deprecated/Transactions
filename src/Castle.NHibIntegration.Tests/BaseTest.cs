@@ -4,16 +4,19 @@ namespace Castle.NHibIntegration.Tests
 	using System.Configuration;
 	using System.Data.SqlClient;
 	using Comps;
+	using FluentAssertions;
 	using MicroKernel.Registration;
+	using NHibernate;
 	using NUnit.Framework;
 	using Oracle.DataAccess.Client;
-	using Services.Transaction2.Facility;
+	using Services.Transaction.Facility;
 	using Windsor;
 
 	public class BaseTest
 	{
 		protected WindsorContainer _container;
 		protected ISessionStore _sessionStore;
+		protected ISessionFactory _sessionFactoryOracle, _sessionFactoryMsSql;
 
 		[SetUp]
 		public void Init()
@@ -28,6 +31,12 @@ namespace Castle.NHibIntegration.Tests
 			);
 
 			_sessionStore = _container.Resolve<ISessionStore>();
+
+			_sessionFactoryOracle = _container.Resolve<ISessionFactory>("sessfactory.oracle");
+			_sessionFactoryMsSql = _container.Resolve<ISessionFactory>("sessfactory.mssql");
+
+			var tran = System.Transactions.Transaction.Current;
+			tran.Should().BeNull();
 
 			var connStr = ConfigurationManager.ConnectionStrings["default"].ConnectionString;
 			using (var conn = new OracleConnection(connStr))

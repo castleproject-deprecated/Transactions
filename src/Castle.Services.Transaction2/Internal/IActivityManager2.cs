@@ -1,4 +1,4 @@
-﻿namespace Castle.Services.Transaction2.Internal
+﻿namespace Castle.Services.Transaction.Internal
 {
 	public interface IActivityManager2
 	{

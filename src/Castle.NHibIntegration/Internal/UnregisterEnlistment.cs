@@ -23,21 +23,21 @@
 		{
 			enlistment.Done();
 
-			_session.UnsafeDispose();
+			_session.UnsafeDispose(commit: true);
 		}
 
 		public void Rollback(Enlistment enlistment)
 		{
 			enlistment.Done();
 
-			_session.UnsafeDispose();
+			_session.UnsafeDispose(commit: false);
 		}
 
 		public void InDoubt(Enlistment enlistment)
 		{
 			enlistment.Done();
 
-			_session.UnsafeDispose();
+			_session.UnsafeDispose(commit: false);
 		}
 	}
 }

@@ -47,7 +47,7 @@
 				if (Logger.IsDebugEnabled)
 					Logger.Debug("Created Session = [" + session.GetSessionImplementation().SessionId + "]");
 
-				wrapped = WrapSession(alias, session, canClose: currentTransaction == null);
+				wrapped = WrapSession(alias, session, currentTransaction, canClose: currentTransaction == null);
 				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: true);
 
 				// _sessionStore.Store(alias, wrapped);
@@ -61,7 +61,7 @@
 				if (Logger.IsDebugEnabled)
 					Logger.Debug("Re-wrapping Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
 
-				wrapped = WrapSession(alias, wrapped.InnerSession, canClose: false);
+				wrapped = WrapSession(alias, wrapped.InnerSession, null, canClose: false);
 				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: false);
 			}
 
@@ -92,9 +92,18 @@
 			}
 		}
 
-		private SessionDelegate WrapSession(string alias, ISession session, bool canClose)
+		private SessionDelegate WrapSession(string alias, ISession session, 
+											ITransaction2 currentTransaction, 
+											bool canClose)
 		{
-			return new SessionDelegate(alias, canClose, session, _sessionStore, this.Logger.CreateChildLogger("Session"));
+			var sessdelegate = new SessionDelegate(alias, canClose, session, _sessionStore, this.Logger.CreateChildLogger("Session"));
+
+			if (currentTransaction != null)
+			{
+				sessdelegate.InternalBeginTransaction();
+			}
+
+			return sessdelegate;
 		}
 
 		private ISession InternalCreateSession(string @alias)
@@ -109,18 +118,6 @@
 
 			ISession session;
 
-//			string aliasedInterceptorId = string.Format(InterceptorFormatString, alias);
-//			if (kernel.HasComponent(aliasedInterceptorId))
-//			{
-//				var interceptor = kernel.Resolve<IInterceptor>(aliasedInterceptorId);
-//				session = sessionFactory.OpenSession(interceptor);
-//			}
-//			else if (kernel.HasComponent(InterceptorName))
-//			{
-//				var interceptor = kernel.Resolve<IInterceptor>(InterceptorName);
-//				session = sessionFactory.OpenSession(interceptor);
-//			}
-//			else
 			{
 				session = sessionFactory.OpenSession();
 			}

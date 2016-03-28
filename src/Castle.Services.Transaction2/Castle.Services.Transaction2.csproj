@@ -7,7 +7,7 @@
     <ProjectGuid>{F240F805-DBAA-4881-86C5-EAE54E8C8082}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Castle.Services.Transaction2</RootNamespace>
+    <RootNamespace>Castle.Services.Transaction</RootNamespace>
     <AssemblyName>Castle.Services.Transaction2</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

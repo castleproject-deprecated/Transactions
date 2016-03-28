@@ -3,7 +3,9 @@
 	using System;
 	using System.Threading;
 	using System.Threading.Tasks;
-	using Services.Transaction2;
+	using System.Transactions;
+	using Castle.Services.Transaction;
+
 
 	public class SvcWithTransactions
 	{
@@ -15,8 +17,10 @@
 		}
 
 		[Transaction]
-		public virtual void Sync()
+		public virtual void Sync(EnlistedConfirmation confirmation)
 		{
+			System.Transactions.Transaction.Current.EnlistVolatile(confirmation, EnlistmentOptions.None);
+
 			using (var sess = _sessionManager.OpenSession())
 			{
 				Child1();
@@ -26,8 +30,10 @@
 		}
 
 		[Transaction]
-		public virtual void SyncThatFails()
+		public virtual void SyncThatFails(EnlistedConfirmation confirmation)
 		{
+			System.Transactions.Transaction.Current.EnlistVolatile(confirmation, EnlistmentOptions.None);
+
 			using (var sess = _sessionManager.OpenSession())
 			{
 				Child2();
@@ -37,8 +43,10 @@
 		}
 
 		[Transaction]
-		public virtual void SyncWithTwoConnections()
+		public virtual void SyncWithTwoConnections(EnlistedConfirmation confirmation)
 		{
+			System.Transactions.Transaction.Current.EnlistVolatile(confirmation, EnlistmentOptions.None);
+
 			using (var sess = _sessionManager.OpenSession())
 			{
 				AddToOracle();
@@ -48,19 +56,28 @@
 		}
 
 		[Transaction]
-		public virtual void SyncWithTwoConnectionsThatFails()
+		public virtual void SyncWithTwoConnectionsThatFails(bool withRootSession)
 		{
-			using (var sess = _sessionManager.OpenSession())
+			if (withRootSession)
+			{
+				using (var sess = _sessionManager.OpenSession())
+				{
+					AddToOracle();
+					AddToMsSql();
+					var isOpen = sess.IsOpen;
+				}
+			}
+			else
 			{
 				AddToOracle();
 				AddToMsSql();
-				var isOpen = sess.IsOpen;
 			}
+			
 			throw new Exception("fake");
 		}
 
 		[Transaction]
-		public virtual async Task Async()
+		public virtual async Task AsyncCompletingSync()
 		{
 			using (var sess = _sessionManager.OpenSession())
 			{
@@ -72,17 +89,90 @@
 		}
 
 		[Transaction]
-		public virtual async Task Async2()
+		public virtual async Task Async2CompletingSyncWithoutRootSession()
 		{
 			await AChild1();
 			await AChild1();
 		}
 
 		[Transaction]
-		public virtual async Task Async3()
+		public virtual async Task Async3CompletingAsync()
 		{
-			await AChild2();
+			using (var sess = _sessionManager.OpenSession())
+			{
+				await LateComplete();
+
+				AddToOracle();
+
+				var isOpen = sess.IsOpen;
+			}
 		}
+
+		[Transaction]
+		public virtual async Task Async4CompletingAsyncWithoutRoot()
+		{
+			await LateComplete();
+
+			AddToOracle();
+		}
+
+		[Transaction]
+		public virtual Task AsyncWithTwoDbsCompletingSync()
+		{
+			using (var sess = _sessionManager.OpenSession())
+			{
+				AddToOracle();
+				AddToMsSql();
+
+				var isOpen = sess.IsOpen;
+			}
+			return Task.CompletedTask;
+		}
+
+		[Transaction]
+		public virtual Task AsyncWithTwoDbsCompletingSync2()
+		{
+			AddToOracle();
+			AddToMsSql();
+
+			return Task.CompletedTask;
+		}
+
+		[Transaction]
+		public virtual Task AsyncWithLateFaultedTask()
+		{
+			AddToOracle();
+
+			var tcs = new TaskCompletionSource<bool>();
+
+			ThreadPool.QueueUserWorkItem((_) =>
+			{
+				Thread.Sleep(100);
+				using (var sess = _sessionManager.OpenSession())
+				{
+					tcs.SetException(new Exception("fake"));
+				}
+			});
+
+			return tcs.Task;
+		}
+
+		[Transaction]
+		public virtual async Task AsyncWithTwoDbsCompletingASync(bool shouldFail)
+		{
+			using (var sess = _sessionManager.OpenSession())
+			{
+				await LateComplete();
+
+				AddToOracle();
+				AddToMsSql();
+
+				var isOpen = sess.IsOpen;
+			}
+
+			if (shouldFail) throw new Exception("fake");
+		}
+
 
 		private Task AChild1()
 		{
@@ -96,12 +186,13 @@
 			return Task.CompletedTask;
 		}
 
-		private Task AChild2()
+		private Task LateComplete()
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
 			ThreadPool.QueueUserWorkItem((_) =>
 			{
+				Thread.Sleep(100);
 				using (var sess = _sessionManager.OpenSession())
 				{
 					tcs.SetResult(true);
@@ -127,7 +218,7 @@
 			{
 				var isOpen = sess.IsOpen;
 
-				sess.Save(new TestTable() {Id = Guid.NewGuid(), Counter = 1});
+				sess.Save(new TestTable {Id = Guid.NewGuid(), Counter = 1});
 
 				sess.Flush();
 			}
@@ -154,6 +245,8 @@
 				sess.Save(new TestTable2() { Id = Guid.NewGuid(), Counter = 1 });
 
 				sess.Flush();
+
+				sess.Transaction.Commit();
 			}
 		}
 	}

@@ -4,7 +4,7 @@ namespace Castle.Services.Transaction
 	using System.Threading;
 	using System.Transactions;
 	using Core.Logging;
-	using Transaction2.Internal;
+	using Internal;
 
 	public class TransactionImpl2 : ITransaction2
 	{

@@ -3,7 +3,8 @@
 	using System;
 	using System.Transactions;
 	using Core.Logging;
-	using Transaction2.Internal;
+	using Internal;
+
 
 	public class TransactionManager2 : ITransactionManager2
 	{

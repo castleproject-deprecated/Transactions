@@ -1,4 +1,4 @@
-﻿namespace Castle.Services.Transaction2
+﻿namespace Castle.Services.Transaction
 {
 	using System;
 	using System.Collections.Generic;

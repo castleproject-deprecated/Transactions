@@ -1,4 +1,4 @@
-namespace Castle.Services.Transaction2.Internal
+namespace Castle.Services.Transaction.Internal
 {
 	using System;
 	using System.Threading;
@@ -35,7 +35,7 @@ namespace Castle.Services.Transaction2.Internal
 
 		private void OnValueChanged(AsyncLocalValueChangedArgs<Activity2> args)
 		{
-			Console.WriteLine("OnValueChanged from " + args.PreviousValue + " to " + args.CurrentValue + "  ctx_switch: " + args.ThreadContextChanged);
+			// Console.WriteLine("OnValueChanged from " + args.PreviousValue + " to " + args.CurrentValue + "  ctx_switch: " + args.ThreadContextChanged);
 		}
 
 		public ILogger Logger

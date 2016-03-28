@@ -22,12 +22,6 @@
 		void Store(string alias, SessionDelegate session, out Action undoAction);
 
 		/// <summary>
-		/// Should remove the session from the store 
-		/// only.
-		/// </summary>
-		// void Remove(string alias, SessionDelegate session);
-
-		/// <summary>
 		/// Returns <c>true</c> if the current activity
 		/// (which is an execution activity context) has no
 		/// sessions available

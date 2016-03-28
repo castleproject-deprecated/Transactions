@@ -4,9 +4,10 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 	using FluentAssertions;
-	using Internal;
 	using NUnit.Framework;
 	using Transaction;
+	using Transaction.Internal;
+
 
 	[TestFixture]
 	public class TransactionManager2TestCase

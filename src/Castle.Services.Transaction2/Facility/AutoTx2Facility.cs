@@ -1,11 +1,11 @@
-﻿namespace Castle.Services.Transaction2.Facility
+﻿namespace Castle.Services.Transaction.Facility
 {
 	using System;
-	using System.Transactions;
 	using Core.Logging;
 	using Internal;
 	using MicroKernel.Registration;
 	using Transaction;
+
 
 	public class AutoTx2Facility : Castle.MicroKernel.Facilities.AbstractFacility
 	{

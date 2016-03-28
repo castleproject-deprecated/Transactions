@@ -45,16 +45,6 @@
 			};
 		}
 
-//		public void Remove(string alias, SessionDelegate session)
-//		{
-//			var dict = GetDict();
-//
-//			if (dict.Remove(alias))
-//			{
-//				Interlocked.Decrement(ref _stored);
-//			}
-//		}
-
 		public bool IsCurrentActivityEmptyFor(string alias)
 		{
 			return GetDict().Count == 0;
