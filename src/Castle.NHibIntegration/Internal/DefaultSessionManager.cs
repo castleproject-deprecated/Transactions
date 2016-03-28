@@ -24,6 +24,16 @@
 
 			Logger = NullLogger.Instance;
 		}
+		
+		/// <summary>
+		/// The flushmode the created session gets
+		/// </summary>
+		/// <value></value>
+		public FlushMode DefaultFlushMode
+		{
+			get { return defaultFlushMode; }
+			set { defaultFlushMode = value; }
+		}
 
 		public ILogger Logger { get; set; }
 
@@ -38,44 +48,59 @@
 
 			ITransaction2 currentTransaction = _transactionManager.CurrentTransaction;
 
-			SessionDelegate wrapped = _sessionStore.FindCompatibleSession(alias);
+			SessionDelegate wrapped = FindCompatible(alias, currentTransaction, _sessionStore);
 
 			if (wrapped == null) // || (currentTransaction != null && !wrapped.Transaction.IsActive))
 			{
 				var session = InternalCreateSession(alias);
 
-				if (Logger.IsDebugEnabled)
-					Logger.Debug("Created Session = [" + session.GetSessionImplementation().SessionId + "]");
-
 				wrapped = WrapSession(alias, session, currentTransaction, canClose: currentTransaction == null);
 				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: true);
 
-				// _sessionStore.Store(alias, wrapped);
-				wrapped.Store();
+				if (Logger.IsDebugEnabled) Logger.Debug("Created Session = [" + wrapped + "]");
 
-				if (Logger.IsDebugEnabled)
-					Logger.Debug("Wrapped Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
+				// _sessionStore.Store(alias, wrapped);
+				// wrapped.Store();
+				Store(alias, wrapped, currentTransaction);
+
+				if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + wrapped + "]");
 			}
 			else
 			{
-				if (Logger.IsDebugEnabled)
-					Logger.Debug("Re-wrapping Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
+				if (Logger.IsDebugEnabled) Logger.Debug("Re-wrapping Session = [" + wrapped + "]");
 
 				wrapped = WrapSession(alias, wrapped.InnerSession, null, canClose: false);
-				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: false);
+				// EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: false);
 			}
 
 			return wrapped;
 		}
 
-		/// <summary>
-		/// The flushmode the created session gets
-		/// </summary>
-		/// <value></value>
-		public FlushMode DefaultFlushMode
+		private static SessionDelegate FindCompatible(string @alias, ITransaction2 transaction, ISessionStore sessionStore)
 		{
-			get { return defaultFlushMode; }
-			set { defaultFlushMode = value; }
+			if (transaction != null)
+			{
+				object instance;
+				if (transaction.UserData.TryGetValue(@alias, out instance))
+				{
+					return (SessionDelegate) instance;
+				}
+			}
+			return sessionStore.FindCompatibleSession(@alias);
+		}
+
+		private static void Store(string @alias, SessionDelegate wrapped, ITransaction2 transaction)
+		{
+			if (transaction != null)
+			{
+				if (transaction.UserData.ContainsKey(@alias)) throw new Exception("Key already exists for " + @alias);
+
+				transaction.UserData[@alias] = wrapped;
+
+				return;
+			}
+
+			wrapped.Store();
 		}
 
 		private void EnlistIfNecessary(ITransaction2 transaction, SessionDelegate session, bool weAreSessionOwner)
@@ -84,7 +109,7 @@
 
 			if (weAreSessionOwner /*&& session.Transaction.IsActive*/)
 			{
-				Logger.Debug("Enlisted Session " + session.GetSessionImplementation().SessionId);
+				Logger.Debug("Enlisted Session " + session);
 
 				var ue = new UnregisterEnlistment(Logger, session);
 

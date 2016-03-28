@@ -30,6 +30,7 @@
 		private bool _disposed;
 		private Action removeFromStore;
 		private ITransaction _tx;
+		private Guid _sessionId;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SessionDelegate"/> class.
@@ -40,6 +41,8 @@
 		/// <param name="logger"></param>
 		public SessionDelegate(string @alias, bool canClose, ISession inner, ISessionStore sessionStore, ILogger logger)
 		{
+			_sessionId = inner.GetSessionImplementation().SessionId;
+
 			this.inner = inner;
 			this.sessionStore = sessionStore;
 			this.canClose = canClose;
@@ -1419,7 +1422,7 @@
 			Thread.MemoryBarrier();
 
 			if (_logger.IsDebugEnabled)
-				_logger.Debug("Disposing Session = [" + GetSessionImplementation().SessionId + "]");
+				_logger.Debug("Disposing Session = [" + _sessionId + "]");
 
 			// DoClose(closing: false);
 
@@ -1526,6 +1529,11 @@
 		public void InternalBeginTransaction()
 		{
 			_tx = inner.BeginTransaction();
+		}
+
+		public override string ToString()
+		{
+			return "SessionDelegate for session " + _sessionId + " IsOpen? " + inner.IsOpen;
 		}
 	}
 }

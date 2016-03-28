@@ -77,8 +77,10 @@
 		}
 
 		[Transaction]
-		public virtual async Task AsyncCompletingSync()
+		public virtual async Task AsyncCompletingSync(EnlistedConfirmation confirmation)
 		{
+			System.Transactions.Transaction.Current.EnlistVolatile(confirmation, EnlistmentOptions.None);
+		
 			using (var sess = _sessionManager.OpenSession())
 			{
 				await AChild1();

@@ -17,6 +17,8 @@
 			_activityManager = activityManager;
 		}
 
+		public event Action<ITransaction2> TransactionCreated;
+
 		public ILogger Logger
 		{
 			get { return _logger; }
@@ -29,7 +31,9 @@
 			{
 				Activity2 activity;
 				if (_activityManager.TryGetCurrentActivity(out activity))
+				{
 					return activity.CurrentTransaction;
+				}
 				return null;
 			}
 		}
@@ -52,6 +56,8 @@
 				var txScope = new TransactionScope(inner, TransactionScopeAsyncFlowOption.Enabled);
 
 				tx = new TransactionImpl2(inner, txScope, activity, _logger.CreateChildLogger("TransactionRoot"));
+
+				FireNewTransactionCreated(tx);
 			}
 			else
 			{
@@ -62,6 +68,15 @@
 				Logger.Debug("Created ActivityCount = " + activityCount + ". Tx = " + tx.LocalIdentifier);
 
 			return tx;
+		}
+
+		private void FireNewTransactionCreated(ITransaction2 transaction)
+		{
+			var ev = this.TransactionCreated;
+			if (ev != null)
+			{
+				ev(transaction);
+			}
 		}
 
 		public void Dispose()

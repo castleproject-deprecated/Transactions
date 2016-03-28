@@ -68,6 +68,7 @@
     <Compile Include="Internal\SessionFactoryActivator.cs" />
     <Compile Include="Stores\AsyncLocalSessionStore.cs" />
     <Compile Include="Stores\WebSessionStore.cs" />
+    <Compile Include="TestSupport\Class1.cs" />
     <Compile Include="Tx\Class1.cs" />
     <Compile Include="Tx\Class2.cs" />
   </ItemGroup>

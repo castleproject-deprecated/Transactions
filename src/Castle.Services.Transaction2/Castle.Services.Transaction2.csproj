@@ -59,6 +59,7 @@
     <Compile Include="TransactionAttribute.cs" />
     <Compile Include="TransactionImpl2.cs" />
     <Compile Include="TransactionManager2.cs" />
+    <Compile Include="TransactionOptions.cs" />
     <Compile Include="TransactionState.cs" />
   </ItemGroup>
   <ItemGroup />

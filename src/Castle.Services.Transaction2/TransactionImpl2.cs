@@ -1,6 +1,7 @@
 namespace Castle.Services.Transaction
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Threading;
 	using System.Transactions;
 	using Core.Logging;
@@ -14,6 +15,7 @@ namespace Castle.Services.Transaction
 		private readonly TransactionScope _txScope;
 		private readonly Activity2 _parentActivity;
 		private readonly string _localIdentifier;
+		private readonly Lazy<IDictionary<string, object>> _lazyUserData;
 		private readonly ILogger _logger;
 		private volatile bool _disposed;
 		private bool _shouldCommit;
@@ -31,12 +33,15 @@ namespace Castle.Services.Transaction
 
 			_currentState = TransactionState.Active;
 
+			_lazyUserData = new Lazy<IDictionary<string, object>>(() => new Dictionary<string, object>(StringComparer.Ordinal));
+
 			_parentActivity.Push(this);
 		}
 
 		public Transaction Inner { get { return _transaction; } }
 		public string LocalIdentifier { get { return _localIdentifier; } }
 		public TransactionState State { get { return _currentState; } }
+		public IDictionary<string, object> UserData { get { return _lazyUserData.Value; } }
 
 		public TransactionStatus? Status
 		{

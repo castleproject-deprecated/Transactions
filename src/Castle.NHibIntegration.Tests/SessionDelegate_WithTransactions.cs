@@ -106,11 +106,14 @@ namespace Castle.NHibIntegration.Tests
 		{
 			// Arrange
 			var comp = _container.Resolve<SvcWithTransactions>();
+			var resource = new EnlistedConfirmation();
 
 			// Act
-			await comp.AsyncCompletingSync();
+			await comp.AsyncCompletingSync(resource);
 
 			// Assert
+			resource.Committed.Should().Be(1);
+			resource.RolledBack.Should().Be(0);
 			_sessionStore.TotalStoredCurrent.Should().Be(0);
 			CountTestTableOracle().Should().Be(2);
 		}
