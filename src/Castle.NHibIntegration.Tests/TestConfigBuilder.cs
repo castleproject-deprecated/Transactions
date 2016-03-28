@@ -53,6 +53,7 @@ namespace Castle.NHibIntegration.Tests
 				.ExposeConfiguration(c => c.SetProperty("generate_statistics", "true"))
 				// .ExposeConfiguration(c => c.SetProperty("transaction.factory_class", TransactionFactoryType.AssemblyQualifiedName))
 				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.AdoNetWithDistributedTransactionFactory, Castle.NHibIntegration"))
+//				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.CastleFriendlyScopelessTxFactory, Castle.NHibIntegration"))
 				;
 
 			var assembled = configuration.BuildConfiguration();
@@ -93,6 +94,7 @@ namespace Castle.NHibIntegration.Tests
 				.ExposeConfiguration(c => c.SetProperty("generate_statistics", "true"))
 				// .ExposeConfiguration(c => c.SetProperty("transaction.factory_class", TransactionFactoryType.AssemblyQualifiedName))
 				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.AdoNetWithDistributedTransactionFactory, Castle.NHibIntegration"))
+//				.ExposeConfiguration(c => c.SetProperty("transaction.factory_class", "Castle.NHibIntegration.Tx.CastleFriendlyScopelessTxFactory, Castle.NHibIntegration"))
 				;
 
 			var assembled = configuration.BuildConfiguration();

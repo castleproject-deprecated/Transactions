@@ -68,6 +68,8 @@
     <Compile Include="Internal\SessionFactoryActivator.cs" />
     <Compile Include="Stores\AsyncLocalSessionStore.cs" />
     <Compile Include="Stores\WebSessionStore.cs" />
+    <Compile Include="Tx\AdoBoundTransaction.cs" />
+    <Compile Include="Tx\CastleFriendlyScopelessTxFactory.cs" />
     <Compile Include="Tx\Class1.cs" />
     <Compile Include="Tx\Class2.cs" />
   </ItemGroup>
