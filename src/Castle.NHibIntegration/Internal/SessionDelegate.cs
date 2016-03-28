@@ -30,6 +30,7 @@
 		private readonly bool canClose;
 		private object cookie;
 		private bool _disposed;
+		private Action removeFromStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SessionDelegate"/> class.
@@ -1425,7 +1426,14 @@
 
 			if (canClose)
 			{
-				sessionStore.Remove(_alias, this);
+				// sessionStore.Remove(_alias, this);
+
+				// called when there are no transactions and the root sessionwrapper is disposed
+				if (removeFromStore != null) 
+				{
+					removeFromStore();
+					removeFromStore = null;
+				}
 
 				inner.Dispose();
 			}
@@ -1437,7 +1445,12 @@
 			_disposed = true;
 			Thread.MemoryBarrier();
 
-			sessionStore.Remove(_alias, this);
+			// sessionStore.Remove(_alias, this);
+			if (removeFromStore != null)
+			{
+				removeFromStore();
+				removeFromStore = null;
+			}
 
 			inner.Dispose();
 		}
@@ -1487,6 +1500,11 @@
 
 			throw new NotSupportedException("AreEqual: left is " +
 											left.GetType().Name + " and right is " + right.GetType().Name);
+		}
+
+		public void Store()
+		{
+			sessionStore.Store(this._alias, this, out this.removeFromStore);
 		}
 	}
 }

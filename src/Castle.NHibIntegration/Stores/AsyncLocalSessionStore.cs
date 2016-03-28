@@ -26,7 +26,7 @@
 			return sessDel;
 		}
 
-		public void Store(string alias, SessionDelegate session)
+		public void Store(string alias, SessionDelegate session, out Action undoAction)
 		{
 			var dict = GetDict();
 
@@ -35,17 +35,25 @@
 			dict[alias] = session;
 
 			Interlocked.Increment(ref _stored);
-		}
 
-		public void Remove(string alias, SessionDelegate session)
-		{
-			var dict = GetDict();
-
-			if (dict.Remove(alias))
+			undoAction = () =>
 			{
-				Interlocked.Decrement(ref _stored);
-			}
+				if (dict.Remove(alias))
+				{
+					Interlocked.Decrement(ref _stored);
+				}
+			};
 		}
+
+//		public void Remove(string alias, SessionDelegate session)
+//		{
+//			var dict = GetDict();
+//
+//			if (dict.Remove(alias))
+//			{
+//				Interlocked.Decrement(ref _stored);
+//			}
+//		}
 
 		public bool IsCurrentActivityEmptyFor(string alias)
 		{

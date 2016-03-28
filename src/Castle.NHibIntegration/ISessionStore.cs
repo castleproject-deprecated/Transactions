@@ -19,13 +19,13 @@
 		/// <summary>
 		/// Should store the specified session instance 
 		/// </summary>
-		void Store(string alias, SessionDelegate session);
+		void Store(string alias, SessionDelegate session, out Action undoAction);
 
 		/// <summary>
 		/// Should remove the session from the store 
 		/// only.
 		/// </summary>
-		void Remove(string alias, SessionDelegate session);
+		// void Remove(string alias, SessionDelegate session);
 
 		/// <summary>
 		/// Returns <c>true</c> if the current activity

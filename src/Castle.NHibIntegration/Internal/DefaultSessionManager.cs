@@ -50,7 +50,8 @@
 				wrapped = WrapSession(alias, session, canClose: currentTransaction == null);
 				EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: true);
 
-				_sessionStore.Store(alias, wrapped);
+				// _sessionStore.Store(alias, wrapped);
+				wrapped.Store();
 
 				if (Logger.IsDebugEnabled)
 					Logger.Debug("Wrapped Session = [" + wrapped.GetSessionImplementation().SessionId + "]");
