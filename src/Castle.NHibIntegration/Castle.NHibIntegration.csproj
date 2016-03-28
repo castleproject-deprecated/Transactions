@@ -53,6 +53,7 @@
     <Compile Include="IConfigurationContributor.cs" />
     <Compile Include="Internal\SessionFactoryResolver.cs" />
     <Compile Include="Internal\DefaultSessionManager.cs" />
+    <Compile Include="Internal\UnregisterEnlistment.cs" />
     <Compile Include="ISessionFactoryResolver.cs" />
     <Compile Include="ISessionManager.cs" />
     <Compile Include="ISessionStore.cs" />

@@ -56,5 +56,7 @@
 //		void Remove(StatelessSessionDelegate session);
 
 		void Dispose();
+
+		int TotalStoredCurrent { get; }
 	}
 }

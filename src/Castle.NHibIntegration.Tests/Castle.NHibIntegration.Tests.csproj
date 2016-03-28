@@ -76,11 +76,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractFluentNhConfigurationBuilder.cs" />
-    <Compile Include="FacilityTests.cs" />
+    <Compile Include="BaseTest.cs" />
+    <Compile Include="SessionDelegate_NoTransactions.cs" />
     <Compile Include="Comps\SvcWithoutTransactions.cs" />
     <Compile Include="Comps\SvcWithTransactions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionDelegate_WithTransactions.cs" />
     <Compile Include="TestConfigBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

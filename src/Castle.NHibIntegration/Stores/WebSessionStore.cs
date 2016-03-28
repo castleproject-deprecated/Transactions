@@ -25,5 +25,7 @@ namespace Castle.NHibIntegration.Stores
 		public void Dispose()
 		{
 		}
+
+		public int TotalStoredCurrent { get; private set; }
 	}
 }

@@ -22,6 +22,10 @@
 			ConfigurationBuilderType = config.Attributes[NhConstants.ConfigurationBuilderConfigurationKey];
 		}
 
+		public NhFactoryConfiguration()
+		{
+		}
+
 		/// <summary>
 		/// Get or sets the factory Id
 		/// </summary>
