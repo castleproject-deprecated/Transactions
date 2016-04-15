@@ -79,6 +79,8 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="EnlistedConfirmation.cs" />
+    <Compile Include="MultipleFactoriesConfigBuilder.cs" />
+    <Compile Include="OracleManagedDataClientDriver.cs" />
     <Compile Include="SessionDelegate_NoTransactions.cs" />
     <Compile Include="Comps\SvcWithoutTransactions.cs" />
     <Compile Include="Comps\SvcWithTransactions.cs" />
@@ -87,6 +89,8 @@
     <Compile Include="SessionDelegate_WithTransactions.cs" />
     <Compile Include="SessionDelegate_WithTransactions_StressTest.cs" />
     <Compile Include="TestConfigBuilder.cs" />
+    <Compile Include="TestConfigOracleBuilder.cs" />
+    <Compile Include="TestConfigSqlServerBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
