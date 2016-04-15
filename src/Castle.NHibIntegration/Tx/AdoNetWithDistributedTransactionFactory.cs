@@ -30,14 +30,17 @@
 			if (session.TransactionContext != null)
 				return;
 
-			if (System.Transactions.Transaction.Current == null)
+			var ambientTx = Transaction.Current;
+
+			if (ambientTx == null)
 				return;
 
-			var transactionContext = new DistributedTransactionContext(session,
-																	   System.Transactions.Transaction.Current);
+			var transactionContext = new DistributedTransactionContext(session, ambientTx);
 			session.TransactionContext = transactionContext;
+
 			logger.DebugFormat("enlisted into DTC transaction: {0}",
 							   transactionContext.AmbientTransation.IsolationLevel);
+			
 			session.AfterTransactionBegin(null);
 
 			TransactionCompletedEventHandler handler = null;

@@ -70,8 +70,8 @@
     <Compile Include="Stores\WebSessionStore.cs" />
     <Compile Include="Tx\AdoBoundTransaction.cs" />
     <Compile Include="Tx\CastleFriendlyScopelessTxFactory.cs" />
-    <Compile Include="Tx\Class1.cs" />
-    <Compile Include="Tx\Class2.cs" />
+    <Compile Include="Tx\AdoNetWithDistributedTransactionFactory.cs" />
+    <Compile Include="Tx\AdoTransaction2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Castle.Services.Transaction2\Castle.Services.Transaction2.csproj">
