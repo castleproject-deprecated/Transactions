@@ -1423,7 +1423,7 @@
 			Thread.MemoryBarrier();
 
 			if (_logger.IsDebugEnabled)
-				_logger.Debug("Disposing Session = [" + _sessionId + "]");
+				_logger.Debug("Disposing Session = [" + _sessionId + "] canClose? " + canClose);
 
 			// DoClose(closing: false);
 

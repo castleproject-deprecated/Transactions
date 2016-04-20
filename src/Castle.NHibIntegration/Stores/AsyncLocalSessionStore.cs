@@ -59,7 +59,11 @@
 
 			undoAction = () =>
 			{
-				if (dict.Remove(alias))
+				var removed = dict.Remove(alias);
+
+				Logger.Debug("Store removing [" + alias + "] removed? " + removed);
+
+				if (removed)
 				{
 					Interlocked.Decrement(ref _stored);
 					// Console.WriteLine("removed " + alias + " " + session + " Thread " + Thread.CurrentThread.ManagedThreadId);

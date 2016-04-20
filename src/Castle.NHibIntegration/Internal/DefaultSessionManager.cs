@@ -7,6 +7,7 @@
 	using NHibernate;
 	using Services.Transaction;
 
+
 	public class DefaultSessionManager : ISessionManager
 	{
 		private readonly ISessionStore _sessionStore;
@@ -59,11 +60,9 @@
 
 				if (Logger.IsDebugEnabled) Logger.Debug("Created Session = [" + newWrapped + "]");
 
-				// _sessionStore.Store(alias, wrapped);
-				// wrapped.Store();
 				Store(alias, newWrapped, currentTransaction);
 
-				if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + newWrapped + "]");
+				// if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + newWrapped + "]");
 
 				wrapped = newWrapped;
 			}
