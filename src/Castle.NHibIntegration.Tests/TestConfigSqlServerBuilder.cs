@@ -6,6 +6,7 @@ namespace Castle.NHibIntegration.Tests
 	using FluentNHibernate.Cfg;
 	using Configuration = NHibernate.Cfg.Configuration;
 
+
 	public class TestConfigSqlServerBuilder : IConfigurationBuilder
 	{
 		public Configuration GetConfiguration(IConfiguration config)
