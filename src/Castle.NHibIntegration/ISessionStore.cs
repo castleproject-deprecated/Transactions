@@ -15,18 +15,23 @@
 		/// for the given alias if available, otherwise null.
 		/// </summary>
 		SessionDelegate FindCompatibleSession(string alias);
+		StatelessSessionDelegate FindCompatibleStatelessSession(string alias);
 
 		/// <summary>
 		/// Should store the specified session instance 
 		/// </summary>
 		void Store(string alias, SessionDelegate session, out Action undoAction);
+		void Store(string alias, StatelessSessionDelegate session, out Action undoAction);
 
-		/// <summary>
-		/// Returns <c>true</c> if the current activity
-		/// (which is an execution activity context) has no
-		/// sessions available
-		/// </summary>
-		bool IsCurrentActivityEmptyFor(String alias);
+		int TotalStoredCurrent { get; }
+		int TotalStatelessStoredCurrent { get; }
+
+		// <summary>
+		// Returns <c>true</c> if the current activity
+		// (which is an execution activity context) has no
+		// sessions available
+		// </summary>
+		// bool IsCurrentActivityEmptyFor(String alias);
 
 //		/// <summary>
 //		/// Should return a previously stored stateless session 
@@ -41,16 +46,14 @@
 //		/// </summary>
 //		/// <param name="alias"></param>
 //		/// <param name="session"></param>
-//		void Store(string alias, StatelessSessionDelegate session);
-//
 //		/// <summary>
 //		/// Should remove the stateless session from the store only.
 //		/// </summary>
 //		/// <param name="session"></param>
-//		void Remove(StatelessSessionDelegate session);
 
-		void Dispose();
+//		void Remove(SessionDelegate session);
+//		void RemoveStateless(StatelessSessionDelegate session);
 
-		int TotalStoredCurrent { get; }
+//		void Dispose();
 	}
 }

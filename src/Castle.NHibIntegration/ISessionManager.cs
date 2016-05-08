@@ -33,7 +33,7 @@ namespace Castle.NHibIntegration
 		/// Returns a valid opened and connected IStatelessSession instance.
 		/// </summary>
 		/// <returns></returns>
-//		IStatelessSession OpenStatelessSession();
+		IStatelessSession OpenStatelessSession();
 
 		/// <summary>
 		/// Returns a valid opened and connected IStatelessSession instance
@@ -41,6 +41,6 @@ namespace Castle.NHibIntegration
 		/// </summary>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-//		IStatelessSession OpenStatelessSession(String alias);
+		IStatelessSession OpenStatelessSession(String alias);
 	}
 }

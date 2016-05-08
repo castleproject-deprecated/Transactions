@@ -4,8 +4,6 @@
 	using System.Collections;
 	using System.Data;
 	using System.Linq.Expressions;
-	using System.Runtime.CompilerServices;
-	using System.Threading;
 	using Core.Logging;
 	using NHibernate;
 	using NHibernate.Stat;
@@ -18,20 +16,9 @@
 	/// <seealso cref="ISessionStore"/>
 	/// <seealso cref="ISessionManager"/>
 	/// </summary>
-	[Serializable]
-	public class SessionDelegate : MarshalByRefObject, ISession
+	public class SessionDelegate : BaseSessionDelegate, ISession
 	{
-		private readonly string _alias;
 		private readonly ISession inner;
-		private readonly ISessionStore sessionStore;
-		private readonly ILogger _logger;
-		private readonly bool canClose;
-		private object cookie;
-		private bool _disposed;
-		private Action removeFromStore;
-		private ITransaction _tx;
-		private Guid _sessionId;
-		public string Helper;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SessionDelegate"/> class.
@@ -40,15 +27,10 @@
 		/// <param name="inner">The inner.</param>
 		/// <param name="sessionStore">The session store.</param>
 		/// <param name="logger"></param>
-		public SessionDelegate(string @alias, bool canClose, ISession inner, ISessionStore sessionStore, ILogger logger)
+		public SessionDelegate(string @alias, bool canClose, ISession inner, ISessionStore sessionStore, ILogger logger) :
+			base(alias, canClose, inner.GetSessionImplementation().SessionId, sessionStore, logger)
 		{
-			_sessionId = inner.GetSessionImplementation().SessionId;
-
 			this.inner = inner;
-			this.sessionStore = sessionStore;
-			this.canClose = canClose;
-			_alias = alias;
-			_logger = logger;
 		}
 
 		/// <summary>
@@ -60,15 +42,11 @@
 			get { return inner; }
 		}
 
-		/// <summary>
-		/// Gets or sets the session store cookie.
-		/// </summary>
-		/// <value>The session store cookie.</value>
-		public object SessionStoreCookie
-		{
-			get { return cookie; }
-			set { cookie = value; }
-		}
+//		public object SessionStoreCookie
+//		{
+//			get { return cookie; }
+//			set { cookie = value; }
+//		}
 
 		#region ISession delegation
 
@@ -1343,7 +1321,6 @@
 			return DoClose(closing: true);
 		}
 
-
 		/// <summary>
 		/// Return the entity name for a persistent entity
 		/// </summary>
@@ -1411,95 +1388,24 @@
 
 		#endregion
 
-		#region Dispose delegation
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
+		public override void Store()
 		{
-			if (_disposed) return;
-			_disposed = true;
-			Thread.MemoryBarrier();
-
-			if (_logger.IsDebugEnabled)
-				_logger.Debug("Disposing Session = [" + _sessionId + "] canClose? " + canClose);
-
-			// DoClose(closing: false);
-
-			if (canClose)
-			{
-				// sessionStore.Remove(_alias, this);
-
-				// called when there are no transactions and the root sessionwrapper is disposed
-				if (removeFromStore != null) 
-				{
-					removeFromStore();
-					removeFromStore = null;
-				}
-
-				inner.Dispose();
-			}
+			sessionStore.Store(this._alias, this, out this.removeFromStore);
 		}
 
-		// called by the transaction that "owns" this session
-		public void UnsafeDispose(bool commit)
+		public override void InternalBeginTransaction()
 		{
-			_disposed = true;
-			Thread.MemoryBarrier();
-
-			// sessionStore.Remove(_alias, this);
-			if (removeFromStore != null)
-			{
-				removeFromStore();
-				removeFromStore = null;
-			}
-
-			try
-			{
-				if (_tx != null)
-				{
-					if (commit && !_tx.WasCommitted)
-						_tx.Commit();
-					else if (!commit && !_tx.WasRolledBack)
-						_tx.Rollback();
-				}
-			}
-			catch (Exception ex)
-			{
-				this._logger.Error("Error completing transaction", ex);
-			}
-			finally
-			{
-				inner.Dispose();
-			}
+			_tx = inner.BeginTransaction();
 		}
 
-		#endregion
-
-		/// <summary>
-		/// Does the close.
-		/// </summary>
-		/// <returns></returns>
-		protected IDbConnection DoClose(bool closing)
+		protected override void InnerDispose()
 		{
-			if (canClose)
-			{
-				return inner.Close();
-			}
-			else
-			{
-				// Fuck no, you cannot ever close a session that you dont own
-				// inner.Dispose(); //as nhib calls, soft dispose tx aware.
-			}
-
-			return null;
+			this.inner.Dispose();
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void EnsureNotDisposed()
+		protected override void InnerClose()
 		{
-			if (this._disposed) throw new ObjectDisposedException("SessionDelegate");
+			this.inner.Close();
 		}
 
 		/// <summary>
@@ -1508,29 +1414,19 @@
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns></returns>
-		public static bool AreEqual(ISession left, ISession right)
-		{
-			var sdLeft = left as SessionDelegate;
-			var sdRight = right as SessionDelegate;
-
-			if (sdLeft != null && sdRight != null)
-			{
-				return Object.ReferenceEquals(sdLeft.inner, sdRight.inner);
-			}
-
-			throw new NotSupportedException("AreEqual: left is " +
-											left.GetType().Name + " and right is " + right.GetType().Name);
-		}
-
-		public void Store()
-		{
-			sessionStore.Store(this._alias, this, out this.removeFromStore);
-		}
-
-		public void InternalBeginTransaction()
-		{
-			_tx = inner.BeginTransaction();
-		}
+//		public static bool AreEqual(ISession left, ISession right)
+//		{
+//			var sdLeft = left as SessionDelegate;
+//			var sdRight = right as SessionDelegate;
+//
+//			if (sdLeft != null && sdRight != null)
+//			{
+//				return Object.ReferenceEquals(sdLeft.inner, sdRight.inner);
+//			}
+//
+//			throw new NotSupportedException("AreEqual: left is " +
+//											left.GetType().Name + " and right is " + right.GetType().Name);
+//		}
 
 		public override string ToString()
 		{

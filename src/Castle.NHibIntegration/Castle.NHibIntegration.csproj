@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IConfigurationContributor.cs" />
+    <Compile Include="Internal\SessionDelegates\BaseSessionDelegate.cs" />
+    <Compile Include="Internal\SessionDelegates\StatelessSessionDelegate.cs" />
     <Compile Include="Internal\SessionFactoryResolver.cs" />
     <Compile Include="Internal\DefaultSessionManager.cs" />
     <Compile Include="Internal\UnregisterEnlistment.cs" />
@@ -59,7 +61,7 @@
     <Compile Include="ISessionStore.cs" />
     <Compile Include="DefaultConfigurationBuilder.cs" />
     <Compile Include="IConfigurationBuilder.cs" />
-    <Compile Include="Internal\SessionDelegate.cs" />
+    <Compile Include="Internal\SessionDelegates\SessionDelegate.cs" />
     <Compile Include="NhConstants.cs" />
     <Compile Include="NhFacility.cs" />
     <Compile Include="Internal\NhFacilityConfiguration.cs" />

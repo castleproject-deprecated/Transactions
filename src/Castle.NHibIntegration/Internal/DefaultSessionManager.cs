@@ -16,8 +16,8 @@
 		private FlushMode defaultFlushMode = FlushMode.Auto;
 
 		public DefaultSessionManager(ISessionStore sessionStore, 
-			ISessionFactoryResolver factoryResolver, 
-			ITransactionManager2 transactionManager)
+									 ISessionFactoryResolver factoryResolver, 
+									 ITransactionManager2 transactionManager)
 		{
 			_sessionStore = sessionStore;
 			_factoryResolver = factoryResolver;
@@ -37,6 +37,45 @@
 		}
 
 		public ILogger Logger { get; set; }
+
+		public IStatelessSession OpenStatelessSession()
+		{
+			return OpenStatelessSession(NhConstants.DefaultAlias);
+		}
+
+		public IStatelessSession OpenStatelessSession(string alias)
+		{
+			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
+
+			ITransaction2 currentTransaction = _transactionManager.CurrentTransaction;
+
+			StatelessSessionDelegate wrapped = FindCompatibleStateless(alias, currentTransaction, _sessionStore);
+
+			if (wrapped == null) // || (currentTransaction != null && !wrapped.Transaction.IsActive))
+			{
+				var session = InternalCreateStatelessSession(alias);
+
+				var newWrapped = WrapSession(alias, session, currentTransaction, canClose: currentTransaction == null);
+				EnlistIfNecessary(currentTransaction, newWrapped, weAreSessionOwner: true);
+
+				if (Logger.IsDebugEnabled) Logger.Debug("Created stateless Session = [" + newWrapped + "]");
+
+				Store(alias, newWrapped, currentTransaction);
+
+				// if (Logger.IsDebugEnabled) Logger.Debug("Wrapped Session = [" + newWrapped + "]");
+
+				wrapped = newWrapped;
+			}
+			else
+			{
+				if (Logger.IsDebugEnabled) Logger.Debug("Re-wrapping stateless Session = [" + wrapped + "]");
+
+				wrapped = WrapSession(alias, wrapped.InnerSession, null, canClose: false);
+				// EnlistIfNecessary(currentTransaction, wrapped, weAreSessionOwner: false);
+			}
+
+			return wrapped;
+		}
 
 		public ISession OpenSession()
 		{
@@ -84,24 +123,39 @@
 				object instance;
 				if (transaction.UserData.TryGetValue(@alias, out instance))
 				{
-					return (SessionDelegate) instance;
+					var stateful = instance as SessionDelegate;
+					if (stateful != null) return stateful;
 				}
 			}
 			return sessionStore.FindCompatibleSession(@alias);
 		}
 
-		private static void Store(string @alias, SessionDelegate wrapped, ITransaction2 transaction)
+		private static StatelessSessionDelegate FindCompatibleStateless(string @alias, ITransaction2 transaction, ISessionStore sessionStore)
+		{
+			if (transaction != null)
+			{
+				object instance;
+				if (transaction.UserData.TryGetValue(@alias, out instance))
+				{
+					var stateless = instance as StatelessSessionDelegate;
+					if (stateless != null) return stateless;
+				}
+			}
+			return sessionStore.FindCompatibleStatelessSession(@alias);
+		}
+
+		private static void Store(string @alias, BaseSessionDelegate wrapped, ITransaction2 transaction)
 		{
 			if (transaction != null)
 			{
 				if (transaction.UserData.ContainsKey(@alias)) throw new Exception("Key already exists for " + @alias);
 
 				transaction.UserData[@alias] = wrapped;
-
-				return;
 			}
-
-			wrapped.Store();
+			else
+			{
+				wrapped.Store();
+			}
 		}
 
 		private void EnlistIfNecessary(ITransaction2 transaction, SessionDelegate session, bool weAreSessionOwner)
@@ -111,6 +165,20 @@
 			if (weAreSessionOwner /*&& session.Transaction.IsActive*/)
 			{
 				Logger.Debug("Enlisted Session " + session);
+
+				var ue = new UnregisterEnlistment(Logger, session);
+
+				transaction.Inner.EnlistVolatile(ue, EnlistmentOptions.EnlistDuringPrepareRequired);
+			}
+		}
+
+		private void EnlistIfNecessary(ITransaction2 transaction, StatelessSessionDelegate session, bool weAreSessionOwner)
+		{
+			if (transaction == null) return;
+
+			if (weAreSessionOwner /*&& session.Transaction.IsActive*/)
+			{
+				Logger.Debug("Enlisted stateless Session " + session);
 
 				var ue = new UnregisterEnlistment(Logger, session);
 
@@ -132,6 +200,20 @@
 			return sessdelegate;
 		}
 
+		private StatelessSessionDelegate WrapSession(string alias, IStatelessSession session,
+													 ITransaction2 currentTransaction,
+													 bool canClose)
+		{
+			var sessdelegate = new StatelessSessionDelegate(alias, canClose, session, _sessionStore, this.Logger.CreateChildLogger("StatelessSession"));
+
+			if (currentTransaction != null)
+			{
+				sessdelegate.InternalBeginTransaction();
+			}
+
+			return sessdelegate;
+		}
+
 		private ISession InternalCreateSession(string @alias)
 		{
 			ISessionFactory sessionFactory = _factoryResolver.GetSessionFactory(@alias);
@@ -142,13 +224,24 @@
 											"associated with the given alias: " + @alias);
 			}
 
-			ISession session;
-
-			{
-				session = sessionFactory.OpenSession();
-			}
+			ISession session = sessionFactory.OpenSession();
 
 			session.FlushMode = defaultFlushMode;
+
+			return session;
+		}
+
+		private IStatelessSession InternalCreateStatelessSession(string @alias)
+		{
+			ISessionFactory sessionFactory = _factoryResolver.GetSessionFactory(@alias);
+
+			if (sessionFactory == null)
+			{
+				throw new FacilityException("No ISessionFactory implementation " +
+											"associated with the given alias: " + @alias);
+			}
+
+			IStatelessSession session = sessionFactory.OpenStatelessSession();
 
 			return session;
 		}

@@ -6,9 +6,9 @@
 	class UnregisterEnlistment : IEnlistmentNotification
 	{
 		private readonly ILogger _logger;
-		private readonly SessionDelegate _session;
+		private readonly BaseSessionDelegate _session;
 
-		public UnregisterEnlistment(ILogger logger, SessionDelegate session)
+		public UnregisterEnlistment(ILogger logger, BaseSessionDelegate session)
 		{
 			_logger = logger;
 			_session = session;
