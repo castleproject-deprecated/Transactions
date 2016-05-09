@@ -62,7 +62,7 @@
 												BaseSessionDelegate session, out Action undoAction)
 			where TSessionDel : BaseSessionDelegate
 		{
-			session.Helper = new StackTrace().ToString();
+//			session.Helper = new StackTrace().ToString();
 
 			if (dict.ContainsKey(alias))
 			{
