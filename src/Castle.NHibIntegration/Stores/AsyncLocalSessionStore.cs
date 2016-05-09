@@ -12,6 +12,7 @@
 	{
 		private readonly AsyncLocal<Dictionary<string, SessionDelegate>> _localSession;
 		private readonly AsyncLocal<Dictionary<string, StatelessSessionDelegate>> _localStatelessSession;
+		
 		private int _stored;
 		private int _storedStateless;
 
