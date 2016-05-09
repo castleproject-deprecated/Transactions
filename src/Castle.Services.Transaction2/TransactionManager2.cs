@@ -40,8 +40,20 @@
 
 		public ITransaction2 CreateTransaction(TransactionOptions transactionOptions)
 		{
-			var activity = _activityManager.EnsureActivityExists();
+//			Activity2 existingActivity;
+//			var hasContextActivity = _activityManager.TryGetCurrentActivity(out existingActivity);
 
+			Activity2 activity;
+//			if (transactionOptions.Mode == TransactionScopeOption.RequiresNew && hasContextActivity)
+//			{
+//				activity = _activityManager.StackNewActivity();
+//			}
+//			else
+			{
+				activity = _activityManager.EnsureActivityExists();
+			}
+
+//			var activity = _activityManager.EnsureActivityExists();
 			var activityCount = activity.Count;
 
 			TransactionImpl2 tx;
