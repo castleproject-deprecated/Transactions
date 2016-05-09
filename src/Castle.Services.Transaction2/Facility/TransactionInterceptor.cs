@@ -86,6 +86,8 @@
 				_logger.Error("Transactional call failed", e);
 
 				// Early termination. nothing to do besides disposing the transaction
+				
+				transaction.Rollback();
 
 				transaction.Dispose();
 
@@ -100,23 +102,38 @@
 				// When promised to complete in the future - should this be a case for DependentTransaction?
 				// Transaction.Current.DependentClone(DependentCloneOption.BlockCommitUntilComplete));
 
-				ret.ContinueWith((t, aTransaction) =>
+				ret.ContinueWith((t, tupleArg) =>
 				{
-					var tran = (ITransaction2) aTransaction;
+					// var tran = (ITransaction2) aTransaction;
+					var tuple = (Tuple<ITransaction2, ILogger>) tupleArg;
+					var tran = tuple.Item1;
+					var logger = tuple.Item2;
 
 					try
 					{
-						if (!t.IsFaulted && !t.IsCanceled && 
-							tran.State == TransactionState.Active)
+						if (!t.IsFaulted && !t.IsCanceled && tran.State == TransactionState.Active)
 						{
 							try
 							{
 								tran.Complete();
-								tran.Dispose();
+								// tran.Dispose();
 							}
 							catch (Exception e)
 							{
-								_logger.Error("Transaction complete error ", e);
+								logger.Error("Transaction complete error ", e);
+								throw;
+							}
+						}
+						else
+						{
+							try
+							{
+								tran.Rollback();
+								// tran.Dispose();
+							}
+							catch (Exception e)
+							{
+								logger.Error("Transaction complete error ", e);
 								throw;
 							}
 						}
@@ -126,7 +143,7 @@
 						tran.Dispose();
 					}
 
-				}, transaction, TaskContinuationOptions.ExecuteSynchronously);
+				}, Tuple.Create(transaction, _logger), TaskContinuationOptions.ExecuteSynchronously);
 			}
 			else
 			{
@@ -137,12 +154,18 @@
 					if (transaction.State == TransactionState.Active && !ret.IsFaulted && !ret.IsCanceled)
 					{
 						transaction.Complete();
-						transaction.Dispose();
+						// transaction.Dispose();
 					}
-					else if (_logger.IsWarnEnabled)
-						_logger.WarnFormat(
-							"transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
+					else // if (_logger.IsWarnEnabled)
+					{
+						transaction.Rollback();
+
+						if (_logger.IsWarnEnabled)
+						{
+							_logger.WarnFormat("transaction was in state {0}, so it cannot be completed. the 'consumer' method, so to speak, might have rolled it back.",
 							transaction.State);
+						}
+					}
 				}
 				finally
 				{
@@ -178,6 +201,9 @@
 			{
 				if (_logger.IsErrorEnabled)
 					_logger.Error("caught exception, rolling back transaction - synchronized case - tx#" + localIdentifier);
+				
+				transaction.Rollback();
+
 				throw;
 			}
 			finally

@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Concurrent;
+	using System.Diagnostics;
 	using System.Threading;
 	using Core.Logging;
 	using Transaction;
@@ -22,6 +23,8 @@
 			_logger = logger;
 			_stack = new ConcurrentStack<ITransaction2>();
 		}
+
+		public bool IsDisposed { get { return _disposed; } }
 
 		public ITransaction2 CurrentTransaction
 		{
@@ -125,6 +128,8 @@
 
 		public void Dispose()
 		{
+//			Console.WriteLine("Disposing " + this + " [" + Thread.CurrentThread.ManagedThreadId + "_" + Thread.CurrentThread.Name + "] (** " + new StackTrace().ToString() + " **)");
+
 			if (_disposed) return;
 
 			_disposed = true;

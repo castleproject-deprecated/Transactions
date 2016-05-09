@@ -1,10 +1,9 @@
 ﻿namespace Castle.Services.Transaction
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
-	using System.Linq;
 	using System.Transactions;
+
 
 	/// <summary>
 	/// 	Specifies a method as transactional. When adding this interface to a method you can use an inversion of control container
@@ -28,13 +27,10 @@
 			Timeout = TimeSpan.Zero;
 			Mode = mode;
 			IsolationLevel = isolationLevel;
-//			_CustomContext = new Dictionary<string, object>();
 		}
 
 		public IsolationLevel IsolationLevel { get; set; }
 		public TransactionScopeOption Mode { get; set; }
-
-//		public DependentCloneOption DependentOption { [Pure] get; set; }
 
 		/// <summary>
 		/// 	Gets or sets the transaction timeout. The timeout is often better

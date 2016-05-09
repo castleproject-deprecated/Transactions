@@ -33,5 +33,14 @@ namespace Castle.Services.Transaction2.Tests.Comps
 
 			enlistment.Done();
 		}
+
+		public override string ToString()
+		{
+			return "EnlistedConfirmation :" + 
+				" Committed: " + Committed +
+				" Rolledback: " + RolledBack +
+				" InDoubtSet: " + InDoubtSet +
+				" Prepared: " + Prepared;
+		}
 	}
 }

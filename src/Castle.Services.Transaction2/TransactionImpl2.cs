@@ -75,8 +75,8 @@ namespace Castle.Services.Transaction
 		public void Dispose()
 		{
 			if (_disposed) return;
-			_disposed = true;
 			Thread.MemoryBarrier();
+			_disposed = true;
 
 			// shouldCommit when wasn't explicit set or was set to true
 			var shouldCommit = !_shouldCommit.HasValue || _shouldCommit.Value == true;

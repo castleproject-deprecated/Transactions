@@ -51,6 +51,7 @@ namespace Castle.Services.Transaction.Internal
 			{
 				_holder.Value = cur = CreateActivity();
 			}
+			if (cur.IsDisposed) throw new Exception(cur + " already disposed [" + Thread.CurrentThread.ManagedThreadId + "_" + Thread.CurrentThread.Name + "]");
 			return cur;
 		}
 
