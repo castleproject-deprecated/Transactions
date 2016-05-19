@@ -1,6 +1,7 @@
 ﻿namespace Castle.NHibIntegration.Internal
 {
 	using System;
+	using System.Diagnostics;
 	using System.Transactions;
 	using Core.Logging;
 	using MicroKernel.Facilities;
@@ -49,6 +50,11 @@
 
 			ITransaction2 currentTransaction = _transactionManager.CurrentTransaction;
 
+			if (currentTransaction == null)
+			{
+				this.Logger.Error("OpenStatelessSession with null transaction at " + new StackTrace().ToString());
+			}
+
 			StatelessSessionDelegate wrapped = FindCompatibleStateless(alias, currentTransaction, _sessionStore);
 
 			if (wrapped == null) // || (currentTransaction != null && !wrapped.Transaction.IsActive))
@@ -87,6 +93,11 @@
 			if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException("alias");
 
 			ITransaction2 currentTransaction = _transactionManager.CurrentTransaction;
+
+			if (currentTransaction == null)
+			{
+				this.Logger.Error("OpenSession with null transaction at " + new StackTrace().ToString());
+			}
 
 			SessionDelegate wrapped = FindCompatible(alias, currentTransaction, _sessionStore);
 
