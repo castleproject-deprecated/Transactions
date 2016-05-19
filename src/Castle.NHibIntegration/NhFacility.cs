@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Configuration;
+	using AutoClosing;
 	using Core.Configuration;
 	using Core.Logging;
 	using Internal;
@@ -43,6 +44,16 @@
 			AssertHasAtLeastOneFactoryConfigured();
 			RegisterComponents();
 			ConfigureFacility();
+
+			// New Auto close support
+			Kernel.Register(
+				Component.For<AutoSessionCloseInterceptor>().LifeStyle.Transient,
+				Component.For<INhMetaInfoStore>().ImplementedBy<NhMetaInfoStore>()
+					.Named("autoclosesess.metaInfoStore")
+					.LifeStyle.Singleton
+				);
+
+			Kernel.ComponentModelBuilder.AddContributor(new SessionAttributeComponentInspector());
 		}
 
 		protected virtual void RegisterComponents()

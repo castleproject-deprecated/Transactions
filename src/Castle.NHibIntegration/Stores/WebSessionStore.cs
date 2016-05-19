@@ -3,6 +3,7 @@ namespace Castle.NHibIntegration.Stores
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Threading;
 	using System.Web;
@@ -56,6 +57,22 @@ namespace Castle.NHibIntegration.Stores
 		public int TotalStoredCurrent { get; private set; }
 
 		public int TotalStatelessStoredCurrent { get; private set; }
+
+		public void DisposeAllInCurrentContext()
+		{
+			var stateful = GetDictSession();
+			var stateless = GetDictStatelessSession();
+
+			foreach (var session in stateful.Values.ToArray())
+			{
+				session.Dispose();
+			}
+
+			foreach (var session in stateless.Values.ToArray())
+			{
+				session.Dispose();
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void InternalStore<TSessionDel>(Dictionary<string, TSessionDel> dict, string @alias,

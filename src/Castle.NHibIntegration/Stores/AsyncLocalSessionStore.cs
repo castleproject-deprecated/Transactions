@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Threading;
 	using Core.Logging;
@@ -55,6 +56,22 @@
 		public void Store(string alias, StatelessSessionDelegate session, out Action undoAction)
 		{
 			InternalStore<StatelessSessionDelegate>(GetDictStatelessSession(), alias, session, out undoAction);
+		}
+
+		public void DisposeAllInCurrentContext()
+		{
+			var stateful = GetDictSession();
+			var stateless = GetDictStatelessSession();
+
+			foreach (var session in stateful.Values.ToArray())
+			{
+				session.Dispose(); 
+			}
+
+			foreach (var session in stateless.Values.ToArray())
+			{
+				session.Dispose();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

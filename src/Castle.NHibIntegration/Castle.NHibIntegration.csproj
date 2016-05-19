@@ -51,7 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnsureSessionClosed.cs" />
+    <Compile Include="AutoClosing\AutoCloseClassMetaInfo.cs" />
+    <Compile Include="AutoClosing\AutoSessionCloseInterceptor.cs" />
+    <Compile Include="AutoClosing\NhMetaInfoStore.cs" />
+    <Compile Include="AutoClosing\SessionAttributeComponentInspector.cs" />
+    <Compile Include="AutoCloseSessionAttribute.cs" />
     <Compile Include="IConfigurationContributor.cs" />
     <Compile Include="Internal\SessionDelegates\BaseSessionDelegate.cs" />
     <Compile Include="Internal\SessionDelegates\StatelessSessionDelegate.cs" />

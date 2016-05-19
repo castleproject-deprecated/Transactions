@@ -55,5 +55,6 @@
 //		void RemoveStateless(StatelessSessionDelegate session);
 
 //		void Dispose();
+		void DisposeAllInCurrentContext();
 	}
 }
