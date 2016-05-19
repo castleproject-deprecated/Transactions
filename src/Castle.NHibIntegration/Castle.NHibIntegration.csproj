@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnsureSessionClosed.cs" />
     <Compile Include="IConfigurationContributor.cs" />
     <Compile Include="Internal\SessionDelegates\BaseSessionDelegate.cs" />
     <Compile Include="Internal\SessionDelegates\StatelessSessionDelegate.cs" />
