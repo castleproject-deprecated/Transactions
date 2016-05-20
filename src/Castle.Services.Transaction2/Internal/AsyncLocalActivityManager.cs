@@ -69,7 +69,7 @@ namespace Castle.Services.Transaction.Internal
 		private Activity2 CreateActivity()
 		{
 			var id = Interlocked.Increment(ref _counter);
-			return new Activity2(this, id, _logger.CreateChildLogger("Activity." + id));
+			return new Activity2(this, id, _logger.CreateChildLogger("Activity"));
 		}
 	}
 }
