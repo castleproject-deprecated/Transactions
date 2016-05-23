@@ -52,7 +52,10 @@
 
 			if (currentTransaction == null)
 			{
-				this.Logger.Error("OpenStatelessSession with null transaction at " + new StackTrace().ToString());
+				if (this.Logger.IsDebugEnabled)
+				{
+					this.Logger.Debug("OpenStatelessSession with null transaction at " + new StackTrace());
+				}
 			}
 
 			StatelessSessionDelegate wrapped = FindCompatibleStateless(alias, currentTransaction, _sessionStore);
@@ -96,7 +99,10 @@
 
 			if (currentTransaction == null)
 			{
-				this.Logger.Error("OpenSession with null transaction at " + new StackTrace().ToString());
+				if (this.Logger.IsDebugEnabled)
+				{
+					this.Logger.Debug("OpenSession with null transaction at " + new StackTrace());
+				}
 			}
 
 			SessionDelegate wrapped = FindCompatible(alias, currentTransaction, _sessionStore);
