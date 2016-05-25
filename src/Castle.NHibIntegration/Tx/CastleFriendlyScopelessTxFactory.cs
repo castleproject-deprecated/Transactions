@@ -5,7 +5,6 @@
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.Common;
-	using System.Diagnostics;
 	using System.Transactions;
 	using NHibernate;
 	using NHibernate.Engine;
@@ -13,6 +12,9 @@
 	using NHibernate.Exceptions;
 	using NHibernate.Impl;
 	using NHibernate.Transaction;
+	using StatsdClient;
+	using StatsdClient.Configuration;
+	using Stopwatch = System.Diagnostics.Stopwatch;
 
 
 	public class CastleFriendlyScopelessTxFactory : ITransactionFactory
@@ -235,7 +237,11 @@
 			{
 				stopwatch.Stop();
 
-				// new MetricsTimer(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"), payload: stopwatch.ElapsedMilliseconds()).Dispose();
+				using (new MetricsTimer(
+					Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"),
+					payload: unchecked ((int)stopwatch.ElapsedMilliseconds) ))
+				{
+				}
 			}
 
 			void End(bool wasSuccessful)
