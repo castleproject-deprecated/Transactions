@@ -1,6 +1,7 @@
 namespace Castle.NHibIntegration.AutoClosing
 {
 	using System;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using Core;
 	using Core.Interceptor;
@@ -9,10 +10,14 @@ namespace Castle.NHibIntegration.AutoClosing
 
 	public class AutoSessionCloseInterceptor : IInterceptor, IOnBehalfAware
 	{
+		private static readonly object Marker = new object();
+		private static readonly AsyncLocal<object> AutoCloseInEffectMarkerAsyncLocal = new AsyncLocal<object>();
+
 		private readonly ISessionStore _sessionStore;
 		private readonly INhMetaInfoStore _store;
 		private ILogger _logger = NullLogger.Instance;
 		private AutoCloseClassMetaInfo _meta;
+
 
 		public AutoSessionCloseInterceptor(ISessionStore sessionStore, INhMetaInfoStore store)
 		{
@@ -27,6 +32,21 @@ namespace Castle.NHibIntegration.AutoClosing
 			set { _logger = value; }
 		}
 
+		private void AddMarker()
+		{
+			AutoCloseInEffectMarkerAsyncLocal.Value = Marker;
+		}
+
+		private void RemoveMarker()
+		{
+			AutoCloseInEffectMarkerAsyncLocal.Value = null;
+		}
+
+		private bool HasPreviousMarker()
+		{
+			return AutoCloseInEffectMarkerAsyncLocal.Value != null;
+		}
+
 		public void SetInterceptedComponentModel(ComponentModel target)
 		{
 			_meta = _store.GetMetaFromType(target.Implementation);
@@ -34,13 +54,18 @@ namespace Castle.NHibIntegration.AutoClosing
 
 		public void Intercept(IInvocation invocation)
 		{
+			if (HasPreviousMarker())
+			{
+				invocation.Proceed();
+				return;
+			}
+
 			var keyMethod = invocation.Method.DeclaringType.IsInterface
 				? invocation.MethodInvocationTarget
 				: invocation.Method;
 
-			var hasAUtoCloseEnabled = _meta.HasAutoCloseEnabled(keyMethod);
-
-			if (!hasAUtoCloseEnabled)
+			var hasAutoCloseEnabled = _meta.HasAutoCloseEnabled(keyMethod);
+			if (!hasAutoCloseEnabled)
 			{
 				// nothing to do
 
@@ -48,6 +73,8 @@ namespace Castle.NHibIntegration.AutoClosing
 
 				return;
 			}
+
+			AddMarker();
 
 			if (typeof(Task).IsAssignableFrom(invocation.MethodInvocationTarget.ReturnType))
 			{
@@ -74,10 +101,11 @@ namespace Castle.NHibIntegration.AutoClosing
 			}
 			catch (Exception e)
 			{
-				_logger.Error("Transactional call failed", e);
+				_logger.Error("Auto close session call failed", e);
 
 				// Early termination. nothing to do
-				
+
+				RemoveMarker();
 				EnsureSessionsDisposed();
 
 				throw;
@@ -101,6 +129,7 @@ namespace Castle.NHibIntegration.AutoClosing
 			else
 			{
 				// When completed synchronously 
+				RemoveMarker();
 				EnsureSessionsDisposed();
 			}
 		}
@@ -113,6 +142,7 @@ namespace Castle.NHibIntegration.AutoClosing
 			}
 			finally
 			{
+				RemoveMarker();
 				EnsureSessionsDisposed();
 			}
 		}
