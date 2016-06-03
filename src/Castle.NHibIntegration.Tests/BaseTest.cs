@@ -27,7 +27,9 @@ namespace Castle.NHibIntegration.Tests
 
 			_container.Register(
 				Component.For<SvcWithTransactions>(),
-				Component.For<SvcWithoutTransactions>()
+				Component.For<SvcWithoutTransactions>(),
+				Component.For<SvcAutoWithoutTransactions>(),
+				Component.For<SvcAutoWithTransactions>()
 			);
 
 			_sessionStore = _container.Resolve<ISessionStore>();

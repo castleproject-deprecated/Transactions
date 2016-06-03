@@ -78,7 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncLocalStoreTestCase.cs" />
+    <Compile Include="AutoClose\SessionDelegate_WithAutoClose.cs" />
     <Compile Include="BaseTest.cs" />
+    <Compile Include="Comps\SvcAutoWithoutTransactions.cs" />
+    <Compile Include="Comps\SvcAutoWithTransactions.cs" />
     <Compile Include="EnlistedConfirmation.cs" />
     <Compile Include="MultipleFactoriesConfigBuilder.cs" />
     <Compile Include="OracleManagedDataClientDriver.cs" />
