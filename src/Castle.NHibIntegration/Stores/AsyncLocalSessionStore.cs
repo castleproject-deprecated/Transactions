@@ -1,10 +1,11 @@
-﻿namespace Castle.NHibIntegration.Stores
+﻿namespace Castle.NHibIntegration.Internal
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Runtime.CompilerServices;
+	using System.Text;
 	using System.Threading;
 	using Core.Logging;
 	using Internal;
@@ -19,10 +20,70 @@
 
 		public AsyncLocalSessionStore()
 		{
-			_localSession = new AsyncLocal<Dictionary<string, SessionDelegate>>();
-			_localStatelessSession = new AsyncLocal<Dictionary<string, StatelessSessionDelegate>>();
+			_localSession = new AsyncLocal<Dictionary<string, SessionDelegate>>(OnChanged);
+			_localStatelessSession = new AsyncLocal<Dictionary<string, StatelessSessionDelegate>>(OnStatelessChanged);
 
 			Logger = NullLogger.Instance;
+		}
+
+		// temp
+		private void OnChanged(AsyncLocalValueChangedArgs<Dictionary<string, SessionDelegate>> arg)
+		{
+			if (this.Logger.IsDebugEnabled)
+			{
+				this.Logger.Debug("Context changed for session: Thread changed: " + arg.ThreadContextChanged + 
+					" Cur " + DumpDict(arg.CurrentValue) +
+					" Prev "  + DumpDict(arg.PreviousValue) + 
+					" at " + new StackTrace());
+			}
+		}
+
+		// temp
+		private void OnStatelessChanged(AsyncLocalValueChangedArgs<Dictionary<string, StatelessSessionDelegate>> arg)
+		{
+			if (this.Logger.IsDebugEnabled)
+			{
+				this.Logger.Debug("Context changed for stateless session: Thread changed: " + arg.ThreadContextChanged +
+					" Cur " + DumpDict(arg.CurrentValue) +
+					" Prev " + DumpDict(arg.PreviousValue) +
+					" at " + new StackTrace());
+			}
+		}
+
+		// temp
+		private static string DumpDict(Dictionary<string, SessionDelegate> val)
+		{
+			if (val == null || val.Count == 0) return "[Null or Empty dict]";
+
+			var sb = new StringBuilder();
+			sb.Append("[ ");
+			foreach (var sessionDelegate in val)
+			{
+				sb.Append("(")
+				  .Append(sessionDelegate.Value.SessionId)
+				  .Append(") ");
+			}
+			sb.Append(" }");
+
+			return sb.ToString();
+		}
+
+		// temp
+		private static string DumpDict(Dictionary<string, StatelessSessionDelegate> val)
+		{
+			if (val == null || val.Count == 0) return "[Null or Empty dict]";
+
+			var sb = new StringBuilder();
+			sb.Append("[ ");
+			foreach (var sessionDelegate in val)
+			{
+				sb.Append("(")
+				  .Append(sessionDelegate.Value.SessionId)
+				  .Append(") ");
+			}
+			sb.Append(" }");
+
+			return sb.ToString();
 		}
 
 		public ILogger Logger { get; set; }

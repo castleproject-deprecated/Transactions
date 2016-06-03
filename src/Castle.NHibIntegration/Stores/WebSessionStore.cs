@@ -1,4 +1,4 @@
-namespace Castle.NHibIntegration.Stores
+namespace Castle.NHibIntegration.Internal
 {
 	using System;
 	using System.Collections.Generic;

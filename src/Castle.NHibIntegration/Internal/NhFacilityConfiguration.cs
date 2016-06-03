@@ -6,10 +6,10 @@ namespace Castle.NHibIntegration
 	using System.Linq;
 	using Core.Configuration;
 	using Core.Internal;
+	using Internal;
 	using MicroKernel;
 	using MicroKernel.Facilities;
 	using MicroKernel.SubSystems.Conversion;
-	using Stores;
 
 	internal class NhFacilityConfiguration
 	{

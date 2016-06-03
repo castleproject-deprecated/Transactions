@@ -30,6 +30,8 @@ namespace Castle.NHibIntegration.Internal
 			this._logger = logger;
 		}
 
+		public Guid SessionId { get { return _sessionId; } }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void EnsureNotDisposed()
 		{
