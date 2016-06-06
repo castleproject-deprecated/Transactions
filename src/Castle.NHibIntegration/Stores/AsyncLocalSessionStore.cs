@@ -29,7 +29,9 @@
 		// temp
 		private void OnChanged(AsyncLocalValueChangedArgs<Dictionary<string, SessionDelegate>> arg)
 		{
-			if (this.Logger.IsDebugEnabled)
+			if (this.Logger.IsDebugEnabled && 
+				((arg.CurrentValue != null && arg.CurrentValue.Count != 0) || 
+				(arg.PreviousValue != null && arg.PreviousValue.Count != 0)))
 			{
 				this.Logger.Debug("Context changed for session: Thread changed: " + arg.ThreadContextChanged + 
 					" Cur " + DumpDict(arg.CurrentValue) +
@@ -41,7 +43,9 @@
 		// temp
 		private void OnStatelessChanged(AsyncLocalValueChangedArgs<Dictionary<string, StatelessSessionDelegate>> arg)
 		{
-			if (this.Logger.IsDebugEnabled)
+			if (this.Logger.IsDebugEnabled &&
+				((arg.CurrentValue != null && arg.CurrentValue.Count != 0) ||
+				(arg.PreviousValue != null && arg.PreviousValue.Count != 0)))
 			{
 				this.Logger.Debug("Context changed for stateless session: Thread changed: " + arg.ThreadContextChanged +
 					" Cur " + DumpDict(arg.CurrentValue) +
