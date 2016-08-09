@@ -191,6 +191,8 @@
 
 					Done(enlistment);
 				}
+
+				Metrics.Counter(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.commit"));
 			}
 
 			private void Done(Enlistment enlistment)
@@ -216,6 +218,8 @@
 
 					Done(enlistment);
 				}
+
+				Metrics.Counter(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.rollback"));
 			}
 
 			void IEnlistmentNotification.InDoubt(Enlistment enlistment)
@@ -237,11 +241,7 @@
 			{
 				stopwatch.Stop();
 
-				using (new MetricsTimer(
-					Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"),
-					payload: unchecked ((int)stopwatch.ElapsedMilliseconds) ))
-				{
-				}
+				Metrics.Timer(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"), (int) stopwatch.ElapsedMilliseconds);
 			}
 
 			void End(bool wasSuccessful)
