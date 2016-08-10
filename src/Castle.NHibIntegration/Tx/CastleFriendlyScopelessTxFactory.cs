@@ -241,7 +241,7 @@
 			{
 				stopwatch.Stop();
 
-				Metrics.Timer(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"), (int) stopwatch.ElapsedMilliseconds);
+				Metrics.Timer(Naming.withEnvironmentApplicationAndHostname("nhibernate.tx.flush"), unchecked ((int) stopwatch.ElapsedMilliseconds));
 			}
 
 			void End(bool wasSuccessful)
