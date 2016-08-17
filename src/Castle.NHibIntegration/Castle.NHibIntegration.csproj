@@ -81,6 +81,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Internal\SessionFactoryActivator.cs" />
     <Compile Include="Stores\AsyncLocalSessionStore.cs" />
+    <Compile Include="Stores\HybridSessionStore.cs" />
     <Compile Include="Stores\WebSessionStore.cs" />
     <Compile Include="Tx\AdoBoundTransaction.cs" />
     <Compile Include="Tx\CastleFriendlyScopelessTxFactory.cs" />

@@ -19,6 +19,7 @@ namespace Castle.NHibIntegration
 		private bool isWeb;
 		private IKernel kernel;
 		private Type customStore;
+		private bool isHybrid;
 
 
 		public IEnumerable<NhFactoryConfiguration> Factories { get; set; }
@@ -141,6 +142,12 @@ namespace Castle.NHibIntegration
 			isWeb = true;
 		}
 
+		public void IsHybrid()
+		{
+			isHybrid = true;
+		}
+
+
 		public bool IsValid()
 		{
 			return facilityConfig != null || (configurationBuilderInstance != null || configurationBuilderType != null);
@@ -188,6 +195,8 @@ namespace Castle.NHibIntegration
 			{
 				sessionStoreType = typeof(WebSessionStore);
 			}
+			else if (isHybrid)
+				sessionStoreType = typeof(HybridSessionStore);
 
 			if (customStore != null)
 			{

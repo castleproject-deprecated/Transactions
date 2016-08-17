@@ -109,8 +109,7 @@ namespace Castle.NHibIntegration.Internal
 			};
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal Dictionary<string, SessionDelegate> GetDictSession()
+		internal virtual Dictionary<string, SessionDelegate> GetDictSession()
 		{
 			var curContext = ObtainSessionContext();
 			var dict = curContext.Items[_slotKey] as Dictionary<string, SessionDelegate>;
@@ -122,8 +121,7 @@ namespace Castle.NHibIntegration.Internal
 			return dict;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal Dictionary<string, StatelessSessionDelegate> GetDictStatelessSession()
+		internal virtual Dictionary<string, StatelessSessionDelegate> GetDictStatelessSession()
 		{
 			var curContext = ObtainSessionContext();
 			var dict = curContext.Items[_statelessSlotKey] as Dictionary<string, StatelessSessionDelegate>;
@@ -135,8 +133,7 @@ namespace Castle.NHibIntegration.Internal
 			return dict;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static HttpContext ObtainSessionContext()
+		internal virtual HttpContext ObtainSessionContext()
 		{
 			HttpContext curContext = HttpContext.Current;
 
