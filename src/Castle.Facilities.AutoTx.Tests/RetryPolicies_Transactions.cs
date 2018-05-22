@@ -49,7 +49,7 @@ namespace Castle.Facilities.AutoTx.Tests
 				// calls a static .Net/Mono framework method, and it's the responsibility of
 				// that framework method to keep track of the call context.
 				Component.For<IActivityManager>()
-					.ImplementedBy<CallContextActivityManager>()
+					.ImplementedBy<AsyncLocalActivityManager>()
 					.LifeStyle.Singleton);
 
 			_Container.Register();

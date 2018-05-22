@@ -29,7 +29,7 @@ namespace Castle.Transactions.IO.Tests
 		public void given_manager()
 		{
 			test_file = ".".Combine("test.txt");
-			subject = new TransactionManager(new CallContextActivityManager(), NullLogger.Instance);
+			subject = new TransactionManager(new AsyncLocalActivityManager(), NullLogger.Instance);
 		}
 
 		[Test]

@@ -27,7 +27,7 @@ namespace Castle.Transactions.Tests.TransactionManager
 		[SetUp]
 		public void given_manager()
 		{
-			subject = new Transactions.TransactionManager(new CallContextActivityManager(), NullLogger.Instance);
+			subject = new Transactions.TransactionManager(new AsyncLocalActivityManager(), NullLogger.Instance);
 		}
 
 		[TearDown]
