@@ -27,7 +27,6 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40-Debug|AnyCPU' ">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <OutputPath>bin\Debug\</OutputPath>
@@ -57,8 +56,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core">
-      <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net40-client\Castle.Core.dll</HintPath>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.4.2.1\lib\net40\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="grensesnitt.Framework">
@@ -121,7 +120,7 @@
       <Name>Castle.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Castle.Transactions\Castle.Transactions.csproj">
-      <Project>{76DF5D09-FC04-411F-B123-01A6B9432796}</Project>
+      <Project>{76df5d09-fc04-411f-b123-01a6b9432796}</Project>
       <Name>Castle.Transactions</Name>
     </ProjectReference>
   </ItemGroup>
