@@ -70,7 +70,7 @@ namespace Castle.Facilities.AutoTx
 				// calls a static .Net/Mono framework method, and it's the responsibility of
 				// that framework method to keep track of the call context.
 				Component.For<IActivityManager>()
-					.ImplementedBy<AsyncLocalActivityManager>()
+					.ImplementedBy<ThreadLocalActivityManager>()
 					.LifeStyle.Singleton
 				//Component.For<IDirectoryAdapter>()
 				//    .ImplementedBy<DirectoryAdapter>()

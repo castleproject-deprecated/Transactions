@@ -18,25 +18,25 @@ using Castle.Core.Logging;
 namespace Castle.Transactions.Activities
 {
 	/// <summary>
-	///   The AsyncLocal activity manager saves the stack of transactions on the call-stack-context. This is the recommended manager and the default, also.
+	///   The ThreadLocal activity manager saves the stack of transactions on the call-stack-context. This is the recommended manager and the default, also.
 	/// </summary>
-    public class AsyncLocalActivityManager : IActivityManager
+    public class ThreadLocalActivityManager : IActivityManager
     {
-        private static readonly AsyncLocal<Activity> _asyncLocalActivity = new AsyncLocal<Activity>();
+        private static readonly ThreadLocal<Activity> _threadLocalActivity = new ThreadLocal<Activity>();
 
-        public AsyncLocalActivityManager()
+        public ThreadLocalActivityManager()
         {
-            _asyncLocalActivity.Value = null;
+            _threadLocalActivity.Value = null;
         }
 
         public Activity GetCurrentActivity()
         {
-            var activity = _asyncLocalActivity.Value;
+            var activity = _threadLocalActivity.Value;
 
             if (activity == null)
             {
                 activity = new Activity(NullLogger.Instance);
-                _asyncLocalActivity.Value = activity;
+                _threadLocalActivity.Value = activity;
             }
 
             return activity;
