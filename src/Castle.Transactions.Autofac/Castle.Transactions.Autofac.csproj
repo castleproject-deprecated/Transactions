@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Castle.Transactions.Autofac</AssemblyName>
     <PackageId>Castle.Transactions.Autofac</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
@@ -15,6 +15,6 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="2.5.2.830" />
+    <PackageReference Include="Autofac" Version="4.8.1" />
   </ItemGroup>
 </Project>

@@ -166,7 +166,7 @@ namespace Castle.Facilities.AutoTx.Tests
 					catch (Exception ex)
 					{
 						possibleException = ex;
-						logger.Debug("child fault", ex);
+						logger.Debug(ex, "child fault");
 					}
 					finally
 					{
