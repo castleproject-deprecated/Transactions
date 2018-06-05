@@ -131,6 +131,7 @@ namespace Castle.Transactions
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
+		[SuppressMessage("Microsoft.Design", "CA1034:ImplementIDisposableCorrectly")]
 		public class DisposableScope : IDisposable
 		{
 			readonly Func<ITransaction> _onDispose;

@@ -15,23 +15,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B75EDA
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.Tests", "src\Castle.Transactions.Tests\Castle.Transactions.Tests.csproj", "{67CDFD3A-450F-4CD4-9401-EF15361E2713}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Transactions.Tests", "src\Castle.Transactions.Tests\Castle.Transactions.Tests.csproj", "{67CDFD3A-450F-4CD4-9401-EF15361E2713}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Facilities.AutoTx", "src\Castle.Facilities.AutoTx\Castle.Facilities.AutoTx.csproj", "{C19A20DD-8F32-44EF-9B68-43C70677F92D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Transactions", "src\Castle.Transactions\Castle.Transactions.csproj", "{76DF5D09-FC04-411F-B123-01A6B9432796}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Facilities.AutoTx.Tests", "src\Castle.Facilities.AutoTx.Tests\Castle.Facilities.AutoTx.Tests.csproj", "{BBDD1C0A-67E9-48C7-9A14-69CB8B158549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Facilities.AutoTx.Tests", "src\Castle.Facilities.AutoTx.Tests\Castle.Facilities.AutoTx.Tests.csproj", "{BBDD1C0A-67E9-48C7-9A14-69CB8B158549}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.IO", "src\Castle.IO\Castle.IO.csproj", "{59637705-C235-488A-876B-E4B1A39E9BF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.IO.Tests", "src\Castle.IO.Tests\Castle.IO.Tests.csproj", "{87BEB55F-0F5B-4812-AD0D-B0D4A603C944}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.IO.Tests", "src\Castle.IO.Tests\Castle.IO.Tests.csproj", "{87BEB55F-0F5B-4812-AD0D-B0D4A603C944}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.IO.Windsor", "src\Castle.IO.Windsor\Castle.IO.Windsor.csproj", "{7B30541F-DE66-4F77-BF44-74FA32C4E1CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Transactions.IO", "src\Castle.Transactions.IO\Castle.Transactions.IO.csproj", "{CD2EEE95-769C-44A6-98AF-27A03A0F4528}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle.Transactions.IO.Tests", "src\Castle.Transactions.IO.Tests\Castle.Transactions.IO.Tests.csproj", "{DDD7BBF2-9CA5-4F5A-B63A-0D32FD7E3F8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Transactions.IO.Tests", "src\Castle.Transactions.IO.Tests\Castle.Transactions.IO.Tests.csproj", "{DDD7BBF2-9CA5-4F5A-B63A-0D32FD7E3F8B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Castle.Transactions.Autofac", "src\Castle.Transactions.Autofac\Castle.Transactions.Autofac.csproj", "{7F966BFF-8994-41CD-BE87-218F9F029D42}"
 EndProject

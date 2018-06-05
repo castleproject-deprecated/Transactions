@@ -30,7 +30,6 @@ namespace Castle.Facilities.AutoTx.Tests
 			_Container.AddFacility<LoggingFacility>(f => f.LogUsing<NLogFactory>().WithConfig("NLog.config"));
 			_Container.AddFacility<AutoTxFacility>();
 			_Container.Register(Component.For<MyService>());
-			ThreadPool.SetMinThreads(5, 5);
 		}
 
 		[TearDown]

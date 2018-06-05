@@ -50,7 +50,7 @@ namespace Castle.IO.Tests.writing_content
 			file.ShouldBe(1, 42);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void DisposeFile()
 		{
 			if (file != null)

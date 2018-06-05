@@ -49,7 +49,7 @@ namespace Castle.IO.Tests
 				writer.Write(Encoding.UTF8.GetBytes(content));
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void delete_temp_dir()
 		{
 			if (TempDir != null)

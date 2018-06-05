@@ -24,7 +24,7 @@ namespace Castle.Transactions.IO.Tests
 
 	public abstract class TxFTestFixtureBase
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void EnsureSupported()
 		{
 			if (!VerifySupported())
