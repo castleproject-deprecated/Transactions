@@ -7,6 +7,9 @@ using Castle.Transactions;
 using Castle.Windsor;
 using NUnit.Framework;
 using System.Linq;
+using Castle.Facilities.Logging;
+using Castle.Services.Logging.NLogIntegration;
+using NLog;
 
 namespace Castle.Facilities.AutoTx.Tests
 {
@@ -17,12 +20,14 @@ namespace Castle.Facilities.AutoTx.Tests
 
 	public class MultipleThreads_TransactionBookKeeping
 	{
+		private static readonly ILogger _Logger = LogManager.GetCurrentClassLogger();
 		private WindsorContainer _Container;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_Container = new WindsorContainer();
+			_Container.AddFacility<LoggingFacility>(f => f.LogUsing<NLogFactory>().WithConfig("NLog.config"));
 			_Container.AddFacility<AutoTxFacility>();
 			_Container.Register(Component.For<MyService>());
 			ThreadPool.SetMinThreads(5, 5);

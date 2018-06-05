@@ -29,7 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Castle.Core-NLog" Version="4.2.1" />
     <PackageReference Include="Castle.FactorySupportFacility" Version="4.1.0" />
+    <PackageReference Include="Castle.LoggingFacility" Version="4.1.0" />
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />
     <PackageReference Include="NLog" Version="4.5.4" />
     <PackageReference Include="NUnit" Version="2.6.4" />

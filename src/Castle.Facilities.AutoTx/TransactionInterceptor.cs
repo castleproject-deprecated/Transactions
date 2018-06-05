@@ -223,9 +223,13 @@ namespace Castle.Facilities.AutoTx
 						throw new TransactionAbortedException(
 							"Parallel/forked transaction aborted! See inner exception for details.", ex);
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
 						hasException = true;
+
+						if (_Logger.IsDebugEnabled)
+							_Logger.Debug(ex.Message, ex);
+
 						throw;
 					}
 					finally
