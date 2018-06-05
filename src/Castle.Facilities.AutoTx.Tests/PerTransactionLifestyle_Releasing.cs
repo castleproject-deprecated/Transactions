@@ -18,6 +18,8 @@ namespace Castle.Facilities.AutoTx.Tests
 	using System.Diagnostics.Contracts;
 	using System.Threading;
 
+	using Castle.Facilities.Logging;
+	using Castle.Services.Logging.NLogIntegration;
 	using Castle.Facilities.AutoTx.Testing;
 	using Castle.Facilities.FactorySupport;
 	using Castle.Facilities.TypedFactory;
@@ -228,6 +230,7 @@ Test 'Castle.Facilities.AutoTx.Tests.PerTransactionLifestyle_Releasing.Concurren
 		private WindsorContainer GetContainer()
 		{
 			var container = new WindsorContainer();
+			container.AddFacility<LoggingFacility>(f => f.LogUsing<NLogFactory>().WithConfig("NLog.config"));
 			container.AddFacility<AutoTxFacility>();
 			container.AddFacility<FactorySupportFacility>();
 			container.AddFacility<TypedFactoryFacility>();
