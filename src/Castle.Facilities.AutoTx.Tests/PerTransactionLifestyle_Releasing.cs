@@ -46,7 +46,7 @@ namespace Castle.Facilities.AutoTx.Tests
 			using (var scope = container.ResolveScope<Service>())
 			{
 				var ex = Assert.Throws<MissingTransactionException>(() => scope.Service.DoWork());
-				Assert.That(ex.Message, Is.StringContaining("Castle.Facilities.AutoTx.Tests.IPerTxService"),
+				Assert.That(ex.Message, Contains.Substring("Castle.Facilities.AutoTx.Tests.IPerTxService"),
 				            "The message from the exception needs to contain the component which IS A per-transaction component.");
 			}
 		}
@@ -63,7 +63,7 @@ namespace Castle.Facilities.AutoTx.Tests
 				using (var scope = container.ResolveScope<ServiceWithDirectDep>())
 					scope.Service.DoWork();
 			});
-			Assert.That(ex.Message, Is.StringContaining("Castle.Facilities.AutoTx.Tests.IPerTxService"),
+			Assert.That(ex.Message, Contains.Substring("Castle.Facilities.AutoTx.Tests.IPerTxService"),
 			            "The message from the exception needs to contain the component which IS A per-transaction component.");
 		}
 
