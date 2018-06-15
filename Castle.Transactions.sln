@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		License.txt = License.txt
 		buildscripts\project_data.rb = buildscripts\project_data.rb
+		buildscripts\TestAssemblyInfo.cs = buildscripts\TestAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B75EDA86-907F-4D93-B23E-AF616D8791F3}"
