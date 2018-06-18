@@ -19,6 +19,9 @@
     <PackageProjectUrl>https://github.com/castleproject/Castle.Transactions</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\buildscripts\TestAssemblyInfo.cs" Link="TestAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\buildscripts\CastleKey.snk">
       <Link>CastleKey.snk</Link>
     </None>

@@ -12,6 +12,9 @@
     <Compile Remove="File_Specs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\buildscripts\TestAssemblyInfo.cs" Link="TestAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
