@@ -54,4 +54,7 @@
   <ItemGroup>
     <Reference Include="System.Transactions" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
