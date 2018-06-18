@@ -13,5 +13,10 @@ namespace Castle.Transactions
 		/// </summary>
 		/// <value>The current activity.</value>
 		Activity GetCurrentActivity();
+
+		/// <summary>
+		///		Force creating new activity (new scope)
+		/// </summary>
+		void CreateNewActivity();
 	}
 }
