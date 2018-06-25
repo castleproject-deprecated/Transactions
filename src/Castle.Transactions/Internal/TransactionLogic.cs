@@ -47,9 +47,9 @@ namespace Castle.Transactions.Internal
 		{
 			return () =>
 			{
-				manager.Activities.CreateNewActivity();
-				manager.Activities.GetCurrentActivity().Push(tx);
-				return new TransactionManager.DisposableScope(manager.Activities.GetCurrentActivity().Pop);
+				var activity = manager.Activities.CreateNewActivity();
+				activity.Push(tx);
+				return new TransactionManager.DisposableScope(activity.Pop);
 			};
 		}
 	}

@@ -42,10 +42,11 @@ namespace Castle.Transactions.Activities
 			return activity;
 		}
 
-		public void CreateNewActivity()
+		public Activity CreateNewActivity()
 		{
 			var activity = new Activity(NullLogger.Instance);
 			_threadLocalActivity.Value = activity;
+			return activity;
 		}
 	}
 }

@@ -17,6 +17,6 @@ namespace Castle.Transactions
 		/// <summary>
 		///		Force creating new activity (new scope)
 		/// </summary>
-		void CreateNewActivity();
+		Activity CreateNewActivity();
 	}
 }
