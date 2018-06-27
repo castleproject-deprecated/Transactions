@@ -46,7 +46,7 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\buildscripts\CastleKey.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageOutputPath>..\..\build\nuget\</PackageOutputPath>
+    <PackageOutputPath>..\..\build\</PackageOutputPath>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>3.3.0</Version>
     <Product>Castle AutoTx Facility</Product>
