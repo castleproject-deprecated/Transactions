@@ -1,10 +1,20 @@
-Documentation on [Wiki!](https://github.com/haf/Castle.Services.Transaction/wiki)
-
-*v3.1*
-
 # Castle Transactions
 
-A project for transaction management on .Net and mono.
+A project for transaction management on .NET Standard 2.0
+
+## Releases
+
+See the [releases](https://github.com/castleproject/Castle.Transactions/releases).
+
+## License
+
+Castle Transactions is &copy; 2004-2018 Castle Project. It is free software, and may be redistributed under the terms of the [Apache 2.0](http://opensource.org/licenses/Apache-2.0) license.
+
+## Building
+
+```
+build.cmd
+```
 
 ## Quick Start
 
@@ -12,20 +22,8 @@ You have a few major options. The first option is to install the Windsor integra
 
 `install-package Castle.Facilities.AutoTx`,
 
- - -> Castle.Facilities.AutoTx
- - -> Castle.Transactions.IO
  - -> Castle.Transactions
- - -> Castle.Core
-
-another option is if you're using Autofac:
-
-`install-package Castle.Transactions.Autofac`
-
- - -> Autofac ~> 2.5
- - -> Castle.Transactions.Autofac
- - -> Castle.Transactions.IO
- - -> Castle.Transactions
- - -> Castle.Core
+ - -> Castle.Windsor
 
 another option is that you only care about the transactions API as a stand-alone:
 
@@ -65,9 +63,4 @@ A project for adding a transactional file system to the mix!
 #### Main Features
 
  * Provides an `Castle.IO.IFileSystem` implementation that adds transactionality to common operations.
-
-
-
-### Remarks
-
-See also the [Castle.IO](https://github.com/haf/Castle.IO) project.
+ 
