@@ -65,9 +65,3 @@ A project for adding a transactional file system to the mix!
 #### Main Features
 
  * Provides an `Castle.IO.IFileSystem` implementation that adds transactionality to common operations.
-
-
-
-### Remarks
-
-See also the [Castle.IO](https://github.com/haf/Castle.IO) project.
